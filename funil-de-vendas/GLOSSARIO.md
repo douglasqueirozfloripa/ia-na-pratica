@@ -118,7 +118,7 @@
   seja trocar a peça, não repintar tudo.
 
 - **Inspiração visual** — a **marca de referência** de onde saem as cores e o tom
-  (aqui, o **Pipedrive**, verde). Diferente da **fundamentação** (o *porquê* do
+  (aqui, o **Jira**, azul). Diferente da **fundamentação** (o *porquê* do
   app): a inspiração é o *como se parece*. No app, foi declarada na tela e toda cor
   dela passou pela auditoria de contraste.
 

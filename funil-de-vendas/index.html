@@ -9,9 +9,9 @@
     index.html — primeira tela do app "Funil" (Prompt 3).
     Coberto por: e2e/app.spec.js (Playwright). Regras de cálculo em: logica.js.
 
-    INSPIRAÇÃO VISUAL DECLARADA: Pipedrive (CRM de pipeline) — verde característico
-    e layout limpo. Dela derivam as CORES abaixo. Toda cor foi medida e aprovada
-    em contraste WCAG AA/AAA (ver rodapé ao vivo e os testes de contraste).
+    INSPIRAÇÃO VISUAL DECLARADA: Jira (Atlassian) — azul característico e layout
+    limpo de gestão de trabalho. Dela derivam as CORES abaixo. Toda cor foi medida
+    e aprovada em contraste WCAG AA/AAA (ver rodapé ao vivo e os testes de contraste).
   -->
   <style>
     /* ===== DESIGN TOKENS (única fonte da verdade — nada de valor solto) ===== */
@@ -20,20 +20,25 @@
       --esp-1: 4px;  --esp-2: 8px;  --esp-3: 12px;  --esp-4: 16px;  --esp-5: 24px;
       /* Raio e sombra */
       --raio: 10px;  --raio-pill: 999px;
-      --sombra: 0 1px 3px rgba(20, 35, 28, .12), 0 4px 12px rgba(20, 35, 28, .06);
+      --sombra: 0 1px 3px rgba(23, 43, 77, .12), 0 4px 12px rgba(23, 43, 77, .06);
       /* Tipografia */
       --fonte: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      /* Cores (derivadas do verde Pipedrive; todas verificadas WCAG AA+) */
-      --cor-fundo: #f3f6f4;
+      /* Cores (derivadas do azul Jira/Atlassian; todas verificadas WCAG AA+) */
+      --cor-fundo: #f4f5f7;
       --cor-superficie: #ffffff;
-      --cor-texto: #14231c;
-      --cor-texto-secundario: #3d5245;
-      --cor-borda: #d5ded8;
-      --cor-primaria: #0b6a37;
-      --cor-primaria-escura: #08512a;
+      --cor-texto: #172b4d;
+      --cor-texto-secundario: #44546f;
+      --cor-borda: #dfe1e6;
+      --cor-primaria: #0052cc;
+      --cor-primaria-escura: #0747a6;
       --cor-primaria-contraste: #ffffff;
-      --cor-erro: #b3261e;
-      --cor-sucesso: #0b6a37;
+      --cor-erro: #bf2600;
+      --cor-sucesso: #006644;
+      /* Tints suaves (fundos de selo/hover) — tons claros do azul/verde/vermelho */
+      --cor-superficie-alt: #ebecf0;   /* cinza-azulado neutro (cabeçalho de grupo) */
+      --cor-primaria-tint: #deebff;     /* azul claro Jira (hover do botão de contorno) */
+      --cor-sucesso-tint: #e3fcef;      /* verde claro (selo Ganho / contraste aprovado) */
+      --cor-erro-tint: #ffedeb;         /* vermelho claro (selo Perdido / reprovado) */
     }
 
     * { box-sizing: border-box; }
@@ -152,7 +157,7 @@
     .grupo-cab {
       display: flex; align-items: center; justify-content: space-between; gap: var(--esp-3);
       padding: var(--esp-3) var(--esp-4);
-      background: #eef4f0; border-bottom: 1px solid var(--cor-borda);
+      background: var(--cor-superficie-alt); border-bottom: 1px solid var(--cor-borda);
     }
     .grupo-cab h3 { margin: 0; font-size: 15px; }
     .grupo-meta { font-size: 13px; color: var(--cor-texto-secundario); font-weight: 600; }
@@ -168,8 +173,8 @@
     .item-pond { color: var(--cor-primaria); white-space: nowrap; }
     .item-acoes { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin-top: var(--esp-3); }
     .vazio { padding: var(--esp-3) var(--esp-4); color: var(--cor-texto-secundario); }
-    .selo.ganho { background: #e3f2e9; color: var(--cor-primaria); }
-    .selo.perdido { background: #fde8e7; color: var(--cor-erro); }
+    .selo.ganho { background: var(--cor-sucesso-tint); color: var(--cor-sucesso); }
+    .selo.perdido { background: var(--cor-erro-tint); color: var(--cor-erro); }
     .item-data { color: var(--cor-texto-secundario); font-size: 12px; margin-left: var(--esp-2); }
     @media (max-width: 480px) {
       .item-info { grid-template-columns: 1fr auto; row-gap: var(--esp-1); }
@@ -180,9 +185,9 @@
     .btn-contorno {
       background: transparent; color: var(--cor-primaria); border-color: var(--cor-primaria);
     }
-    .btn-contorno:hover { background: #eef4f0; }
+    .btn-contorno:hover { background: var(--cor-primaria-tint); }
     .btn-perigo { background: transparent; color: var(--cor-erro); border-color: var(--cor-erro); }
-    .btn-perigo:hover { background: #fdecea; }
+    .btn-perigo:hover { background: var(--cor-erro-tint); }
 
     /* Cabeçalho do cartão da lista: título + ações (exportar/limpar) */
     .lista-cab {
@@ -205,8 +210,8 @@
       border-radius: var(--raio-pill); padding: 6px var(--esp-3);
     }
     .selo { font-weight: 700; border-radius: var(--raio-pill); padding: 1px var(--esp-2); font-size: 12px; }
-    .selo.AAA, .selo.AA { background: #e3f2e9; color: var(--cor-primaria); }
-    .selo.reprovado { background: #fde8e7; color: var(--cor-erro); }
+    .selo.AAA, .selo.AA { background: var(--cor-sucesso-tint); color: var(--cor-sucesso); }
+    .selo.reprovado { background: var(--cor-erro-tint); color: var(--cor-erro); }
   </style>
 </head>
 <body>
@@ -529,7 +534,7 @@
     function montarContraste() {
       const pares = [
         ['Texto × fundo', corToken('--cor-texto'), corToken('--cor-fundo')],
-        ['Botão (branco × verde)', corToken('--cor-primaria-contraste'), corToken('--cor-primaria')],
+        ['Botão (branco × azul)', corToken('--cor-primaria-contraste'), corToken('--cor-primaria')],
         ['Secundário × superfície', corToken('--cor-texto-secundario'), corToken('--cor-superficie')],
         ['Erro × superfície', corToken('--cor-erro'), corToken('--cor-superficie')],
       ];

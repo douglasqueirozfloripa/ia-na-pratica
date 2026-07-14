@@ -110,7 +110,7 @@ organizador-tarefas-prioridades/
 ├── PROMPTS.md          # diário de prompts (Setup 0 → 12)
 ├── GLOSSARIO.md        # termos em linguagem simples
 ├── RESUMAO.md          # memorial de cada etapa
-└── SLIDES.html         # apresentação da história do projeto
+└── slides.html         # apresentação da história do projeto
 ```
 
 ## Documentos do projeto
@@ -118,4 +118,4 @@ organizador-tarefas-prioridades/
 - **`PROMPTS.md`** — o caminho inteiro, prompt a prompt (Setup 0 → entregas).
 - **`RESUMAO.md`** — o que foi feito, decisões e aprendizados por etapa.
 - **`GLOSSARIO.md`** — todos os termos explicados com analogias.
-- **`SLIDES.html`** — abra no navegador para a apresentação.
+- **`slides.html`** — abra no navegador para a apresentação.

@@ -29,7 +29,7 @@ Poucas regras deixam a conversa produtiva:
 ```
 Estou começando um novo projeto: [descreva o tema do app em 1–2 frases].
 Criei a pasta "[nome-da-pasta]" no computador e ela já está aberta nesta
-ferramenta. Com base no instrucoes-do-projeto-estado-zero.md, preencha o
+ferramenta. Com base no instrucoes-do-projeto-template.md, preencha o
 arquivo de instruções para este tema: o que é o app, a FUNDAMENTAÇÃO e
 referências do conceito central, a stack, as regras de negócio e as regras
 automáticas de toda resposta (testes dos dois lados, clean code comentado,

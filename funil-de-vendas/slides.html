@@ -6,8 +6,8 @@
   <title>Funil — a história do projeto (slides)</title>
   <style>
     :root {
-      --verde: #0b6a37; --verde-escuro: #08512a; --branco: #ffffff;
-      --texto: #14231c; --sec: #3d5245; --borda: #d5ded8; --fundo: #f3f6f4;
+      --azul: #0052cc; --azul-escuro: #0747a6; --branco: #ffffff;
+      --texto: #172b4d; --sec: #44546f; --borda: #dfe1e6; --fundo: #f4f5f7;
       --esp-2: 8px; --esp-3: 12px; --esp-4: 16px; --esp-5: 24px; --raio: 12px;
       --fonte: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     }
@@ -24,39 +24,39 @@
     }
     .slide.ativo { opacity: 1; transform: none; pointer-events: auto; }
     .slide h1 { font-size: clamp(28px, 5vw, 52px); margin: 0; }
-    .slide h2 { font-size: clamp(22px, 3.4vw, 34px); margin: 0 0 var(--esp-2); color: var(--verde); }
+    .slide h2 { font-size: clamp(22px, 3.4vw, 34px); margin: 0 0 var(--esp-2); color: var(--azul); }
     .slide p, .slide li { font-size: clamp(15px, 1.9vw, 20px); line-height: 1.55; max-width: 60ch; }
-    .kicker { color: var(--verde); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 13px; }
+    .kicker { color: var(--azul); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 13px; }
     .sub { color: var(--sec); }
     ul { margin: 0; padding-left: 1.2em; display: grid; gap: var(--esp-2); }
-    a { color: var(--verde); }
-    .capa { background: var(--verde); color: var(--branco); }
+    a { color: var(--azul); }
+    .capa { background: var(--azul); color: var(--branco); }
     .capa h1, .capa h2 { color: var(--branco); }
     .capa .kicker, .capa .sub { color: rgba(255,255,255,.85); }
-    .logo { width: 64px; height: 64px; border-radius: var(--raio); background: var(--branco); color: var(--verde);
+    .logo { width: 64px; height: 64px; border-radius: var(--raio); background: var(--branco); color: var(--azul);
       display: grid; place-items: center; font-weight: 800; font-size: 34px; }
 
     .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--esp-3); max-width: 900px; }
     .cartao { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--raio); padding: var(--esp-4); }
-    .cartao b { color: var(--verde); font-size: 26px; display: block; }
+    .cartao b { color: var(--azul); font-size: 26px; display: block; }
     .cartao span { color: var(--sec); font-size: 14px; }
     table { border-collapse: collapse; font-size: clamp(14px, 1.8vw, 19px); }
     td, th { text-align: left; padding: 6px 18px 6px 0; }
     th { color: var(--sec); font-weight: 600; }
-    .selo { display: inline-block; background: #e3f2e9; color: var(--verde); border-radius: 999px; padding: 2px 10px; font-weight: 700; font-size: 13px; }
+    .selo { display: inline-block; background: #deebff; color: var(--azul); border-radius: 999px; padding: 2px 10px; font-weight: 700; font-size: 13px; }
 
     /* Barra inferior de navegação */
     .barra { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-3);
       padding: var(--esp-3) var(--esp-5); background: var(--branco); border-top: 1px solid var(--borda); }
     .pontos { display: flex; gap: 6px; flex-wrap: wrap; }
     .ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--borda); border: 0; padding: 0; cursor: pointer; }
-    .ponto.ativo { background: var(--verde); }
+    .ponto.ativo { background: var(--azul); }
     .btns { display: flex; gap: var(--esp-2); }
     .btn { font: inherit; font-weight: 600; cursor: pointer; height: 40px; padding: 0 var(--esp-4);
-      border-radius: 8px; border: 1px solid var(--verde); background: var(--verde); color: var(--branco); }
-    .btn.sec { background: transparent; color: var(--verde); }
+      border-radius: 8px; border: 1px solid var(--azul); background: var(--azul); color: var(--branco); }
+    .btn.sec { background: transparent; color: var(--azul); }
     .btn:disabled { opacity: .4; cursor: not-allowed; }
-    .btn:focus-visible, .ponto:focus-visible { outline: 3px solid var(--verde-escuro); outline-offset: 2px; }
+    .btn:focus-visible, .ponto:focus-visible { outline: 3px solid var(--azul-escuro); outline-offset: 2px; }
     .contador { color: var(--sec); font-size: 14px; min-width: 64px; text-align: center; }
   </style>
 </head>
@@ -69,10 +69,18 @@
         <p class="kicker">IA na Prática · do Setup 0 ao app pronto</p>
         <h1>Funil</h1>
         <p class="sub">Um gestor de oportunidades que mostra em que etapa do funil cada negócio está — e qual focar primeiro.</p>
-        <p class="sub">Tema escolhido: Funil de Vendas · Inspiração visual: Pipedrive</p>
+        <p class="sub">Tema escolhido: Funil de Vendas · Inspiração visual: Jira</p>
       </section>
 
       <!-- 2 -->
+      <section class="slide">
+        <p class="kicker">O problema</p>
+        <h1>Uma lista de contatos não diz em quem focar</h1>
+        <p>Todo vendedor tem uma lista de negócios em aberto. O difícil é decidir <b>a ordem</b>: qual oportunidade atacar agora, qual ainda amadurecer e qual já não vale o esforço.</p>
+        <p class="sub">O Funil transforma a lista solta numa recomendação: "foque neste".</p>
+      </section>
+
+      <!-- 3 -->
       <section class="slide">
         <p class="kicker">O conceito</p>
         <h1>Muitos entram, poucos fecham</h1>
@@ -80,7 +88,7 @@
         <p class="sub">Lead → Qualificação → Proposta → Negociação → Fechado (Ganho/Perdido)</p>
       </section>
 
-      <!-- 3 -->
+      <!-- 4 -->
       <section class="slide">
         <p class="kicker">Fundamentação (não é achismo)</p>
         <h2>De onde vem a ideia</h2>
@@ -92,7 +100,7 @@
         <p class="sub">Cada termo entrou no glossário com a fonte linkada, antes de qualquer código.</p>
       </section>
 
-      <!-- 4 -->
+      <!-- 5 -->
       <section class="slide">
         <p class="kicker">O cálculo (função pura)</p>
         <h2>Probabilidade e valor ponderado</h2>
@@ -107,7 +115,7 @@
         <p>+5% por critério <b>BANT</b> atendido. <b>Valor ponderado = valor × probabilidade</b> — é o que ordena o foco.</p>
       </section>
 
-      <!-- 5 -->
+      <!-- 6 -->
       <section class="slide">
         <p class="kicker">Stack & arquitetura</p>
         <h2>HTML + CSS + JS puros</h2>
@@ -119,7 +127,7 @@
         </ul>
       </section>
 
-      <!-- 6 -->
+      <!-- 7 -->
       <section class="slide">
         <p class="kicker">A jornada, prompt a prompt</p>
         <h2>Passos pequenos, testes junto</h2>
@@ -131,7 +139,7 @@
         </ul>
       </section>
 
-      <!-- 7 -->
+      <!-- 8 -->
       <section class="slide">
         <p class="kicker">Qualidade</p>
         <h2>Testado dos dois lados</h2>
@@ -143,7 +151,7 @@
         <p class="sub">O teste de espaçamento pegou uma quebra real: um botão colado na fileira BANT.</p>
       </section>
 
-      <!-- 8 -->
+      <!-- 9 -->
       <section class="slide">
         <p class="kicker">Acessibilidade</p>
         <h2>WCAG AA desde a 1ª tela</h2>
@@ -154,15 +162,15 @@
         </ul>
       </section>
 
-      <!-- 9 -->
+      <!-- 10 -->
       <section class="slide">
         <p class="kicker">Inspiração visual</p>
-        <h2>Pipedrive, o CRM de pipeline</h2>
-        <p>A paleta parte do <b>verde característico do Pipedrive</b> — a referência real de mercado do próprio domínio (funil/pipeline em colunas).</p>
+        <h2>Jira, a gestão de trabalho da Atlassian</h2>
+        <p>A paleta parte do <b>azul característico do Jira</b> — a referência real de mercado para gerir trabalho em fluxo (boards, colunas, cartões).</p>
         <p class="sub">A referência é declarada no código e toda cor foi medida em WCAG AA — a estética nunca fura a acessibilidade: se a cor de marca reprova, ajusta-se o tom mantendo a identidade.</p>
       </section>
 
-      <!-- 10 -->
+      <!-- 11 -->
       <section class="slide">
         <p class="kicker">Próximos passos</p>
         <h2>Features futuras</h2>
@@ -174,7 +182,7 @@
         <p class="sub">O caminho inteiro fica em PROMPTS.md e RESUMAO.md.</p>
       </section>
 
-      <!-- 11 -->
+      <!-- 12 -->
       <section class="slide capa">
         <div class="logo" aria-hidden="true">▽</div>
         <h1>Obrigado!</h1>

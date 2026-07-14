@@ -129,10 +129,10 @@
 ## Qualidade visual (design de TODA interface)
 
 - **Inspiração visual (obrigatória):** a paleta e o estilo partem de uma
-  **referência real de mercado do mesmo domínio** — proposta inicial: a identidade
-  de um CRM de pipeline conhecido (ex.: **Pipedrive**, com seu verde característico
-  e o layout de funil/kanban em colunas). A referência será **declarada
-  explicitamente** ao criar a primeira tela e **sempre respeitará o contraste WCAG
+  **referência real de mercado do mesmo domínio** — referência escolhida: a
+  identidade do **Jira** (Atlassian), com seu **azul característico** e o layout
+  limpo de gestão de trabalho em boards/colunas/cartões. A referência é **declarada
+  explicitamente** no código (tokens do `index.html`) e **sempre respeita o contraste WCAG
   AA**. Se o usuário indicar outra marca/sistema, usamos a dele.
 - **Design tokens**: escala **única** de espaçamento (4/8/12/16/24px), raio,
   tipografia, **cores** e sombras em variáveis CSS, reutilizada em tudo (nada de

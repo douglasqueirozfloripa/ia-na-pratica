@@ -98,7 +98,7 @@ ficam só na tela. Por isso a lógica é testável sem navegador. Principais fun
 - **Teclado, foco visível, labels e regiões nomeadas** — cobertos por E2E.
 - **Teste de espaçamento** (`validarEspacamento`): reprova botão/campo colado ou
   sobreposto (folga exigida > 0,5px) — pegou uma quebra real durante o projeto.
-- **Inspiração visual** declarada: **Pipedrive** (verde), sempre respeitando o
+- **Inspiração visual** declarada: **Jira** (Atlassian, azul), sempre respeitando o
   contraste.
 
 ## Decisões (e o porquê)

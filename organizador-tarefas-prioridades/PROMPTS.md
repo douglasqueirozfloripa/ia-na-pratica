@@ -18,7 +18,7 @@
 
 ```
 Tema: Organizador de tarefas e Prioridades. Com base no
-instrucoes-do-projeto-estado-zero.md, preencha o arquivo de instruções para
+instrucoes-do-projeto-template.md, preencha o arquivo de instruções para
 este tema (o que é o app, fundamentação com fontes, stack, regras de negócio,
 regras automáticas) e monte o roteiro de prompts no PROMPTS.md.
 ```
@@ -223,7 +223,7 @@ slides da história do projeto, alimentados por PROMPTS.md e RESUMAO.md.
 
 **Resultado:** `README.md` completo (visão, conceito com fontes, como rodar, como
 testar, arquitetura pura×externo, acessibilidade, inspiração Jenkins, LGPD,
-estrutura de arquivos) e `SLIDES.html` — deck autocontido de 12 slides no tema
+estrutura de arquivos) e `slides.html` — deck autocontido de 12 slides no tema
 Jenkins (navegação por teclado), contando a história do Setup 0 ao app pronto.
 Capa conferida por screenshot (`prioriza-slides-capa.png`). **Projeto concluído:
 82 unitários + 4 E2E, WCAG AA.**
@@ -380,5 +380,5 @@ slides da história do projeto, alimentados por PROMPTS.md e RESUMAO.md.
 - [x] **Prompt 9** — excluir + reiniciar, ambos com confirmação (80 verdes; ambos os caminhos verificados no navegador).
 - [x] **Prompt 10** — exportar (.json) + limpar dados (LGPD) (82 verdes; export e limpeza verificados no navegador).
 - [x] **Prompt 11** — acessibilidade WCAG AA + E2E Playwright (82 unitários + 4 E2E verdes).
-- [x] **Prompt 12** — entregas finais: `README.md` + `SLIDES.html`. 🎉 **Projeto concluído.**
-- [x] Entregas finais: **README.md** e **SLIDES.html**.
+- [x] **Prompt 12** — entregas finais: `README.md` + `slides.html`. 🎉 **Projeto concluído.**
+- [x] Entregas finais: **README.md** e **slides.html**.

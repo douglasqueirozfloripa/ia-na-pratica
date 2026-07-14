@@ -17,7 +17,7 @@
 ## Prompt 0 — Setup ✅ executado
 
 ```
-Tema: Funil de venda. Com base no instrucoes-do-projeto-estado-zero.md, preencha
+Tema: Funil de venda. Com base no instrucoes-do-projeto-template.md, preencha
 o arquivo de instruções para este tema (o que é o app, fundamentação com fontes,
 stack, regras de negócio, regras automáticas) e monte o roteiro de prompts no
 PROMPTS.md.
@@ -75,7 +75,7 @@ nivelWcag) mostrando o nível WCAG ao vivo. Gere um screenshot ao final.
 
 **Resultado:** criado `index.html` (header com "Reiniciar experiência",
 formulário, prévia ao vivo de probabilidade/valor ponderado e rodapé de contraste
-WCAG). Inspiração visual declarada: **Pipedrive** (verde). Funções puras de
+WCAG). Inspiração visual declarada: **Jira** (azul). Funções puras de
 contraste adicionadas ao `logica.js` (agora também usável no navegador via
 `window.Logica`). Screenshot em `screenshots/prompt3-primeira-tela.png`. Inclui
 **teste de espaçamento** (`validarEspacamento`, folga > 0,5px) que pegou e levou à
@@ -318,6 +318,24 @@ Gere o README.md (visão, como rodar, como testar, arquitetura, decisões) e os
 slides da história do projeto, alimentados por PROMPTS.md e RESUMAO.md.
 ```
 **[Entrega]** `README.md` + slides finais.
+
+## Prompt 13 — refazer inspiração visual (Pipedrive → Jira) ✅ executado
+
+```
+Refaça a inspiração visual do funil: troque de Pipedrive para Jira (azul da
+Atlassian). Faça os testes de acessibilidade, rode toda a suíte e atualize as docs.
+```
+
+**Resultado:** inspiração visual trocada de **Pipedrive (verde)** para **Jira
+(azul Atlassian)**. Paleta derivada do azul do Jira e **medida ANTES de fixar os
+tokens** com as próprias funções puras (`razaoContraste`/`nivelWcag`): botão
+branco×azul **6.82:1 (AA)**, texto×fundo **12.93:1 (AAA)**, secundário×superfície
+**7.65:1 (AAA)**, erro **6.01:1 (AA)** — todas AA+. Atualizados os design tokens do
+`index.html` (+ tints de selo/hover), o `slides.html` (cores, slide de inspiração e
+novo slide "O problema" antes de "O conceito", padronizando a ordem com o outro
+projeto) e as docs (CLAUDE/README/GLOSSARIO/RESUMAO). Suíte: **49 Jest + 19 E2E**
+verdes (incluindo espaçamento e auditoria de contraste ao vivo).
+**Próximo passo:** seguir para as features futuras (dashboard/filtros) quando quiser.
 
 ## Status do roteiro
 

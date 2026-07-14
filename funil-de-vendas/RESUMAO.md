@@ -113,7 +113,7 @@
   negócio** (nome, valor, etapa, qualificação BANT), **prévia ao vivo**
   (probabilidade + valor ponderado) e **rodapé de contraste WCAG ao vivo**.
 - **Design tokens** em variáveis CSS derivados da inspiração visual declarada
-  (**Pipedrive**, verde); controles nativos estilizados; layout em grid responsivo
+  (**Jira**, azul); controles nativos estilizados; layout em grid responsivo
   sem quebra.
 - Adicionadas ao `logica.js` as funções puras de contraste `luminancia`,
   `razaoContraste`, `nivelWcag`; export tornado seguro para navegador
@@ -123,7 +123,7 @@
 ### Decisões e o porquê
 | Decisão | Por quê |
 |---|---|
-| Inspiração visual = Pipedrive (verde), declarada na tela | O visual precisa de uma referência real de mercado do domínio; verde/limpo combina com CRM de pipeline |
+| Inspiração visual = Jira (azul), declarada na tela | O visual precisa de uma referência real de mercado do domínio; o azul/limpo do Jira combina com gestão de trabalho em fluxo (boards/colunas) |
 | Paleta medida ANTES de fixar os tokens (via as próprias funções de contraste) | Garante AA/AAA desde a 1ª versão — a estética não fura a acessibilidade |
 | Rodapé lê os tokens REAIS (`getComputedStyle`) e mede ao vivo | Se alguém mudar uma cor, o nível WCAG atualiza sozinho — auditoria de verdade |
 | `logica.js` serve navegador e Node com o mesmo arquivo | A tela usa a MESMA lógica testada — nada de regra duplicada |
@@ -299,8 +299,10 @@
 ### O que foi feito
 - **`README.md`**: visão, conceito + fundamentação (com fontes), como rodar, como
   testar, arquitetura (funções puras × efeitos na tela), decisões e estado do roteiro.
-- **`slides.html`**: deck autossuficiente (10 slides) contando a história do Setup
-  0 ao app pronto — navega por ← → / cliques / pontos, na identidade verde.
+- **`slides.html`**: deck autossuficiente (12 slides) contando a história do Setup
+  0 ao app pronto — abre apresentando Tema + Inspiração, segue "O problema → O
+  conceito" e traz um slide dedicado à inspiração; navega por ← → / cliques /
+  pontos, na identidade azul (Jira).
 - Screenshots dos slides em `screenshots/prompt12-slides-*.png`.
 
 ### Decisões e o porquê

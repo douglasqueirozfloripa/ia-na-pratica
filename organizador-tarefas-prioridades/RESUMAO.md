@@ -353,7 +353,7 @@
 - `README.md` completo: visão, conceito com fontes, como rodar, como testar,
   arquitetura (regra pura × mundo externo), acessibilidade, inspiração Jenkins,
   LGPD e estrutura de arquivos.
-- `SLIDES.html`: deck autocontido de 12 slides no tema Jenkins (navegação por
+- `slides.html`: deck autocontido de 12 slides no tema Jenkins (navegação por
   teclado ← →), contando a história do Setup 0 ao app pronto.
 
 ### Testes
