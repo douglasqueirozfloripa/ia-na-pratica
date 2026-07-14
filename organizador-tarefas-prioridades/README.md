@@ -46,7 +46,7 @@ servidor nenhum.
 Requer Node.js (só para rodar os testes).
 
 ```bash
-npm install          # instala Jest e Playwright (só na 1ª vez)
+npm install          # instala Jest, Playwright, ESLint, Prettier e Husky (1ª vez)
 npm test             # testes unitários das regras (Jest)
 npx playwright install chromium   # baixa o navegador dos testes E2E (1ª vez)
 npm run test:e2e     # testes de ponta a ponta no navegador (Playwright)
@@ -55,6 +55,35 @@ npm run test:e2e     # testes de ponta a ponta no navegador (Playwright)
 Placar atual: **82 testes unitários + 4 E2E**. Todo teste diz no nome se é um
 caso `(positivo)` (o que deve funcionar) ou `(negativo)` (o que deve ser
 bloqueado/dar erro).
+
+## Qualidade de código (lint, formatação e hook de commit)
+
+Três scripts no `package.json` mantêm o código limpo e no padrão:
+
+```bash
+npm run lint      # ESLint: aponta erros e maus hábitos no JavaScript
+npm run format    # Prettier: formata o código (--write) num padrão único
+npm run prepare   # ativa o Husky (roda sozinho no npm install)
+```
+
+O **Husky** instala um **hook de pre-commit** que roda `lint` + `format` (e a
+suíte de testes) **antes de cada commit, em qualquer branch** — nada com erro de
+lint ou fora do padrão entra no histórico. Os arquivos `.gitignore`,
+`.eslintignore` e `.prettierignore` deixam `node_modules/` e artefatos de teste
+fora do repositório (HTML e `.md` ficam fora do Prettier, por serem à mão).
+
+## Como subir o repositório (passo a passo)
+
+Para publicar este projeto como um repositório próprio:
+
+```bash
+git init                                   # 1. inicia o repositório (o .gitignore protege o que não sobe)
+git add . && git commit -m "primeiro commit"   # 2. primeiro commit
+npm install                                # 3. traz o ferramental e ATIVA o hook de pre-commit (script prepare)
+gh repo create prioriza --public --source=. --push   # 4. cria o repo remoto e sobe (ou crie pelo site e git push)
+```
+
+A partir daí, **todo commit passa pelo lint + format do Husky** antes de entrar.
 
 ## Arquitetura
 

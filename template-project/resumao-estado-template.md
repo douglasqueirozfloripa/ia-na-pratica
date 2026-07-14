@@ -26,6 +26,8 @@ A cada avanço, adicione um bloco assim (a etapa mais recente por último):
 
 ### Testes
 - [o que foi coberto e o placar atual, ex.: X unitários + Y E2E = Z passando]
+- [depois do passo 2.5, também o estado do **lint/format**: `npm run lint` limpo
+  e código formatado pelo Prettier; o pre-commit do Husky repete isso no commit]
 
 ### Próximo passo
 - [a opção escolhida para seguir]

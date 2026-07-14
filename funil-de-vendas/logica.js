@@ -101,7 +101,11 @@ function validarNegocio(negocio) {
 function hexParaRgb(hex) {
   if (typeof hex !== 'string') throw new Error(`Cor inválida: "${hex}".`);
   let h = hex.trim().replace(/^#/, '');
-  if (h.length === 3) h = h.split('').map((c) => c + c).join(''); // #abc -> #aabbcc
+  if (h.length === 3)
+    h = h
+      .split('')
+      .map((c) => c + c)
+      .join(''); // #abc -> #aabbcc
   if (!/^[0-9a-fA-F]{6}$/.test(h)) throw new Error(`Cor inválida: "${hex}".`);
   return [0, 2, 4].map((i) => Number.parseInt(h.slice(i, i + 2), 16));
 }
@@ -259,8 +263,12 @@ function exportarJson(lista, agora) {
 // Uma caixa contém a outra? (relação pai/filho — sobreposição INTENCIONAL, ex.: o
 // checkbox dentro do seu rótulo). Esses pares são ignorados na validação.
 function caixaContem(externa, interna) {
-  return externa.left <= interna.left && externa.right >= interna.right
-    && externa.top <= interna.top && externa.bottom >= interna.bottom;
+  return (
+    externa.left <= interna.left &&
+    externa.right >= interna.right &&
+    externa.top <= interna.top &&
+    externa.bottom >= interna.bottom
+  );
 }
 
 // Distância, em px, entre duas caixas: > 0 há folga; = 0 encostadas; < 0 sobrepostas.

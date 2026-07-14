@@ -25,3 +25,10 @@ Exemplo de formato:
 ## Termos (a preencher)
 
 _Nenhum termo ainda — os primeiros entram junto com o Prompt 1._
+
+> Dica de quando entram alguns termos comuns: no **passo 2.5 (ferramental de
+> qualidade)** costumam surgir **ESLint** (analisa o código em busca de erros/maus
+> hábitos), **Prettier** (formata num padrão único), **Husky** (instala *git
+> hooks*), **pre-commit** (gatilho que roda antes de cada commit) e **`.gitignore`**
+> (lista do que **não** sobe para o repositório). Explique cada um em linguagem
+> simples quando o passo for executado.

@@ -87,6 +87,20 @@
 - **`data-testid` em todos os botões e campos de ação**, para os testes de
   interface não quebrarem quando o visual mudar.
 - Cada tela/módulo referencia, em comentário, o arquivo de teste que a cobre.
+- **Qualidade de código automatizada — três configurações com script no
+  `package.json`** (instaladas cedo, junto do núcleo da lógica, para valerem em
+  todas as etapas seguintes):
+  - `npm run lint` — **ESLint** aponta erros e maus hábitos no JavaScript.
+  - `npm run format` — **Prettier** formata o código (`--write`) num padrão único.
+  - `npm run prepare` — ativa o **Husky**, que instala o **hook de pre-commit**.
+  O **pre-commit do Husky roda os dois scripts (lint + format) antes de CADA
+  commit, em QUALQUER branch**: código com erro de lint ou fora do padrão não
+  entra no histórico. (Depende de o projeto ser um repositório Git próprio.)
+- **Arquivos de exclusão definidos desde o início** — `.gitignore` (e
+  `.eslintignore` / `.prettierignore`): `node_modules/`, artefatos de teste
+  (`test-results/`, `playwright-report/`), `.DS_Store` e afins **ficam fora do
+  repositório**; sobe só o que é fonte. É **uma das diretrizes de criação do
+  projeto**, não um detalhe do final.
 
 ## Regras de negócio (não quebrar)
 
@@ -183,6 +197,12 @@
   revisar layout (flex/grid), consistência de componentes, alinhamento e
   espaçamento **antes de encerrar** — o "como se parece" com o mesmo rigor do
   "como se comporta".
+- **Após criada cada etapa do sistema, passar o código pelo ferramental de
+  qualidade**: rodar `npm run lint` e `npm run format` (Prettier `--write`)
+  **antes de encerrar** a etapa, deixando o código sem erro de lint e no padrão
+  único. O **hook de pre-commit do Husky repete lint + format em qualquer branch**,
+  então nada fora do padrão chega ao commit — a checagem local e a do hook se
+  reforçam. (Anda junto com a checagem de regressão de testes logo abaixo.)
 - **Checagem de regressão em TODO prompt**: **qualquer prompt que altera código**
   (lógica, persistência, tela — inclusive os que **não** têm tela, como o de
   localStorage) **roda a suíte de testes (unitários + E2E) e confirma que nada
@@ -198,7 +218,15 @@
 ## Entregas finais do projeto
 
 - **`README.md`** — visão do app, como rodar, como testar, arquitetura e decisões
-  (alguém roda o projeto do zero seguindo só ele).
+  (alguém roda o projeto do zero seguindo só ele). **Inclui o passo a passo para
+  subir o repositório** (útil para quem está começando):
+  1. `git init` e primeiro commit (o `.gitignore` já garante que só sobe fonte).
+  2. `npm install` — traz também ESLint/Prettier/Husky; o script `prepare` ativa
+     o hook de pre-commit.
+  3. Criar o repositório remoto (ex.: `gh repo create <nome> --public --source=.`
+     ou pelo site) e `git push -u origin main`.
+  4. A partir daí, **todo commit passa pelo lint + format do Husky em qualquer
+     branch** antes de entrar.
 - **Slides de apresentação** — a história da concepção, do Setup 0 ao app pronto,
   alimentados pelo `PROMPTS.md` e pelo `RESUMAO.md`. **Abrem sempre apresentando,
   logo na capa, o TEMA escolhido e a INSPIRAÇÃO visual** (ex.: "Tema escolhido: X ·

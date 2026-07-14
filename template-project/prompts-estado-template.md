@@ -44,6 +44,28 @@ que entendeu do app.
 
 **Resultado:** _aguardando execução._
 
+## Prompt de qualidade de código (rode cedo — logo após o núcleo da lógica)
+
+> Este é o **passo 2.5** do roteiro. Rode assim que existir o primeiro código
+> (`logica.js`), para que o padrão valha em **todas as etapas seguintes**. Cole o
+> texto abaixo:
+
+```
+Configure o ferramental de qualidade de código deste projeto, com três scripts
+no package.json:
+- "lint" rodando ESLint sobre os .js (logica, testes e e2e);
+- "format" rodando Prettier com --write no padrão do projeto;
+- "prepare" ativando o Husky.
+Crie o hook de pre-commit do Husky para rodar lint + format (Prettier) antes de
+CADA commit, em QUALQUER branch — código com erro de lint ou fora do padrão não
+deve entrar no histórico. Defina também os arquivos de exclusão .gitignore,
+.eslintignore e .prettierignore (ignorando node_modules, test-results,
+playwright-report, .DS_Store etc.). Ao final, rode lint e format, confirme que a
+suíte de testes continua verde e me diga o placar.
+```
+
+**Resultado:** _aguardando execução._
+
 ## Como registrar cada prompt (convenção)
 
 A cada avanço, adicione um bloco assim (o mais recente por último):
@@ -81,7 +103,10 @@ A cada avanço, adicione um bloco assim (o mais recente por último):
 >
 > **Todo prompt fecha confirmando que nada quebrou:** qualquer item do roteiro que
 > altera código (inclusive os **sem tela**, como o **4 persistência**) termina
-> **rodando a suíte de testes (unitários + E2E) e reportando o placar**. Os itens
+> **rodando a suíte de testes (unitários + E2E) e reportando o placar** e, depois
+> que o ferramental (2.5) existir, **passando `npm run lint` e `npm run format`**
+> antes de encerrar — o mesmo par que o **pre-commit do Husky** repete a cada
+> commit, em qualquer branch. Os itens
 > que mexem na **interface** (ex.: **3 primeira tela** e **7 dashboard**), **além
 > disso**, **geram o screenshot** — print e placar vêm juntos, e a tela só é
 > "pronta" se o screenshot está bom e nenhum teste regrediu (ver "Checagem de
@@ -90,7 +115,11 @@ A cada avanço, adicione um bloco assim (o mais recente por último):
 > Sequência típica (adaptar os nomes ao tema): **1 fundamentação** (documentar,
 > com fontes/links, de onde vem o **conceito central** — pesquisa da IA + as
 > referências que o usuário queira citar — antes de qualquer código) → **2** núcleo
-> da lógica em funções puras + testes → **3** primeira tela (formulário + **design
+> da lógica em funções puras + testes → **2.5 ferramental de qualidade de código**
+> (ESLint + Prettier + Husky pre-commit; os 3 scripts no `package.json` — `lint`,
+> `format`, `prepare` — e os `.gitignore`/`.eslintignore`/`.prettierignore`;
+> **entra cedo**, logo que existe código, para valer em todas as etapas seguintes)
+> → **3** primeira tela (formulário + **design
 > tokens derivados da inspiração visual: marca/sistema de mercado de referência** +
 > rodapé de contraste + **teste de espaçamento dos elementos: folga > 0,5px, sem
 > colar/sobrepor** — ver "Espaçamento garantido por teste" no arquivo de
@@ -100,7 +129,8 @@ A cada avanço, adicione um bloco assim (o mais recente por último):
 > persistidos → **9** ações destrutivas com confirmação + "Reiniciar experiência"
 > → **10** exportar/limpar dados (LGPD) → **11** acessibilidade WCAG AA + E2E
 > (Playwright) → **12** entregas finais (README + slides).
->
+> Plan Test → **13** em portugûes para planejar os próximos testes unitarios ou de interface
+
 > **Primeiro prompt do roteiro é sempre a fundamentação (conceito central):** todo
 > app tem a seção obrigatória de FUNDAMENTAÇÃO (ver arquivo de instruções). Como o
 > tema é informado pelo usuário e pode ser **qualquer tipo de sistema**, no
@@ -115,7 +145,13 @@ A cada avanço, adicione um bloco assim (o mais recente por último):
 
 - [ ] Executar o **Prompt 0** (setup do arquivo de instruções + este roteiro).
 - [ ] **Prompt 1** … **Prompt N** conforme a previsão acima, um de cada vez.
+- [ ] **Ferramental de qualidade (2.5)**: ESLint + Prettier + Husky pre-commit
+      (scripts `lint`/`format`/`prepare` no `package.json`) e os arquivos de
+      exclusão `.gitignore`/`.eslintignore`/`.prettierignore` — rodado cedo.
 - [ ] Entregas finais: **README.md** e **slides** (alimentados por este
       `PROMPTS.md` e pelo `RESUMAO.md`). Os **slides abrem apresentando, na capa,
       o TEMA e a INSPIRAÇÃO visual**, com um **slide dedicado à inspiração** — mesma
-      lógica de abertura em todos os projetos.
+      lógica de abertura em todos os projetos. O **README traz o passo a passo para
+      subir o repositório** (git init → commit → `npm install` (ativa o Husky) →
+      criar repo remoto → push) — os slides ganham um **slide de qualidade de
+      código** (lint + format + pre-commit).

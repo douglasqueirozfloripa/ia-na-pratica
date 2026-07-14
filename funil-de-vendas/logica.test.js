@@ -4,7 +4,6 @@
 // Cobre: logica.js
 
 const {
-  ETAPAS,
   probabilidadeDaEtapa,
   pontuarQualificacao,
   probabilidadeDeFechamento,
@@ -50,7 +49,9 @@ describe('probabilidadeDaEtapa', () => {
 
 describe('pontuarQualificacao (BANT)', () => {
   test('(positivo) conta de 0 a 4 os critérios atendidos', () => {
-    expect(pontuarQualificacao({ orcamento: true, autoridade: true, necessidade: true, prazo: true })).toBe(4);
+    expect(
+      pontuarQualificacao({ orcamento: true, autoridade: true, necessidade: true, prazo: true })
+    ).toBe(4);
     expect(pontuarQualificacao({ orcamento: true, necessidade: true })).toBe(2);
     expect(pontuarQualificacao({})).toBe(0);
   });
@@ -202,14 +203,18 @@ describe('espaçamento de layout (guarda contra elementos colados)', () => {
   });
 
   test('(negativo) folga de 0,3px ainda é violação; 0,6px passa', () => {
-    expect(validarEspacamento([
-      { nome: 'a', caixa: cx(0, 0, 100, 40) },
-      { nome: 'b', caixa: cx(100.3, 0, 200, 40) },
-    ]).valido).toBe(false);
-    expect(validarEspacamento([
-      { nome: 'a', caixa: cx(0, 0, 100, 40) },
-      { nome: 'b', caixa: cx(100.6, 0, 200, 40) },
-    ]).valido).toBe(true);
+    expect(
+      validarEspacamento([
+        { nome: 'a', caixa: cx(0, 0, 100, 40) },
+        { nome: 'b', caixa: cx(100.3, 0, 200, 40) },
+      ]).valido
+    ).toBe(false);
+    expect(
+      validarEspacamento([
+        { nome: 'a', caixa: cx(0, 0, 100, 40) },
+        { nome: 'b', caixa: cx(100.6, 0, 200, 40) },
+      ]).valido
+    ).toBe(true);
   });
 
   test('(positivo) pai/filho (contido) é ignorado, não é falso positivo', () => {
@@ -223,7 +228,13 @@ describe('espaçamento de layout (guarda contra elementos colados)', () => {
 
 describe('persistência (serializar / ler com segurança)', () => {
   const lista = [
-    { id: 'a1', nome: 'Clínica Sorriso', valor: 4500, etapa: 'proposta', bant: { orcamento: true } },
+    {
+      id: 'a1',
+      nome: 'Clínica Sorriso',
+      valor: 4500,
+      etapa: 'proposta',
+      bant: { orcamento: true },
+    },
     { id: 'b2', nome: 'Studio Bem-Estar', valor: 12000, etapa: 'lead', bant: {} },
   ];
 
@@ -273,7 +284,13 @@ describe('organização da lista (agrupar / ordenar)', () => {
 
   test('(positivo) agrupa por etapa na ordem oficial, com quantidade e soma de valor', () => {
     const grupos = agruparPorEtapa([pequeno, grande, lead]);
-    expect(grupos.map((g) => g.etapa)).toEqual(['lead', 'qualificacao', 'proposta', 'negociacao', 'fechado']);
+    expect(grupos.map((g) => g.etapa)).toEqual([
+      'lead',
+      'qualificacao',
+      'proposta',
+      'negociacao',
+      'fechado',
+    ]);
     const proposta = grupos.find((g) => g.etapa === 'proposta');
     expect(proposta.quantidade).toBe(2);
     expect(proposta.somaValor).toBe(5000); // 1000 + 4000
@@ -306,7 +323,10 @@ describe('ciclo de etapas (avançar / voltar / desfecho)', () => {
   });
 
   test('(positivo) fechar como Ganho carimba desfecho e data (vinda de fora)', () => {
-    const r = avancarNegocio(naNegociacao, { desfecho: 'ganho', agora: '2026-07-13T10:00:00.000Z' });
+    const r = avancarNegocio(naNegociacao, {
+      desfecho: 'ganho',
+      agora: '2026-07-13T10:00:00.000Z',
+    });
     expect(r.etapa).toBe('fechado');
     expect(r.desfecho).toBe('ganho');
     expect(r.fechadoEm).toBe('2026-07-13T10:00:00.000Z');
@@ -329,7 +349,12 @@ describe('ciclo de etapas (avançar / voltar / desfecho)', () => {
   });
 
   test('(positivo) reabrir (voltar de fechado) limpa desfecho e data', () => {
-    const fechado = { ...naNegociacao, etapa: 'fechado', desfecho: 'perdido', fechadoEm: '2026-07-13T10:00:00.000Z' };
+    const fechado = {
+      ...naNegociacao,
+      etapa: 'fechado',
+      desfecho: 'perdido',
+      fechadoEm: '2026-07-13T10:00:00.000Z',
+    };
     const r = voltarNegocio(fechado);
     expect(r.etapa).toBe('negociacao');
     expect(r.desfecho).toBeUndefined();

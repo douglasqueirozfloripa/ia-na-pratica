@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      MODELO "ESTADO ZERO" DE SLIDES (semente).
+      Layout/alinhamento herdados do projeto "organizador-tarefas-prioridades"
+      (texto à esquerda, deck escuro, cartão central) — o preferido do experimento.
+
+      COMO USAR:
+      1) Troque os [PLACEHOLDERS] pelo conteúdo do seu tema.
+      2) PARAMETRIZE AS CORES: substitua os HEX do bloco :root abaixo pelos tokens
+         da INSPIRAÇÃO VISUAL escolhida pelo usuário — os MESMOS do index.html.
+         Toda cor deve respeitar contraste WCAG AA (a estética nunca fura a
+         acessibilidade). Não deixe HEX solto no corpo: use as variáveis.
+      3) Ordem dos tópicos padronizada: Capa → O problema → O conceito → ... →
+         Inspiração visual → Encerramento (a capa já apresenta Tema + Inspiração).
+    -->
+    <title>[NOME DO APP] — a história do projeto (slides)</title>
+    <style>
+      :root {
+        /* ==== TOKENS DE COR — PARAMETRIZE pela inspiração visual do usuário ==== */
+        --cor-principal: #335061; /* cor 1 da marca (títulos de seção, realces) */
+        --cor-principal-forte: #26404e; /* variação escura (hover/foco) */
+        --cor-acento: #d33834; /* cor de destaque da marca (kicker, ênfase) */
+        --cor-terciaria: #48728b; /* cor de apoio (selos/badges) */
+        --fundo: #14232b; /* fundo escuro do deck */
+        --claro: #f4f6f7; /* texto claro sobre o fundo */
+        --suave: #9fb3bd; /* texto secundário (legendas) */
+        --fonte: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: var(--fonte);
+        background: var(--fundo);
+        color: var(--claro);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .slide {
+        display: none;
+        width: min(900px, 92vw);
+        min-height: 70vh;
+        padding: clamp(24px, 5vw, 56px);
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+      }
+      .slide.ativo {
+        display: flex;
+        animation: entra 0.35s ease;
+      }
+      @keyframes entra {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .kicker {
+        color: var(--cor-acento);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+      }
+      h1 {
+        font-size: clamp(2rem, 6vw, 3.4rem);
+        line-height: 1.05;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        line-height: 1.1;
+      }
+      p,
+      li {
+        font-size: clamp(1rem, 2.4vw, 1.2rem);
+        color: #dce6ea;
+        line-height: 1.55;
+      }
+      ul {
+        padding-left: 1.2em;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      strong {
+        color: #fff;
+      }
+      a {
+        color: var(--suave);
+      }
+      .sub {
+        color: var(--suave);
+      }
+
+      .marca {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .badge {
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #fff;
+      }
+      .b-1 {
+        background: var(--cor-acento);
+      }
+      .b-2 {
+        background: var(--cor-principal);
+      }
+      .b-3 {
+        background: var(--cor-terciaria);
+      }
+      .b-4 {
+        background: #6d6b6d;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .card b {
+        color: #fff;
+      }
+      .num {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .ok {
+        color: #7fd39a;
+        font-weight: 800;
+      }
+
+      /* barra de navegação */
+      .nav {
+        position: fixed;
+        bottom: 18px;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+      .nav button {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        color: #fff;
+        background: var(--cor-principal);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 8px 14px;
+      }
+      .nav button:hover {
+        background: var(--cor-principal-forte);
+      }
+      .contador {
+        color: var(--suave);
+        font-size: 0.9rem;
+        min-width: 60px;
+        text-align: center;
+      }
+      .dica {
+        position: fixed;
+        top: 16px;
+        right: 18px;
+        color: var(--suave);
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dica">← → para navegar</div>
+
+    <!-- 1 · CAPA — apresenta o TEMA e a INSPIRAÇÃO já na abertura -->
+    <section class="slide ativo">
+      <div class="kicker">IA na Prática · estado zero</div>
+      <h1>[NOME DO APP]</h1>
+      <p>[Pitch em 1–2 frases: o que o app faz e qual problema resolve.]</p>
+      <p class="sub">Tema escolhido: [TEMA] · Inspiração visual: [MARCA/SISTEMA]</p>
+    </section>
+
+    <!-- 2 · O PROBLEMA -->
+    <section class="slide">
+      <div class="kicker">O problema</div>
+      <h2>[A dor que o app resolve, em uma linha]</h2>
+      <p>[Contextualize o problema — por que uma abordagem ingênua não basta.]</p>
+      <p class="sub">[A promessa do app: o que ele entrega de diferente.]</p>
+    </section>
+
+    <!-- 3 · O CONCEITO (fundamentação, não é achismo) -->
+    <section class="slide">
+      <div class="kicker">O conceito (não é achismo)</div>
+      <h2>[Conceito central + fontes]</h2>
+      <ul>
+        <li><strong>[Referência 1]</strong> — [o que embasa, com a fonte].</li>
+        <li><strong>[Referência 2]</strong> — [o que embasa].</li>
+        <li><strong>[Referência 3]</strong> — [o que embasa].</li>
+      </ul>
+      <p class="sub">Fontes reais e linkadas — registradas no GLOSSARIO.md antes de qualquer código.</p>
+    </section>
+
+    <!-- 4 · AS REGRAS (Setup 0) -->
+    <section class="slide">
+      <div class="kicker">As regras (Setup 0)</div>
+      <h2>Como a IA respondeu em TODAS as etapas</h2>
+      <ul>
+        <li>Partes pequenas, <strong>com testes junto</strong> (positivos e negativos).</li>
+        <li>Valores derivados <strong>calculados por função pura</strong>, nunca digitados.</li>
+        <li>Acessibilidade <strong>WCAG AA</strong> com relatório de contraste ao vivo.</li>
+        <li>Usabilidade sem becos, LGPD com dados fictícios, tudo documentado.</li>
+      </ul>
+    </section>
+
+    <!-- 5 · A STACK -->
+    <section class="slide">
+      <div class="kicker">A stack</div>
+      <h2>Simples de propósito</h2>
+      <div class="grid">
+        <div class="card"><b>HTML + CSS + JS puros</b><p class="sub">Abre no navegador, sem build.</p></div>
+        <div class="card"><b>localStorage</b><p class="sub">Sem servidor, sem banco.</p></div>
+        <div class="card"><b>Jest</b><p class="sub">Testa as regras puras.</p></div>
+        <div class="card"><b>Playwright</b><p class="sub">Testa o app real (E2E).</p></div>
+      </div>
+    </section>
+
+    <!-- 6 · QUALIDADE DE CÓDIGO (ferramental — passo 2.5) -->
+    <section class="slide">
+      <div class="kicker">Qualidade de código</div>
+      <h2>Lint, formatação e hook de commit</h2>
+      <ul>
+        <li><strong>ESLint</strong> (<code>npm run lint</code>) aponta erros e maus hábitos.</li>
+        <li><strong>Prettier</strong> (<code>npm run format</code>) mantém um padrão único.</li>
+        <li><strong>Husky</strong> roda os dois no <strong>pre-commit</strong>, em qualquer branch.</li>
+      </ul>
+      <p class="sub">Código com erro de lint ou fora do padrão não entra no histórico.</p>
+    </section>
+
+    <!-- 7 · ACESSIBILIDADE -->
+    <section class="slide">
+      <div class="kicker">Acessibilidade</div>
+      <h2>WCAG AA desde o primeiro pixel</h2>
+      <p>
+        Cada par de cores é medido por <strong>funções puras</strong> e mostrado ao vivo no rodapé.
+        Um teste "guarda" reprova qualquer cor abaixo do AA.
+      </p>
+      <div class="grid">
+        <div class="card"><b>[par 1]</b><div class="num ok">[x.x]<span style="font-size: 1rem">:1</span></div></div>
+        <div class="card"><b>[par 2]</b><div class="num ok">[x.x]<span style="font-size: 1rem">:1</span></div></div>
+        <div class="card"><b>[par 3]</b><div class="num ok">[x.x]<span style="font-size: 1rem">:1</span></div></div>
+      </div>
+    </section>
+
+    <!-- 8 · INSPIRAÇÃO VISUAL (slide dedicado à marca) -->
+    <section class="slide">
+      <div class="kicker">Inspiração visual</div>
+      <h2>[MARCA/SISTEMA] — [o que é]</h2>
+      <p>A paleta parte da <strong>identidade do [MARCA]</strong> — a referência real de mercado do domínio.</p>
+      <p class="sub">
+        A referência é declarada no código e toda cor foi medida em WCAG AA — a estética nunca fura a
+        acessibilidade: se a cor de marca reprova, ajusta-se o tom mantendo a identidade.
+      </p>
+    </section>
+
+    <!-- 9 · PRIVACIDADE (LGPD) -->
+    <section class="slide">
+      <div class="kicker">Privacidade</div>
+      <h2>LGPD: o dado é seu</h2>
+      <ul>
+        <li>Tudo fica <strong>só no seu navegador</strong> (localStorage), sem servidor.</li>
+        <li>Você pode <strong>exportar</strong> ou <strong>limpar</strong> quando quiser.</li>
+        <li>Exemplos com <strong>dados fictícios</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- 10 · ENCERRAMENTO -->
+    <section class="slide">
+      <div class="kicker">Encerramento</div>
+      <h2>Do Setup 0 ao app pronto</h2>
+      <p>
+        Um app pequeno, mas <strong>fundamentado, testado, acessível e documentado</strong> — construído
+        em passos pequenos, cada um com testes e um registro do porquê.
+      </p>
+      <p class="sub">README.md, PROMPTS.md, RESUMAO.md e GLOSSARIO.md contam o resto da história.</p>
+    </section>
+
+    <nav class="nav">
+      <button id="anterior" aria-label="Slide anterior">← Anterior</button>
+      <span class="contador" id="contador">1 / 1</span>
+      <button id="proximo" aria-label="Próximo slide">Próximo →</button>
+    </nav>
+
+    <script>
+      // Navegação simples: mostra um slide por vez (← → / Home / End / botões).
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const contador = document.getElementById('contador');
+      let atual = 0;
+
+      function mostrar(i) {
+        atual = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, k) => s.classList.toggle('ativo', k === atual));
+        contador.textContent = atual + 1 + ' / ' + slides.length;
+      }
+      document.getElementById('proximo').addEventListener('click', () => mostrar(atual + 1));
+      document.getElementById('anterior').addEventListener('click', () => mostrar(atual - 1));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'PageDown') mostrar(atual + 1);
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') mostrar(atual - 1);
+        if (e.key === 'Home') mostrar(0);
+        if (e.key === 'End') mostrar(slides.length - 1);
+      });
+      mostrar(0);
+    </script>
+  </body>
+</html>

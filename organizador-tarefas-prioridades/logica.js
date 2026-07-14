@@ -19,9 +19,9 @@ const LIMIAR_ALTO = 3; // nota >= 3 é considerada "alta"
 // Os quatro quadrantes de Eisenhower, com os nomes (convenção deste projeto).
 const QUADRANTES = {
   FACA_AGORA: 'faca-agora', // urgente E importante
-  AGENDE: 'agende',         // importante, não urgente
-  DELEGUE: 'delegue',       // urgente, não importante
-  ELIMINE: 'elimine',       // nem urgente nem importante
+  AGENDE: 'agende', // importante, não urgente
+  DELEGUE: 'delegue', // urgente, não importante
+  ELIMINE: 'elimine', // nem urgente nem importante
 };
 
 // Status do ciclo de vida da tarefa (o ciclo em si entra no Prompt 6).
@@ -159,8 +159,7 @@ const ORDEM_QUADRANTES = [
 function ordenarPorPrioridade(lista) {
   return [...lista].sort(
     (a, b) =>
-      pontuarPrioridade(b.urgencia, b.importancia) -
-      pontuarPrioridade(a.urgencia, a.importancia)
+      pontuarPrioridade(b.urgencia, b.importancia) - pontuarPrioridade(a.urgencia, a.importancia)
   );
 }
 
@@ -171,10 +170,14 @@ function ordenarPorPrioridade(lista) {
  */
 function ordenarTarefas(lista, criterio) {
   if (criterio === 'recentes') {
-    return [...lista].sort((a, b) => String(b.criadoEm || '').localeCompare(String(a.criadoEm || '')));
+    return [...lista].sort((a, b) =>
+      String(b.criadoEm || '').localeCompare(String(a.criadoEm || ''))
+    );
   }
   if (criterio === 'antigas') {
-    return [...lista].sort((a, b) => String(a.criadoEm || '').localeCompare(String(b.criadoEm || '')));
+    return [...lista].sort((a, b) =>
+      String(a.criadoEm || '').localeCompare(String(b.criadoEm || ''))
+    );
   }
   return ordenarPorPrioridade(lista); // padrão
 }
@@ -215,9 +218,7 @@ function agruparPorQuadrante(lista, criterio) {
   const ordenada = ordenarTarefas(lista, criterio || 'prioridade');
   return ORDEM_QUADRANTES.map((q) => ({
     quadrante: q,
-    tarefas: ordenada.filter(
-      (t) => classificarQuadrante(t.urgencia, t.importancia) === q
-    ),
+    tarefas: ordenada.filter((t) => classificarQuadrante(t.urgencia, t.importancia) === q),
   }));
 }
 
@@ -258,9 +259,7 @@ function ehConcluidaHoje(tarefa, hojeISO) {
  * - atencao: a tarefa PENDENTE de maior prioridade (o "comece por esta"), ou null
  */
 function calcularResumo(lista, hojeISO) {
-  const pendentes = lista.filter(
-    (t) => (t.status || STATUS.A_FAZER) !== STATUS.CONCLUIDA
-  );
+  const pendentes = lista.filter((t) => (t.status || STATUS.A_FAZER) !== STATUS.CONCLUIDA);
   const fazAgora = pendentes.filter(
     (t) => classificarQuadrante(t.urgencia, t.importancia) === QUADRANTES.FACA_AGORA
   ).length;
@@ -316,7 +315,8 @@ function lerTarefasDe(texto) {
     const dados = JSON.parse(texto);
     if (!Array.isArray(dados)) return [];
     return dados.filter(
-      (t) => t && typeof t.titulo === 'string' && ehNotaValida(t.urgencia) && ehNotaValida(t.importancia)
+      (t) =>
+        t && typeof t.titulo === 'string' && ehNotaValida(t.urgencia) && ehNotaValida(t.importancia)
     );
   } catch (_erro) {
     return []; // JSON quebrado não pode derrubar o app
@@ -336,7 +336,11 @@ function lerTarefasDe(texto) {
 function hexParaRgb(hex) {
   if (typeof hex !== 'string') return null;
   let h = hex.trim().replace(/^#/, '');
-  if (h.length === 3) h = h.split('').map((c) => c + c).join(''); // #f00 -> #ff0000
+  if (h.length === 3)
+    h = h
+      .split('')
+      .map((c) => c + c)
+      .join(''); // #f00 -> #ff0000
   if (!/^[0-9a-fA-F]{6}$/.test(h)) return null;
   return {
     r: Number.parseInt(h.slice(0, 2), 16),

@@ -21,24 +21,24 @@
   // Rótulos em português para cada quadrante de Eisenhower (convenção do projeto).
   const ROTULO_QUADRANTE = {
     'faca-agora': 'Faça agora',
-    'agende': 'Agende',
-    'delegue': 'Delegue',
-    'elimine': 'Elimine',
+    agende: 'Agende',
+    delegue: 'Delegue',
+    elimine: 'Elimine',
   };
 
   // Cor (token CSS) de cada quadrante, para pintar o selo da prévia.
   const COR_QUADRANTE = {
     'faca-agora': '--q-faca-agora',
-    'agende': '--q-agende',
-    'delegue': '--q-delegue',
-    'elimine': '--q-elimine',
+    agende: '--q-agende',
+    delegue: '--q-delegue',
+    elimine: '--q-elimine',
   };
 
   // Rótulos em português para cada status do ciclo de vida.
   const ROTULO_STATUS = {
     'a-fazer': 'A fazer',
-    'fazendo': 'Fazendo',
-    'concluida': 'Concluída',
+    fazendo: 'Fazendo',
+    concluida: 'Concluída',
   };
 
   // Traduz os códigos de erro da validação em mensagens amigáveis para a tela.
@@ -100,8 +100,14 @@
     previaQuadrante.textContent = ROTULO_QUADRANTE[decorada.quadrante];
     previaQuadrante.style.background = token(COR_QUADRANTE[decorada.quadrante]);
     previaNota.textContent =
-      'Prioridade calculada: ' + decorada.prioridade + ' de 15 ' +
-      '(urgência ' + tarefa.urgencia + ' × importância ' + tarefa.importancia + ').';
+      'Prioridade calculada: ' +
+      decorada.prioridade +
+      ' de 15 ' +
+      '(urgência ' +
+      tarefa.urgencia +
+      ' × importância ' +
+      tarefa.importancia +
+      ').';
     previa.classList.add('visivel');
   }
 
@@ -135,7 +141,12 @@
     painel.innerHTML = '';
     painel.appendChild(criarTileNumero('Total de tarefas', r.total, '', 'painel-total'));
     painel.appendChild(
-      criarTileNumero('Faça agora (pendentes)', r.fazAgora, r.fazAgora > 0 ? 'destaque' : '', 'painel-fazagora')
+      criarTileNumero(
+        'Faça agora (pendentes)',
+        r.fazAgora,
+        r.fazAgora > 0 ? 'destaque' : '',
+        'painel-fazagora'
+      )
     );
     painel.appendChild(criarTileNumero('Concluídas hoje', r.concluidasHoje, 'ok', 'painel-hoje'));
 
@@ -347,7 +358,8 @@
       } else {
         const itens = document.createElement('div');
         itens.className = 'grupo__itens';
-        for (const tarefa of grupo.tarefas) itens.appendChild(criarCartaoTarefa(tarefa, grupo.quadrante));
+        for (const tarefa of grupo.tarefas)
+          itens.appendChild(criarCartaoTarefa(tarefa, grupo.quadrante));
         bloco.appendChild(itens);
       }
 
@@ -422,7 +434,9 @@
 
   // Limpar meus dados (LGPD): apaga tudo com confirmação (mesmo efeito do reiniciar).
   btnLimpar.addEventListener('click', function () {
-    const ok = window.confirm('Apagar TODAS as suas tarefas deste navegador? Não dá para desfazer.');
+    const ok = window.confirm(
+      'Apagar TODAS as suas tarefas deste navegador? Não dá para desfazer.'
+    );
     if (!ok) return; // (negativo) cancelou -> mantém
     zerarDados();
   });
@@ -485,5 +499,5 @@
 
   montarRelatorioContraste();
   sincronizarFiltros(); // reflete, ao abrir, os filtros salvos
-  atualizarTela();      // reflete, ao abrir, o que já estava salvo no localStorage
+  atualizarTela(); // reflete, ao abrir, o que já estava salvo no localStorage
 })();

@@ -98,7 +98,9 @@ async function semear(page, dados) {
 }
 
 test('(positivo) avançar move o negócio para a próxima etapa', async ({ page }) => {
-  await semear(page, [{ id: 'p1', nome: 'Studio Bem-Estar', valor: 5000, etapa: 'lead', bant: {} }]);
+  await semear(page, [
+    { id: 'p1', nome: 'Studio Bem-Estar', valor: 5000, etapa: 'lead', bant: {} },
+  ]);
   await expect(page.getByTestId('grupo-lead')).toContainText('Studio Bem-Estar');
   await page.getByTestId('avancar-p1').click();
   await expect(page.getByTestId('grupo-qualificacao')).toContainText('Studio Bem-Estar');
@@ -118,10 +120,20 @@ test('(positivo) fechar como Ganho carimba o desfecho; reabrir limpa', async ({ 
   await expect(page.getByTestId('grupo-fechado')).not.toContainText('Ganho');
 });
 
-test('(negativo) sem beco sem saída: Lead não tem "Voltar"; Fechado não tem "Avançar"', async ({ page }) => {
+test('(negativo) sem beco sem saída: Lead não tem "Voltar"; Fechado não tem "Avançar"', async ({
+  page,
+}) => {
   await semear(page, [
     { id: 'l1', nome: 'No topo', valor: 1000, etapa: 'lead', bant: {} },
-    { id: 'f1', nome: 'Fechado', valor: 1000, etapa: 'fechado', desfecho: 'ganho', fechadoEm: '2026-07-13T10:00:00.000Z', bant: {} },
+    {
+      id: 'f1',
+      nome: 'Fechado',
+      valor: 1000,
+      etapa: 'fechado',
+      desfecho: 'ganho',
+      fechadoEm: '2026-07-13T10:00:00.000Z',
+      bant: {},
+    },
   ]);
   await expect(page.getByTestId('voltar-l1')).toHaveCount(0); // Lead não volta
   await expect(page.getByTestId('avancar-f1')).toHaveCount(0); // Fechado não avança
@@ -130,7 +142,9 @@ test('(negativo) sem beco sem saída: Lead não tem "Voltar"; Fechado não tem "
 
 test('(positivo) exportar baixa um arquivo JSON com os negócios', async ({ page }) => {
   const fs = require('fs');
-  await semear(page, [{ id: 'x1', nome: 'Clínica Sorriso', valor: 4500, etapa: 'proposta', bant: {} }]);
+  await semear(page, [
+    { id: 'x1', nome: 'Clínica Sorriso', valor: 4500, etapa: 'proposta', bant: {} },
+  ]);
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     page.getByTestId('btn-exportar').click(),
@@ -159,14 +173,16 @@ test('(negativo) limpar tudo (cancelando) mantém os negócios', async ({ page }
   await expect(page.getByTestId('grupo-lead')).toContainText('Fico aqui');
 });
 
-test('(negativo→positivo) nenhum controle fica colado/sobreposto (folga > 0,5px)', async ({ page }) => {
+test('(negativo→positivo) nenhum controle fica colado/sobreposto (folga > 0,5px)', async ({
+  page,
+}) => {
   // Roda a MESMA função pura (window.Logica.validarEspacamento) sobre as caixas
   // REAIS dos controles da tela. Pega botão/campo "grudado" na margem ou no vizinho.
   const relatorio = await page.evaluate((minPx) => {
     const els = Array.from(document.querySelectorAll('input, select, button, label.check'));
     const caixas = els.map((el, i) => {
       const r = el.getBoundingClientRect();
-      const nome = el.getAttribute('data-testid') || (el.tagName.toLowerCase() + '#' + i);
+      const nome = el.getAttribute('data-testid') || el.tagName.toLowerCase() + '#' + i;
       return { nome, caixa: { left: r.left, right: r.right, top: r.top, bottom: r.bottom } };
     });
     return window.Logica.validarEspacamento(caixas, minPx);
@@ -175,18 +191,32 @@ test('(negativo→positivo) nenhum controle fica colado/sobreposto (folga > 0,5p
   expect(relatorio.violacoes, JSON.stringify(relatorio.violacoes, null, 2)).toEqual([]);
 });
 
-test('(positivo) fluxo completo: criar → avançar até Negociação → fechar como Ganho', async ({ page }) => {
+test('(positivo) fluxo completo: criar → avançar até Negociação → fechar como Ganho', async ({
+  page,
+}) => {
   // cria pelo formulário
   await page.getByTestId('campo-nome').fill('Clínica Sorriso');
   await page.getByTestId('campo-valor').fill('10000');
   await page.getByTestId('campo-etapa').selectOption('lead');
   await page.getByTestId('btn-salvar').click();
   // avança degrau a degrau (o item muda de grupo a cada passo)
-  await page.getByTestId('grupo-lead').getByRole('button', { name: /Avançar/ }).click();
-  await page.getByTestId('grupo-qualificacao').getByRole('button', { name: /Avançar/ }).click();
-  await page.getByTestId('grupo-proposta').getByRole('button', { name: /Avançar/ }).click();
+  await page
+    .getByTestId('grupo-lead')
+    .getByRole('button', { name: /Avançar/ })
+    .click();
+  await page
+    .getByTestId('grupo-qualificacao')
+    .getByRole('button', { name: /Avançar/ })
+    .click();
+  await page
+    .getByTestId('grupo-proposta')
+    .getByRole('button', { name: /Avançar/ })
+    .click();
   // fecha como Ganho
-  await page.getByTestId('grupo-negociacao').getByRole('button', { name: /Fechar: Ganho/ }).click();
+  await page
+    .getByTestId('grupo-negociacao')
+    .getByRole('button', { name: /Fechar: Ganho/ })
+    .click();
   const fechado = page.getByTestId('grupo-fechado');
   await expect(fechado).toContainText('Clínica Sorriso');
   await expect(fechado).toContainText('Ganho');
@@ -203,7 +233,9 @@ test('(positivo) dá para criar um negócio usando só o teclado', async ({ page
   await expect(page.getByTestId('mensagem')).toContainText('salvo no funil');
 });
 
-test('(positivo) acessibilidade: campos têm nome, botão tem texto, lista é uma região nomeada', async ({ page }) => {
+test('(positivo) acessibilidade: campos têm nome, botão tem texto, lista é uma região nomeada', async ({
+  page,
+}) => {
   await expect(page.getByTestId('campo-nome')).toHaveAccessibleName(/nome do negócio/i);
   await expect(page.getByTestId('campo-valor')).toHaveAccessibleName(/valor/i);
   await expect(page.getByTestId('campo-etapa')).toHaveAccessibleName(/etapa do funil/i);

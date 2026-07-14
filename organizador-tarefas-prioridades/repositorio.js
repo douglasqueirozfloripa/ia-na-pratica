@@ -42,9 +42,7 @@
    */
   function novaTarefa(dados) {
     const id =
-      typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : 'id-' + Date.now();
+      typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now();
     return {
       id,
       criadoEm: new Date().toISOString(),
@@ -55,6 +53,12 @@
   }
 
   window.Repositorio = {
-    CHAVE, CHAVE_PREFS, carregar, salvar, carregarPrefs, salvarPrefs, novaTarefa,
+    CHAVE,
+    CHAVE_PREFS,
+    carregar,
+    salvar,
+    carregarPrefs,
+    salvarPrefs,
+    novaTarefa,
   };
 })();

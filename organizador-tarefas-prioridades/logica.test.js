@@ -104,11 +104,11 @@ describe('classificarQuadrante (Matriz de Eisenhower, limiar >= 3)', () => {
 describe('pontuarPrioridade (importância pesa o dobro)', () => {
   test('(positivo) calcula importancia*2 + urgencia', () => {
     expect(pontuarPrioridade(5, 5)).toBe(15); // máximo
-    expect(pontuarPrioridade(1, 1)).toBe(3);  // mínimo
+    expect(pontuarPrioridade(1, 1)).toBe(3); // mínimo
   });
 
   test('(positivo) importante-não-urgente vence urgente-não-importante', () => {
-    const agende = pontuarPrioridade(2, 5);  // importância alta
+    const agende = pontuarPrioridade(2, 5); // importância alta
     const delegue = pontuarPrioridade(5, 2); // urgência alta
     expect(agende).toBeGreaterThan(delegue);
   });
@@ -160,7 +160,11 @@ describe('Ciclo de status (avança / volta um passo)', () => {
 
   test('(positivo) reabrir (voltar de concluída) LIMPA o carimbo', () => {
     const concluida = definirStatus({ titulo: 'X' }, STATUS.CONCLUIDA, '2026-07-13T12:00:00.000Z');
-    const reaberta = definirStatus(concluida, voltarStatus(concluida.status), '2026-07-13T12:00:00.000Z');
+    const reaberta = definirStatus(
+      concluida,
+      voltarStatus(concluida.status),
+      '2026-07-13T12:00:00.000Z'
+    );
     expect(reaberta.status).toBe(STATUS.FAZENDO);
     expect(reaberta.concluidoEm).toBeNull();
   });
@@ -176,7 +180,7 @@ describe('Ciclo de status (avança / volta um passo)', () => {
 describe('ordenarPorPrioridade', () => {
   const baixa = { titulo: 'baixa', urgencia: 1, importancia: 1 }; // nota 3
   const media = { titulo: 'media', urgencia: 2, importancia: 3 }; // nota 8
-  const alta = { titulo: 'alta', urgencia: 5, importancia: 5 };   // nota 15
+  const alta = { titulo: 'alta', urgencia: 5, importancia: 5 }; // nota 15
 
   test('(positivo) ordena da maior para a menor prioridade', () => {
     const r = ordenarPorPrioridade([baixa, alta, media]);
@@ -203,7 +207,10 @@ describe('agruparPorQuadrante', () => {
   test('(positivo) devolve sempre os 4 grupos na ordem fixa', () => {
     const grupos = agruparPorQuadrante([]);
     expect(grupos.map((g) => g.quadrante)).toEqual([
-      QUADRANTES.FACA_AGORA, QUADRANTES.AGENDE, QUADRANTES.DELEGUE, QUADRANTES.ELIMINE,
+      QUADRANTES.FACA_AGORA,
+      QUADRANTES.AGENDE,
+      QUADRANTES.DELEGUE,
+      QUADRANTES.ELIMINE,
     ]);
     expect(grupos.every((g) => g.tarefas.length === 0)).toBe(true);
   });
@@ -274,11 +281,23 @@ describe('removerTarefa', () => {
 describe('calcularResumo (painel "Foco do dia")', () => {
   const HOJE = '2026-07-13';
   const base = [
-    { titulo: 'crítica', urgencia: 5, importancia: 5, status: 'a-fazer' },        // faça agora, pendente
-    { titulo: 'em andamento', urgencia: 4, importancia: 4, status: 'fazendo' },   // faça agora, pendente
-    { titulo: 'planejar', urgencia: 1, importancia: 5, status: 'a-fazer' },       // agende, pendente
-    { titulo: 'feita hoje', urgencia: 3, importancia: 3, status: 'concluida', concluidoEm: '2026-07-13T09:00:00.000Z' },
-    { titulo: 'feita ontem', urgencia: 3, importancia: 3, status: 'concluida', concluidoEm: '2026-07-12T09:00:00.000Z' },
+    { titulo: 'crítica', urgencia: 5, importancia: 5, status: 'a-fazer' }, // faça agora, pendente
+    { titulo: 'em andamento', urgencia: 4, importancia: 4, status: 'fazendo' }, // faça agora, pendente
+    { titulo: 'planejar', urgencia: 1, importancia: 5, status: 'a-fazer' }, // agende, pendente
+    {
+      titulo: 'feita hoje',
+      urgencia: 3,
+      importancia: 3,
+      status: 'concluida',
+      concluidoEm: '2026-07-13T09:00:00.000Z',
+    },
+    {
+      titulo: 'feita ontem',
+      urgencia: 3,
+      importancia: 3,
+      status: 'concluida',
+      concluidoEm: '2026-07-12T09:00:00.000Z',
+    },
   ];
 
   test('(positivo) total conta todas as tarefas', () => {
@@ -307,15 +326,19 @@ describe('calcularResumo (painel "Foco do dia")', () => {
 
   test('(negativo) lista vazia zera tudo', () => {
     expect(calcularResumo([], HOJE)).toEqual({
-      total: 0, pendentes: 0, fazAgora: 0, concluidasHoje: 0, atencao: null,
+      total: 0,
+      pendentes: 0,
+      fazAgora: 0,
+      concluidasHoje: 0,
+      atencao: null,
     });
   });
 });
 
 describe('filtrarTarefas', () => {
   const lista = [
-    { titulo: 'a', urgencia: 5, importancia: 5, status: 'a-fazer' },  // faça-agora
-    { titulo: 'b', urgencia: 5, importancia: 2, status: 'fazendo' },  // delegue
+    { titulo: 'a', urgencia: 5, importancia: 5, status: 'a-fazer' }, // faça-agora
+    { titulo: 'b', urgencia: 5, importancia: 2, status: 'fazendo' }, // delegue
     { titulo: 'c', urgencia: 1, importancia: 5, status: 'concluida' }, // agende
   ];
 
@@ -344,7 +367,12 @@ describe('filtrarTarefas', () => {
 });
 
 describe('ordenarTarefas (critério do usuário)', () => {
-  const t1 = { titulo: 'antiga', urgencia: 1, importancia: 1, criadoEm: '2026-01-01T00:00:00.000Z' };
+  const t1 = {
+    titulo: 'antiga',
+    urgencia: 1,
+    importancia: 1,
+    criadoEm: '2026-01-01T00:00:00.000Z',
+  };
   const t2 = { titulo: 'nova', urgencia: 5, importancia: 5, criadoEm: '2026-06-01T00:00:00.000Z' };
 
   test('(positivo) prioridade (padrão) coloca maior nota primeiro', () => {
@@ -374,7 +402,9 @@ describe('lerPreferencias', () => {
 
   test('(positivo) mescla o que veio salvo com o padrão', () => {
     expect(lerPreferencias('{"status":"fazendo"}')).toEqual({
-      quadrante: 'todos', status: 'fazendo', ordem: 'prioridade',
+      quadrante: 'todos',
+      status: 'fazendo',
+      ordem: 'prioridade',
     });
   });
 
@@ -410,7 +440,7 @@ describe('Persistência (funções puras)', () => {
 
   test('(negativo) texto corrompido não quebra: devolve []', () => {
     expect(lerTarefasDe('{isso não é json')).toEqual([]);
-    expect(lerTarefasDe('42')).toEqual([]);      // não é array
+    expect(lerTarefasDe('42')).toEqual([]); // não é array
     expect(lerTarefasDe('"texto"')).toEqual([]); // não é array
   });
 
@@ -423,8 +453,8 @@ describe('Persistência (funções puras)', () => {
   test('(negativo) descarta itens adulterados dentro do array', () => {
     const texto = JSON.stringify([
       { titulo: 'Válida', urgencia: 3, importancia: 4 },
-      { titulo: 'Sem notas' },                      // incompleta
-      { urgencia: 2, importancia: 2 },              // sem título
+      { titulo: 'Sem notas' }, // incompleta
+      { urgencia: 2, importancia: 2 }, // sem título
       { titulo: 'Nota fora', urgencia: 9, importancia: 1 },
       'lixo',
     ]);
@@ -464,8 +494,8 @@ describe('Contraste WCAG (acessibilidade)', () => {
   });
 
   test('(positivo) nivelWcag classifica AAA / AA / Reprovado (texto normal)', () => {
-    expect(nivelWcag(21)).toBe('AAA');      // >= 7
-    expect(nivelWcag(4.6)).toBe('AA');      // >= 4.5 e < 7
+    expect(nivelWcag(21)).toBe('AAA'); // >= 7
+    expect(nivelWcag(4.6)).toBe('AA'); // >= 4.5 e < 7
     expect(nivelWcag(3)).toBe('Reprovado'); // < 4.5 para texto normal
   });
 
@@ -484,8 +514,8 @@ describe('Design tokens (paleta Jenkins) passam WCAG AA', () => {
     superficie: '#ffffff',
     texto: '#14232b',
     textoSuave: '#6d6b6d',
-    primaria: '#335061',  // Worn Navy
-    acento: '#d33834',    // Medium Carmine (gravata)
+    primaria: '#335061', // Worn Navy
+    acento: '#d33834', // Medium Carmine (gravata)
     bismark: '#48728b',
   };
   const paresDaUI = [
