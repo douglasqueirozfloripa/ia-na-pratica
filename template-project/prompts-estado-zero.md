@@ -116,4 +116,6 @@ A cada avanço, adicione um bloco assim (o mais recente por último):
 - [ ] Executar o **Prompt 0** (setup do arquivo de instruções + este roteiro).
 - [ ] **Prompt 1** … **Prompt N** conforme a previsão acima, um de cada vez.
 - [ ] Entregas finais: **README.md** e **slides** (alimentados por este
-      `PROMPTS.md` e pelo `RESUMAO.md`).
+      `PROMPTS.md` e pelo `RESUMAO.md`). Os **slides abrem apresentando, na capa,
+      o TEMA e a INSPIRAÇÃO visual**, com um **slide dedicado à inspiração** — mesma
+      lógica de abertura em todos os projetos.

@@ -200,4 +200,8 @@
 - **`README.md`** — visão do app, como rodar, como testar, arquitetura e decisões
   (alguém roda o projeto do zero seguindo só ele).
 - **Slides de apresentação** — a história da concepção, do Setup 0 ao app pronto,
-  alimentados pelo `PROMPTS.md` e pelo `RESUMAO.md`.
+  alimentados pelo `PROMPTS.md` e pelo `RESUMAO.md`. **Abrem sempre apresentando,
+  logo na capa, o TEMA escolhido e a INSPIRAÇÃO visual** (ex.: "Tema escolhido: X ·
+  Inspiração visual: Y"), e trazem um **slide dedicado à inspiração visual**
+  (a marca/sistema de referência e o porquê da paleta) — mantendo a mesma lógica
+  de abertura entre todos os projetos.
