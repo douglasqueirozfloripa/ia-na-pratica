@@ -1,0 +1,20 @@
+{
+  "name": "instancia",
+  "version": "0.1.0",
+  "description": "Instância — classifica e acompanha sentenças/decisões de consumo da concessionária Eletroca pelas fases recursais.",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "test:e2e": "playwright test --headed slow 800",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "eslint": "^8.57.1",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "prettier": "^3.9.5"
+  }
+}

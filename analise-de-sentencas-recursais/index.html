@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Instância — análise de sentenças (fases recursais)</title>
+    <!--
+      index.html — primeira tela do "Instância" (Prompt 3).
+      Inspiração visual: JUSBRASIL (maior portal jurídico do Brasil) — paleta azul
+      institucional + verde, declarada nos design tokens abaixo. Todas as cores
+      medidas para contraste WCAG AA (ver rodapé ao vivo).
+      Coberto por: logica.test.js (funções puras) e, futuramente, e2e/ (Playwright).
+    -->
+    <style>
+      /* ---------------------------------------------------------------------
+         DESIGN TOKENS — derivados da inspiração visual JUSBRASIL.
+         Escala única de espaçamento, raio, tipografia, cores e sombra: nada de
+         valor solto no resto do CSS.
+         -------------------------------------------------------------------- */
+      :root {
+        /* Espaçamento (4/8/12/16/24) */
+        --esp-1: 4px;
+        --esp-2: 8px;
+        --esp-3: 12px;
+        --esp-4: 16px;
+        --esp-6: 24px;
+        --esp-8: 32px;
+
+        /* Raio e sombra */
+        --raio: 10px;
+        --raio-sm: 6px;
+        --sombra: 0 2px 8px rgba(18, 32, 58, 0.08);
+        --sombra-forte: 0 6px 20px rgba(18, 32, 58, 0.12);
+
+        /* Cores — paleta Jusbrasil (todas verificadas em AA, ver rodapé) */
+        --cor-fundo: #ffffff;
+        --cor-superficie: #f4f7fb;
+        --cor-borda: #d5dee8;
+        --cor-texto: #12203a;
+        --cor-texto-suave: #4a5568;
+        --cor-texto-inverso: #ffffff;
+        --cor-primaria: #0b57d0;
+        --cor-primaria-escura: #0a3d91;
+        --cor-sucesso: #00875a;
+        --cor-perigo: #c0392b;
+
+        /* Tipografia */
+        --fonte: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+          Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--fonte);
+        color: var(--cor-texto);
+        background: var(--cor-superficie);
+        line-height: 1.5;
+      }
+
+      /* -------- Cabeçalho -------- */
+      header.app {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--esp-4);
+        padding: var(--esp-4) var(--esp-6);
+        background: var(--cor-primaria-escura);
+        color: var(--cor-texto-inverso);
+      }
+      .marca {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-3);
+      }
+      .marca .simbolo {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--raio-sm);
+        background: var(--cor-primaria);
+        font-weight: 700;
+        font-size: 20px;
+      }
+      .marca h1 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.1;
+      }
+      .marca p {
+        margin: 2px 0 0;
+        font-size: 13px;
+        opacity: 0.9;
+      }
+
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: var(--esp-6) var(--esp-4);
+        display: grid;
+        gap: var(--esp-6);
+      }
+
+      /* -------- Cartões -------- */
+      .cartao {
+        background: var(--cor-fundo);
+        border: 1px solid var(--cor-borda);
+        border-radius: var(--raio);
+        box-shadow: var(--sombra);
+        padding: var(--esp-6);
+      }
+      .cartao > h2 {
+        margin: 0 0 var(--esp-4);
+        font-size: 18px;
+      }
+      .ajuda {
+        margin: calc(-1 * var(--esp-2)) 0 var(--esp-4);
+        color: var(--cor-texto-suave);
+        font-size: 14px;
+      }
+
+      /* -------- Formulário -------- */
+      form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--esp-4);
+      }
+      .campo {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-2);
+      }
+      .campo.largo {
+        grid-column: 1 / -1;
+      }
+      label {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      input,
+      select {
+        font: inherit;
+        color: var(--cor-texto);
+        background: var(--cor-fundo);
+        border: 1px solid var(--cor-borda);
+        border-radius: var(--raio-sm);
+        padding: var(--esp-3);
+        min-height: 44px;
+      }
+      input:focus,
+      select:focus,
+      button:focus-visible {
+        outline: 3px solid var(--cor-primaria);
+        outline-offset: 2px;
+      }
+      input:disabled,
+      select:disabled {
+        background: var(--cor-superficie);
+        color: var(--cor-texto-suave);
+        cursor: not-allowed;
+      }
+      fieldset.campo {
+        border: 1px solid var(--cor-borda);
+        border-radius: var(--raio-sm);
+        padding: var(--esp-3);
+      }
+      fieldset.campo legend {
+        font-weight: 600;
+        font-size: 14px;
+        padding: 0 var(--esp-2);
+      }
+      .radios {
+        display: flex;
+        gap: var(--esp-4);
+      }
+      .radios label {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-2);
+        font-weight: 400;
+      }
+
+      /* -------- Botões (mesma classe base; variam só na cor) -------- */
+      .acoes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-3);
+        margin-top: var(--esp-2);
+      }
+      .btn {
+        font: inherit;
+        font-weight: 600;
+        min-height: 44px;
+        padding: 0 var(--esp-6);
+        border: 1px solid transparent;
+        border-radius: var(--raio-sm);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--esp-2);
+      }
+      .btn-primario {
+        background: var(--cor-primaria);
+        color: var(--cor-texto-inverso);
+      }
+      .btn-primario:hover {
+        background: var(--cor-primaria-escura);
+      }
+      .btn-contorno {
+        background: transparent;
+        color: var(--cor-primaria-escura);
+        border-color: var(--cor-borda);
+      }
+      .btn-contorno:hover {
+        background: var(--cor-superficie);
+      }
+      /* Botão de contorno SOBRE o cabeçalho navy: texto/borda claros p/ enxergar. */
+      header.app .btn-contorno {
+        color: var(--cor-texto-inverso);
+        border-color: rgba(255, 255, 255, 0.6);
+      }
+      header.app .btn-contorno:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .btn-perigo {
+        background: transparent;
+        color: var(--cor-perigo);
+        border-color: var(--cor-perigo);
+      }
+      .btn-perigo:hover {
+        background: rgba(192, 57, 43, 0.08);
+      }
+
+      /* -------- Painel do contencioso (dashboard) -------- */
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: var(--esp-3);
+      }
+      .tile {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-1);
+        padding: var(--esp-4);
+        border: 1px solid var(--cor-borda);
+        border-radius: var(--raio-sm);
+        background: var(--cor-superficie);
+        min-width: 0; /* deixa o conteúdo encolher em vez de estourar o grid */
+      }
+      .tile .rotulo {
+        font-size: 13px;
+        color: var(--cor-texto-suave);
+      }
+      .tile .numero {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--cor-primaria-escura);
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere; /* valor grande quebra em vez de vazar */
+        line-height: 1.15;
+      }
+      .tile.atencao {
+        border-color: var(--cor-perigo);
+      }
+      .tile.atencao .numero {
+        color: var(--cor-perigo);
+      }
+      .destaque-painel {
+        margin: var(--esp-4) 0 0;
+        padding: var(--esp-3) var(--esp-4);
+        border-radius: var(--raio-sm);
+        background: #eaf1fc;
+        color: var(--cor-primaria-escura);
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .destaque-painel:empty {
+        display: none;
+      }
+
+      /* -------- Filtros da lista -------- */
+      .filtros {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--esp-3);
+        border: 1px solid var(--cor-borda);
+        border-radius: var(--raio-sm);
+        padding: var(--esp-3) var(--esp-4) var(--esp-4);
+        margin: 0 0 var(--esp-6);
+      }
+      .filtros-legenda {
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--cor-texto-suave);
+        padding: 0 var(--esp-2);
+      }
+
+      /* -------- Lista por fase recursal -------- */
+      .fase-grupo {
+        margin-bottom: var(--esp-6);
+      }
+      .fase-grupo:last-child {
+        margin-bottom: 0;
+      }
+      .fase-cabecalho {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-3);
+        margin-bottom: var(--esp-3);
+        padding-bottom: var(--esp-2);
+        border-bottom: 2px solid var(--cor-primaria);
+      }
+      .fase-cabecalho h3 {
+        margin: 0;
+        font-size: 15px;
+        color: var(--cor-primaria-escura);
+      }
+      .fase-contador {
+        margin-left: auto;
+        background: var(--cor-primaria);
+        color: var(--cor-texto-inverso);
+        font-size: 13px;
+        font-weight: 700;
+        padding: var(--esp-1) var(--esp-3);
+        border-radius: 999px;
+        min-width: 28px;
+        text-align: center;
+      }
+      .fase-vazia {
+        color: var(--cor-texto-suave);
+        font-size: 13px;
+        font-style: italic;
+      }
+      .lista-cards {
+        display: grid;
+        gap: var(--esp-3);
+      }
+      .decisao-card {
+        display: grid;
+        gap: var(--esp-2);
+        padding: var(--esp-4);
+        border: 1px solid var(--cor-borda);
+        border-radius: var(--raio-sm);
+        background: var(--cor-superficie);
+      }
+      .decisao-topo {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--esp-2);
+      }
+      .decisao-numero {
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+      }
+      .decisao-prioridade {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: baseline;
+        gap: var(--esp-1);
+        font-size: 13px;
+        color: var(--cor-texto-suave);
+      }
+      .decisao-prioridade strong {
+        font-size: 18px;
+        color: var(--cor-primaria-escura);
+      }
+      .decisao-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-2) var(--esp-3);
+        font-size: 13px;
+        color: var(--cor-texto-suave);
+        overflow-wrap: anywhere;
+      }
+      .decisao-meta .valor-risco {
+        color: var(--cor-texto);
+        font-weight: 600;
+      }
+      .decisao-meta .valor-condenacao {
+        color: var(--cor-perigo);
+        font-weight: 600;
+      }
+      .decisao-acoes {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--esp-2);
+        margin-top: var(--esp-1);
+      }
+      .decisao-acoes .fase-atual {
+        margin-right: auto;
+        font-size: 13px;
+        color: var(--cor-texto-suave);
+      }
+      .btn-sm {
+        min-height: 36px;
+        padding: 0 var(--esp-4);
+        font-size: 13px;
+      }
+      .btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .selo-transito {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--cor-sucesso);
+      }
+
+      /* -------- Prévia da classificação -------- */
+      .previa {
+        display: grid;
+        gap: var(--esp-3);
+      }
+      .previa .linha {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: var(--esp-2);
+      }
+      .previa .rotulo {
+        color: var(--cor-texto-suave);
+        font-size: 14px;
+        min-width: 130px;
+      }
+      .tag {
+        display: inline-block;
+        padding: var(--esp-1) var(--esp-3);
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        background: var(--cor-superficie);
+        border: 1px solid var(--cor-borda);
+      }
+      .tag.definitiva {
+        background: #e6f2ec;
+        color: #0a3d2c;
+        border-color: #b6dcc9;
+      }
+      .tag.terminativa {
+        background: #fdecea;
+        color: #7a231b;
+        border-color: #f2c2bb;
+      }
+      .nota-prioridade {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--cor-primaria-escura);
+      }
+      .erros {
+        margin: 0;
+        padding-left: var(--esp-6);
+        color: var(--cor-perigo);
+        font-size: 14px;
+      }
+      .erros:empty {
+        display: none;
+      }
+      .contador {
+        margin: var(--esp-4) 0 0;
+        padding-top: var(--esp-3);
+        border-top: 1px solid var(--cor-borda);
+        color: var(--cor-texto-suave);
+        font-size: 14px;
+      }
+      .contador strong {
+        color: var(--cor-primaria-escura);
+      }
+
+      /* -------- Rodapé de contraste -------- */
+      footer.contraste {
+        max-width: 880px;
+        margin: 0 auto var(--esp-8);
+        padding: 0 var(--esp-4);
+      }
+      footer.contraste .cartao {
+        padding: var(--esp-4) var(--esp-6);
+      }
+      .contraste h2 {
+        font-size: 16px;
+      }
+      .tabela-contraste {
+        display: grid;
+        gap: var(--esp-2);
+      }
+      .par {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-3);
+        flex-wrap: wrap;
+      }
+      .amostra {
+        min-width: 120px;
+        padding: var(--esp-1) var(--esp-3);
+        border-radius: var(--raio-sm);
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid var(--cor-borda);
+      }
+      .par .valor {
+        font-variant-numeric: tabular-nums;
+        color: var(--cor-texto-suave);
+        font-size: 14px;
+      }
+      .selo {
+        font-size: 12px;
+        font-weight: 700;
+        padding: var(--esp-1) var(--esp-2);
+        border-radius: var(--raio-sm);
+      }
+      .selo.ok {
+        background: #e6f2ec;
+        color: #0a3d2c;
+      }
+      .selo.reprovado {
+        background: #fdecea;
+        color: #7a231b;
+      }
+
+      @media (max-width: 400px) {
+        header.app {
+          padding: var(--esp-4);
+        }
+        main {
+          padding: var(--esp-4) var(--esp-3);
+        }
+        .cartao {
+          padding: var(--esp-4);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app">
+      <div class="marca">
+        <span class="simbolo" aria-hidden="true">§</span>
+        <div>
+          <h1>Instância</h1>
+          <p>Análise de sentenças de consumo · fases recursais · Eletroca</p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-contorno" data-testid="btn-reiniciar">
+        Reiniciar experiência
+      </button>
+    </header>
+
+    <main>
+      <section class="cartao" aria-labelledby="titulo-painel">
+        <h2 id="titulo-painel">Painel do contencioso</h2>
+        <p class="ajuda">Visão geral das decisões cadastradas (o que já transitou fica de fora da exposição em disputa).</p>
+        <div class="tiles" id="painel-tiles" data-testid="painel"></div>
+        <p class="destaque-painel" id="painel-destaque" data-testid="painel-destaque" aria-live="polite"></p>
+      </section>
+
+      <section class="cartao" aria-labelledby="titulo-form">
+        <h2 id="titulo-form">Nova decisão</h2>
+        <p class="ajuda">
+          Cadastre uma decisão <strong>fictícia</strong> (LGPD: nada de dados
+          reais). A <strong>espécie</strong> e a <strong>prioridade</strong> são
+          <strong>calculadas</strong> — não digitadas.
+        </p>
+
+        <form id="form-decisao" novalidate>
+          <div class="campo">
+            <label for="numeroProcesso">Nº do processo (fictício)</label>
+            <input
+              id="numeroProcesso"
+              name="numeroProcesso"
+              type="text"
+              placeholder="0000000-00.2026.8.24.0000"
+              data-testid="in-numero"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="campo">
+            <label for="orgaoVara">Órgão / vara</label>
+            <input
+              id="orgaoVara"
+              name="orgaoVara"
+              type="text"
+              placeholder="3ª Vara Cível de Florianópolis"
+              data-testid="in-orgao-vara"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="campo largo">
+            <label for="tipoLide">Tipo de lide (consumo)</label>
+            <select id="tipoLide" name="tipoLide" data-testid="sel-tipo-lide">
+              <option value="">— selecione —</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="orgaoJulgador">Órgão julgador</label>
+            <select id="orgaoJulgador" name="orgaoJulgador" data-testid="sel-orgao">
+              <option value="singular">Juiz singular (1º grau)</option>
+              <option value="colegiado">Colegiado (acórdão)</option>
+              <option value="complexo">Complexo (ex.: Júri)</option>
+            </select>
+          </div>
+
+          <fieldset class="campo">
+            <legend>Resolveu o mérito?</legend>
+            <div class="radios">
+              <label>
+                <input
+                  type="radio"
+                  name="resolveuMerito"
+                  value="sim"
+                  data-testid="rad-merito-sim"
+                  checked
+                />
+                Sim (definitiva)
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="resolveuMerito"
+                  value="nao"
+                  data-testid="rad-merito-nao"
+                />
+                Não (terminativa)
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="campo">
+            <label for="cargaEficacia">Carga de eficácia</label>
+            <select id="cargaEficacia" name="cargaEficacia" data-testid="sel-carga">
+              <option value="declaratoria">Declaratória</option>
+              <option value="constitutiva">Constitutiva</option>
+              <option value="condenatoria" selected>Condenatória</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="resultado">Resultado</label>
+            <select id="resultado" name="resultado" data-testid="sel-resultado">
+              <option value="procedente">Procedente (cliente ganhou)</option>
+              <option value="parcial">Parcialmente procedente</option>
+              <option value="improcedente">Improcedente (empresa ganhou)</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="valorCausa">Valor da causa (R$)</label>
+            <input
+              id="valorCausa"
+              name="valorCausa"
+              type="number"
+              min="0"
+              step="100"
+              placeholder="15000"
+              data-testid="in-valor-causa"
+            />
+          </div>
+
+          <div class="campo">
+            <label for="valorCondenacao">Valor da condenação / a pagar (R$)</label>
+            <input
+              id="valorCondenacao"
+              name="valorCondenacao"
+              type="number"
+              min="0"
+              step="100"
+              placeholder="0"
+              data-testid="in-valor-condenacao"
+            />
+          </div>
+
+          <div class="campo">
+            <label for="prazoRecursalAte">Prazo recursal até</label>
+            <input
+              id="prazoRecursalAte"
+              name="prazoRecursalAte"
+              type="date"
+              data-testid="in-prazo"
+            />
+          </div>
+
+          <div class="acoes campo largo">
+            <button type="submit" class="btn btn-primario" data-testid="btn-classificar">
+              Classificar decisão
+            </button>
+            <button type="reset" class="btn btn-contorno" data-testid="btn-limpar">
+              Limpar formulário
+            </button>
+          </div>
+        </form>
+        <p class="contador" id="contador-salvas" data-testid="contador-salvas" aria-live="polite">
+          Decisões salvas: <strong>0</strong>
+        </p>
+      </section>
+
+      <section class="cartao" aria-labelledby="titulo-lista">
+        <h2 id="titulo-lista">Decisões por fase recursal</h2>
+        <p class="ajuda">
+          Agrupadas pela fase, ordenadas pela prioridade de atuação (maior
+          primeiro). O contador mostra quantas há em cada fase.
+        </p>
+        <fieldset class="filtros">
+          <legend class="filtros-legenda">Filtros da lista</legend>
+          <div class="campo">
+            <label for="filtro-fase">Fase</label>
+            <select id="filtro-fase" data-testid="filtro-fase">
+              <option value="todas">Todas as fases</option>
+              <option value="primeiro-grau">1º grau</option>
+              <option value="apelacao">Apelação (2º grau)</option>
+              <option value="instancia-superior">Instância superior (STJ/STF)</option>
+              <option value="transitado">Transitado em julgado</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="filtro-especie">Espécie</label>
+            <select id="filtro-especie" data-testid="filtro-especie">
+              <option value="todas">Todas</option>
+              <option value="definitiva">Definitiva (com mérito)</option>
+              <option value="terminativa">Terminativa (sem mérito)</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="filtro-resultado">Resultado</label>
+            <select id="filtro-resultado" data-testid="filtro-resultado">
+              <option value="todos">Todos</option>
+              <option value="procedente">Procedente</option>
+              <option value="parcial">Parcialmente procedente</option>
+              <option value="improcedente">Improcedente</option>
+            </select>
+          </div>
+        </fieldset>
+        <div id="lista-fases" data-testid="lista-fases"></div>
+        <p class="ajuda" id="lista-vazia" data-testid="lista-vazia" hidden>
+          Nenhuma decisão salva ainda — cadastre uma acima.
+        </p>
+      </section>
+
+      <section class="cartao" aria-labelledby="titulo-dados">
+        <h2 id="titulo-dados">Meus dados (LGPD)</h2>
+        <p class="ajuda">
+          Os dados ficam <strong>só no seu navegador</strong> (localStorage) — nada
+          é enviado a servidor. Você pode levar (exportar) ou apagar quando quiser.
+          Use apenas dados <strong>fictícios</strong>.
+        </p>
+        <div class="acoes">
+          <button type="button" class="btn btn-primario" data-testid="btn-exportar">
+            Exportar (baixar .json)
+          </button>
+          <button type="button" class="btn btn-perigo" data-testid="btn-limpar-dados">
+            Limpar meus dados
+          </button>
+        </div>
+      </section>
+
+      <section class="cartao" aria-labelledby="titulo-previa">
+        <h2 id="titulo-previa">Prévia da classificação</h2>
+        <p class="ajuda">Atualiza ao vivo conforme você preenche o formulário.</p>
+        <div class="previa" aria-live="polite" data-testid="previa">
+          <div class="linha">
+            <span class="rotulo">Espécie</span>
+            <span class="tag" id="previa-especie" data-testid="previa-especie">—</span>
+          </div>
+          <div class="linha">
+            <span class="rotulo">Prioridade de atuação</span>
+            <span class="nota-prioridade" id="previa-prioridade" data-testid="previa-prioridade"
+              >—</span
+            >
+          </div>
+          <ul class="erros" id="previa-erros" data-testid="previa-erros" aria-live="polite"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="contraste">
+      <div class="cartao">
+        <h2>Contraste (WCAG AA) — ao vivo</h2>
+        <p class="ajuda">
+          Cada par de cores dos tokens é medido pela fórmula WCAG 2.1. Nenhum par
+          pode ficar “Reprovado”.
+        </p>
+        <div class="tabela-contraste" id="tabela-contraste" data-testid="tabela-contraste"></div>
+      </div>
+    </footer>
+
+    <script src="logica.js"></script>
+    <script src="repositorio.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

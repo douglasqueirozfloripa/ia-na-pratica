@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Instância — a história do projeto (Setup 0 → app pronto)</title>
+    <style>
+      :root {
+        --azul: #4c8dff;
+        --azul-claro: #8fb8ff;
+        --verde: #29b473;
+        --fundo: #0a2447;
+        --fundo2: #0a3d91;
+        --claro: #eaf1fb;
+        --suave: #9db4d6;
+        --fonte: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: var(--fonte);
+        background: var(--fundo);
+        color: var(--claro);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .slide {
+        display: none;
+        width: min(920px, 92vw);
+        min-height: 72vh;
+        padding: clamp(24px, 5vw, 56px);
+        flex-direction: column;
+        justify-content: center;
+        gap: 18px;
+      }
+      .slide.ativo {
+        display: flex;
+        animation: entra 0.35s ease;
+      }
+      @keyframes entra {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        color: var(--azul-claro);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+      }
+      h1 {
+        font-size: clamp(2rem, 6vw, 3.4rem);
+        line-height: 1.05;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        line-height: 1.1;
+      }
+      p,
+      li {
+        font-size: clamp(1rem, 2.4vw, 1.2rem);
+        color: #d7e3f5;
+        line-height: 1.55;
+      }
+      ul {
+        padding-left: 1.2em;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      strong {
+        color: #fff;
+      }
+      a {
+        color: var(--azul-claro);
+      }
+      .sub {
+        color: var(--suave);
+      }
+      .marca {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .logo {
+        width: 56px;
+        height: 56px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: var(--azul);
+        color: #fff;
+        font-size: 30px;
+        font-weight: 800;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .badge {
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #fff;
+        background: var(--fundo2);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .card b {
+        color: #fff;
+      }
+      .num {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .verde {
+        color: var(--verde);
+        font-weight: 800;
+      }
+      .nav {
+        position: fixed;
+        bottom: 18px;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+      .nav button {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        color: #fff;
+        background: var(--fundo2);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 8px;
+        padding: 8px 14px;
+      }
+      .nav button:hover {
+        background: var(--azul);
+      }
+      .contador {
+        color: var(--suave);
+        font-size: 0.9rem;
+        min-width: 60px;
+        text-align: center;
+      }
+      .dica {
+        position: fixed;
+        top: 16px;
+        right: 18px;
+        color: var(--suave);
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dica">← → para navegar</div>
+
+    <!-- 1 — Capa -->
+    <section class="slide ativo">
+      <div class="marca">
+        <span class="logo" aria-hidden="true">§</span>
+        <div>
+          <div class="kicker">IA na Prática · estado zero</div>
+          <h1>Instância</h1>
+        </div>
+      </div>
+      <p>
+        Classifica e acompanha as <strong>sentenças de consumo</strong> da
+        concessionária <strong>Eletroca</strong> pelas <strong>fases recursais</strong> —
+        do Setup 0 ao app pronto.
+      </p>
+      <p class="sub">
+        Tema escolhido: Análise de sentenças/decisões (fases recursais) · Inspiração
+        visual: Jusbrasil
+      </p>
+    </section>
+
+    <!-- 2 — Problema -->
+    <section class="slide">
+      <div class="kicker">O problema</div>
+      <h2>Muitas decisões, pouca visão do todo</h2>
+      <p>
+        Uma distribuidora de energia enfrenta <strong>contencioso de consumo em massa</strong>
+        (cobrança, corte, dano moral). O difícil é enxergar <strong>em que fase</strong> está
+        cada processo, <strong>quanto</strong> está em risco e <strong>por qual agir primeiro</strong>.
+      </p>
+      <p class="sub">O Instância transforma a papelada em um painel: "aja por esta primeiro".</p>
+    </section>
+
+    <!-- 3 — Conceito / fundamentação -->
+    <section class="slide">
+      <div class="kicker">A fundamentação (não é achismo)</div>
+      <h2>Duas bases jurídicas reais</h2>
+      <ul>
+        <li>
+          <strong>Espécies de sentença (CPC):</strong> terminativa (art. 485) × definitiva
+          (art. 487); carga declaratória/constitutiva/condenatória (Liebman); e por órgão
+          (simples/plúrima/complexa).
+        </li>
+        <li><strong>Sistema recursal:</strong> 1º grau → apelação → STJ/STF → trânsito em julgado.</li>
+        <li>
+          <strong>Mérito do consumo:</strong> CDC (Lei 8.078/1990) + REN ANEEL nº 1.000/2021.
+        </li>
+      </ul>
+      <p class="sub">Cada termo entrou no GLOSSARIO.md, com a fonte linkada, antes de qualquer código.</p>
+    </section>
+
+    <!-- 4 — Entidade -->
+    <section class="slide">
+      <div class="kicker">A entidade</div>
+      <h2>Decisão</h2>
+      <p>
+        Campos validados: nº do processo, órgão/vara, tipo de lide (6, do CDC/ANEEL), órgão
+        julgador, resolveu mérito?, carga, resultado, <strong>valor da causa</strong> e
+        <strong>valor da condenação (a pagar)</strong>.
+      </p>
+      <div class="badges">
+        <span class="badge">Espécie: calculada</span>
+        <span class="badge">Prioridade: calculada</span>
+        <span class="badge">Fase: ciclo de status</span>
+      </div>
+      <p class="sub">A espécie e a prioridade <strong>nunca são digitadas</strong> — são calculadas.</p>
+    </section>
+
+    <!-- 5 — Classificação pura -->
+    <section class="slide">
+      <div class="kicker">Função pura #1</div>
+      <h2>classificarEspecie(...)</h2>
+      <p>
+        A partir de <strong>resolveu mérito? · carga · órgão</strong>, devolve a espécie —
+        terminativa/definitiva, o tipo pela carga e simples/plúrima/complexa.
+      </p>
+      <p><strong>Regra dura:</strong> sem mérito <strong>nunca</strong> é definitiva e não tem carga.</p>
+      <p class="sub">Mesma entrada → mesma saída: fácil de testar, à prova de erro de digitação.</p>
+    </section>
+
+    <!-- 6 — Prioridade -->
+    <section class="slide">
+      <div class="kicker">Função pura #2</div>
+      <h2>pontuarPrioridade(...)</h2>
+      <p>
+        Cruza <strong>valor da causa × resultado × prazo recursal</strong> em faixas, e devolve
+        uma nota: quanto maior a exposição e mais curto o prazo, mais urgente.
+      </p>
+      <p class="sub">"Hoje" é injetado de fora — a função continua pura e o teste controla a data.</p>
+    </section>
+
+    <!-- 7 — Ciclo de fases -->
+    <section class="slide">
+      <div class="kicker">Usabilidade sem beco sem saída</div>
+      <h2>Ciclo de fases recursais</h2>
+      <div class="badges">
+        <span class="badge">1º grau</span>
+        <span class="badge">Apelação (2º grau)</span>
+        <span class="badge">Instância superior</span>
+        <span class="badge">Transitado em julgado</span>
+      </div>
+      <p>
+        Avança na ordem e <strong>volta um passo</strong>; as pontas travam. Transitar em julgado
+        <strong>carimba a data</strong>; reabrir <strong>limpa</strong>.
+      </p>
+    </section>
+
+    <!-- 8 — Painel -->
+    <section class="slide">
+      <div class="kicker">Painel do contencioso</div>
+      <h2>Os números-chave num relance</h2>
+      <div class="grid">
+        <div class="card"><b>Total</b><br />de decisões</div>
+        <div class="card"><b>Prazo correndo</b><br />o que exige ação</div>
+        <div class="card"><b>% defendidos</b><br />improcedentes</div>
+        <div class="card"><b>Exposição em disputa</b><br />zera ao transitar tudo</div>
+        <div class="card"><b>Total a pagar</b><br />condenações</div>
+        <div class="card"><b>Aja por esta primeiro</b><br />maior prioridade</div>
+      </div>
+    </section>
+
+    <!-- 9 — Testes -->
+    <section class="slide">
+      <div class="kicker">Qualidade por teste</div>
+      <h2>Pirâmide de testes</h2>
+      <div class="grid">
+        <div class="card"><span class="num">146</span><br /><b>unitários</b> (Jest) — as regras puras</div>
+        <div class="card"><span class="num">13</span><br /><b>E2E</b> (Playwright) — o app real</div>
+      </div>
+      <p class="sub">
+        Cada teste diz no nome se é <strong>(positivo)</strong> ou <strong>(negativo)</strong> —
+        o que deve funcionar e o que deve ser bloqueado.
+      </p>
+    </section>
+
+    <!-- 10 — Acessibilidade -->
+    <section class="slide">
+      <div class="kicker">Acessibilidade desde o 1º pixel</div>
+      <h2>WCAG AA, medido ao vivo</h2>
+      <p>
+        Rodapé de contraste calcula cada par de cores pela fórmula WCAG 2.1; um teste
+        <strong>reprova</strong> qualquer cor abaixo de AA. Teclado, foco visível, labels ligados
+        e espaçamento <strong>garantido por teste</strong> (nada colado).
+      </p>
+      <p class="verde">Nenhum par "Reprovado" — a estética não fura a acessibilidade.</p>
+    </section>
+
+    <!-- 11 — LGPD -->
+    <section class="slide">
+      <div class="kicker">O dado é do usuário</div>
+      <h2>LGPD na prática</h2>
+      <p>
+        As decisões ficam <strong>só no navegador</strong> (localStorage). Dá para
+        <strong>exportar</strong> (.json) ou <strong>limpar</strong> quando quiser. Todos os
+        exemplos usam <strong>dados fictícios</strong> — nunca processo, parte ou valor real.
+      </p>
+    </section>
+
+    <!-- 12 — Como foi construído -->
+    <section class="slide">
+      <div class="kicker">Como foi construído</div>
+      <h2>Um prompt de cada vez (Setup 0 → 13)</h2>
+      <p>
+        Fundamentação → núcleo em funções puras → ferramental (ESLint/Prettier/Husky) →
+        primeira tela (inspiração perguntada) → persistência → lista → ciclo → painel →
+        filtros → ações destrutivas → LGPD → acessibilidade + E2E → entregas.
+      </p>
+      <p class="sub">Guia, não trilho: um objetivo por prompt, com os testes junto.</p>
+    </section>
+
+    <!-- 13 — Fecho -->
+    <section class="slide">
+      <div class="kicker">O legado</div>
+      <h2>App pronto e documentado</h2>
+      <p>
+        O app é o produto; o <strong>aprendizado documentado</strong> é o legado —
+        README, PROMPTS, RESUMAO e GLOSSARIO contam o resto da história.
+      </p>
+      <p class="sub">
+        Próximo passo possível: integrar IA no próprio app (classificar por texto da sentença,
+        prever êxito recursal por RAG) — sempre com a pessoa conferindo e respeitando a LGPD.
+      </p>
+      <div class="marca" style="margin-top: 12px">
+        <span class="logo" aria-hidden="true">§</span>
+        <h1 style="font-size: 2rem">Instância</h1>
+      </div>
+    </section>
+
+    <nav class="nav">
+      <button id="anterior" aria-label="Slide anterior">← Anterior</button>
+      <span class="contador" id="contador">1 / 13</span>
+      <button id="proximo" aria-label="Próximo slide">Próximo →</button>
+    </nav>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const contador = document.getElementById('contador');
+      let atual = 0;
+
+      function mostrar(i) {
+        atual = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, k) => s.classList.toggle('ativo', k === atual));
+        contador.textContent = atual + 1 + ' / ' + slides.length;
+      }
+      document.getElementById('proximo').addEventListener('click', () => mostrar(atual + 1));
+      document.getElementById('anterior').addEventListener('click', () => mostrar(atual - 1));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'PageDown') mostrar(atual + 1);
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') mostrar(atual - 1);
+        if (e.key === 'Home') mostrar(0);
+        if (e.key === 'End') mostrar(slides.length - 1);
+      });
+      mostrar(0);
+    </script>
+  </body>
+</html>
