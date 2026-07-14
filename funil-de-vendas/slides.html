@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Funil — a história do projeto (slides)</title>
+  <style>
+    :root {
+      --verde: #0b6a37; --verde-escuro: #08512a; --branco: #ffffff;
+      --texto: #14231c; --sec: #3d5245; --borda: #d5ded8; --fundo: #f3f6f4;
+      --esp-2: 8px; --esp-3: 12px; --esp-4: 16px; --esp-5: 24px; --raio: 12px;
+      --fonte: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: var(--fonte); color: var(--texto); background: var(--fundo); }
+
+    .deck { height: 100vh; display: grid; grid-template-rows: 1fr auto; }
+    .palco { position: relative; overflow: hidden; }
+    .slide {
+      position: absolute; inset: 0; padding: clamp(24px, 6vw, 80px);
+      display: flex; flex-direction: column; justify-content: center; gap: var(--esp-4);
+      opacity: 0; transform: translateX(24px); transition: opacity .25s, transform .25s;
+      pointer-events: none;
+    }
+    .slide.ativo { opacity: 1; transform: none; pointer-events: auto; }
+    .slide h1 { font-size: clamp(28px, 5vw, 52px); margin: 0; }
+    .slide h2 { font-size: clamp(22px, 3.4vw, 34px); margin: 0 0 var(--esp-2); color: var(--verde); }
+    .slide p, .slide li { font-size: clamp(15px, 1.9vw, 20px); line-height: 1.55; max-width: 60ch; }
+    .kicker { color: var(--verde); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 13px; }
+    .sub { color: var(--sec); }
+    ul { margin: 0; padding-left: 1.2em; display: grid; gap: var(--esp-2); }
+    a { color: var(--verde); }
+    .capa { background: var(--verde); color: var(--branco); }
+    .capa h1, .capa h2 { color: var(--branco); }
+    .capa .kicker, .capa .sub { color: rgba(255,255,255,.85); }
+    .logo { width: 64px; height: 64px; border-radius: var(--raio); background: var(--branco); color: var(--verde);
+      display: grid; place-items: center; font-weight: 800; font-size: 34px; }
+
+    .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--esp-3); max-width: 900px; }
+    .cartao { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--raio); padding: var(--esp-4); }
+    .cartao b { color: var(--verde); font-size: 26px; display: block; }
+    .cartao span { color: var(--sec); font-size: 14px; }
+    table { border-collapse: collapse; font-size: clamp(14px, 1.8vw, 19px); }
+    td, th { text-align: left; padding: 6px 18px 6px 0; }
+    th { color: var(--sec); font-weight: 600; }
+    .selo { display: inline-block; background: #e3f2e9; color: var(--verde); border-radius: 999px; padding: 2px 10px; font-weight: 700; font-size: 13px; }
+
+    /* Barra inferior de navegação */
+    .barra { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-3);
+      padding: var(--esp-3) var(--esp-5); background: var(--branco); border-top: 1px solid var(--borda); }
+    .pontos { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--borda); border: 0; padding: 0; cursor: pointer; }
+    .ponto.ativo { background: var(--verde); }
+    .btns { display: flex; gap: var(--esp-2); }
+    .btn { font: inherit; font-weight: 600; cursor: pointer; height: 40px; padding: 0 var(--esp-4);
+      border-radius: 8px; border: 1px solid var(--verde); background: var(--verde); color: var(--branco); }
+    .btn.sec { background: transparent; color: var(--verde); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn:focus-visible, .ponto:focus-visible { outline: 3px solid var(--verde-escuro); outline-offset: 2px; }
+    .contador { color: var(--sec); font-size: 14px; min-width: 64px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="palco" id="palco">
+      <!-- 1 -->
+      <section class="slide capa ativo">
+        <div class="logo" aria-hidden="true">▽</div>
+        <p class="kicker">IA na Prática · do Setup 0 ao app pronto</p>
+        <h1>Funil</h1>
+        <p class="sub">Um gestor de oportunidades que mostra em que etapa do funil cada negócio está — e qual focar primeiro.</p>
+      </section>
+
+      <!-- 2 -->
+      <section class="slide">
+        <p class="kicker">O conceito</p>
+        <h1>Muitos entram, poucos fecham</h1>
+        <p>O motor é o <b>funil de vendas</b> (metáfora do modelo <b>AIDA</b>): o negócio percorre etapas em ordem, e a cada uma corresponde uma <b>probabilidade</b> de fechar.</p>
+        <p class="sub">Lead → Qualificação → Proposta → Negociação → Fechado (Ganho/Perdido)</p>
+      </section>
+
+      <!-- 3 -->
+      <section class="slide">
+        <p class="kicker">Fundamentação (não é achismo)</p>
+        <h2>De onde vem a ideia</h2>
+        <ul>
+          <li><b>Modelo AIDA / funil</b> — Elias St. Elmo Lewis (1898); funil em Townsend (1924).</li>
+          <li><b>BANT</b> — qualificação por Orçamento/Autoridade/Necessidade/Prazo (IBM, anos 1950).</li>
+          <li><b>Pipeline ponderado</b> — valor × probabilidade + taxa de conversão (prática de CRM).</li>
+        </ul>
+        <p class="sub">Cada termo entrou no glossário com a fonte linkada, antes de qualquer código.</p>
+      </section>
+
+      <!-- 4 -->
+      <section class="slide">
+        <p class="kicker">O cálculo (função pura)</p>
+        <h2>Probabilidade e valor ponderado</h2>
+        <table>
+          <tr><th>Etapa</th><th>Chance-base</th></tr>
+          <tr><td>Lead</td><td>10%</td></tr>
+          <tr><td>Qualificação</td><td>25%</td></tr>
+          <tr><td>Proposta</td><td>50%</td></tr>
+          <tr><td>Negociação</td><td>75%</td></tr>
+          <tr><td>Fechado</td><td>100% Ganho / 0% Perdido</td></tr>
+        </table>
+        <p>+5% por critério <b>BANT</b> atendido. <b>Valor ponderado = valor × probabilidade</b> — é o que ordena o foco.</p>
+      </section>
+
+      <!-- 5 -->
+      <section class="slide">
+        <p class="kicker">Stack & arquitetura</p>
+        <h2>HTML + CSS + JS puros</h2>
+        <ul>
+          <li><b>logica.js</b> — regras em <b>funções puras</b> (rodam no Jest e no navegador).</li>
+          <li><b>index.html</b> — telas, design tokens e a "cola" com a lógica.</li>
+          <li><b>localStorage</b> — dados no navegador, sem servidor.</li>
+          <li>Efeitos colaterais (dados, data, download) só na tela → lógica testável.</li>
+        </ul>
+      </section>
+
+      <!-- 6 -->
+      <section class="slide">
+        <p class="kicker">A jornada, prompt a prompt</p>
+        <h2>Passos pequenos, testes junto</h2>
+        <ul>
+          <li><b>0–1</b> setup + fundamentação (glossário com fontes)</li>
+          <li><b>2</b> núcleo da lógica (funções puras) · <b>3</b> primeira tela + contraste</li>
+          <li><b>4</b> persistência · <b>5</b> lista por etapa · <b>6</b> ciclo de etapas + desfecho</li>
+          <li><b>10</b> exportar/limpar (LGPD) · <b>11</b> acessibilidade + E2E</li>
+        </ul>
+      </section>
+
+      <!-- 7 -->
+      <section class="slide">
+        <p class="kicker">Qualidade</p>
+        <h2>Testado dos dois lados</h2>
+        <div class="grade">
+          <div class="cartao"><b>68</b><span>testes (49 Jest + 19 Playwright)</span></div>
+          <div class="cartao"><b>+ / −</b><span>cenários positivos e negativos</span></div>
+          <div class="cartao"><b>&gt; 0,5px</b><span>teste de espaçamento (nada colado)</span></div>
+        </div>
+        <p class="sub">O teste de espaçamento pegou uma quebra real: um botão colado na fileira BANT.</p>
+      </section>
+
+      <!-- 8 -->
+      <section class="slide">
+        <p class="kicker">Acessibilidade</p>
+        <h2>WCAG AA desde a 1ª tela</h2>
+        <ul>
+          <li>Contraste medido <b>ao vivo</b> no rodapé <span class="selo">AA</span> <span class="selo">AAA</span></li>
+          <li>Teclado, foco visível, labels e regiões nomeadas (cobertos por E2E)</li>
+          <li><code>aria-live</code> anuncia mudanças a leitores de tela</li>
+        </ul>
+      </section>
+
+      <!-- 9 -->
+      <section class="slide">
+        <p class="kicker">Próximos passos</p>
+        <h2>Features futuras</h2>
+        <ul>
+          <li><b>7</b> — painel "Visão do funil" (dashboard: valor total, ponderado, taxa de conversão)</li>
+          <li><b>8</b> — filtros e ordenação persistidos</li>
+          <li><b>9</b> — reiniciar/excluir com confirmação</li>
+        </ul>
+        <p class="sub">O caminho inteiro fica em PROMPTS.md e RESUMAO.md.</p>
+      </section>
+
+      <!-- 10 -->
+      <section class="slide capa">
+        <div class="logo" aria-hidden="true">▽</div>
+        <h1>Obrigado!</h1>
+        <p class="sub">Funil — do conceito (AIDA + BANT) ao app testado e acessível, em passos pequenos.</p>
+        <p class="sub">Use ← → para navegar.</p>
+      </section>
+    </div>
+
+    <nav class="barra" aria-label="Navegação dos slides">
+      <div class="pontos" id="pontos"></div>
+      <div class="btns">
+        <button class="btn sec" id="anterior" type="button">← Anterior</button>
+        <span class="contador" id="contador"></span>
+        <button class="btn" id="proximo" type="button">Próximo →</button>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const pontosBox = document.getElementById('pontos');
+    const contador = document.getElementById('contador');
+    const btnAnt = document.getElementById('anterior');
+    const btnProx = document.getElementById('proximo');
+    let atual = 0;
+
+    // Cria um "ponto" clicável por slide.
+    slides.forEach((_, i) => {
+      const p = document.createElement('button');
+      p.className = 'ponto';
+      p.type = 'button';
+      p.setAttribute('aria-label', `Ir para o slide ${i + 1}`);
+      p.addEventListener('click', () => ir(i));
+      pontosBox.appendChild(p);
+    });
+    const pontos = Array.from(pontosBox.children);
+
+    function ir(i) {
+      atual = Math.max(0, Math.min(slides.length - 1, i));
+      slides.forEach((s, k) => s.classList.toggle('ativo', k === atual));
+      pontos.forEach((p, k) => p.classList.toggle('ativo', k === atual));
+      contador.textContent = `${atual + 1} / ${slides.length}`;
+      btnAnt.disabled = atual === 0;
+      btnProx.disabled = atual === slides.length - 1;
+    }
+
+    btnAnt.addEventListener('click', () => ir(atual - 1));
+    btnProx.addEventListener('click', () => ir(atual + 1));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') ir(atual + 1);
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') ir(atual - 1);
+      if (e.key === 'Home') ir(0);
+      if (e.key === 'End') ir(slides.length - 1);
+    });
+
+    ir(0);
+  </script>
+</body>
+</html>

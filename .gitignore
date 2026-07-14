@@ -1,0 +1,12 @@
+# Dependências e artefatos de build/test (regeráveis — não versionar)
+node_modules/
+test-results/
+playwright-report/
+.playwright-mcp/
+
+# Sistema operacional
+.DS_Store
+
+# Material de apoio do encontro (fora do escopo dos projetos)
+*.pptx
+*.docx

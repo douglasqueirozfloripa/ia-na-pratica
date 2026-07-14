@@ -1,0 +1,14 @@
+{
+  "name": "prioriza",
+  "version": "0.1.0",
+  "description": "Organizador de tarefas que ordena o que fazer agora por urgência x importância (Matriz de Eisenhower).",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "test:e2e": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "jest": "^29.7.0"
+  }
+}

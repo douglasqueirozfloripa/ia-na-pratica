@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prioriza — a história do projeto (Setup 0 → app pronto)</title>
+  <style>
+    :root {
+      --navy: #335061; --navy-forte: #26404e; --carmim: #d33834; --carmim-forte: #b32f2b;
+      --bismark: #48728b; --fundo: #14232b; --claro: #f4f6f7; --suave: #9fb3bd;
+      --fonte: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--fonte); background: var(--fundo); color: var(--claro);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .slide {
+      display: none; width: min(900px, 92vw); min-height: 70vh;
+      padding: clamp(24px, 5vw, 56px);
+      flex-direction: column; justify-content: center; gap: 20px;
+    }
+    .slide.ativo { display: flex; animation: entra .35s ease; }
+    @keyframes entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .kicker { color: var(--carmim); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
+    h1 { font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+    h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); line-height: 1.1; }
+    p, li { font-size: clamp(1rem, 2.4vw, 1.2rem); color: #dCe6ea; line-height: 1.55; }
+    ul { padding-left: 1.2em; display: flex; flex-direction: column; gap: 8px; }
+    strong { color: #fff; }
+    a { color: #9fd0e6; }
+    .sub { color: var(--suave); }
+
+    .marca { display: flex; align-items: center; gap: 16px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .badge { border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: .85rem; color: #fff; }
+    .b-faca { background: var(--carmim); } .b-agende { background: var(--navy); }
+    .b-delegue { background: var(--bismark); } .b-elimine { background: #6d6b6d; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 8px; }
+    .card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 16px; }
+    .card b { color: #fff; }
+    .num { font-size: 2.4rem; font-weight: 800; color: #fff; }
+    .verde { color: #7fd39a; font-weight: 800; }
+
+    /* barra de navegação */
+    .nav { position: fixed; bottom: 18px; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .nav button {
+      font: inherit; font-weight: 700; cursor: pointer; color: #fff;
+      background: var(--navy); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 8px 14px;
+    }
+    .nav button:hover { background: var(--navy-forte); }
+    .contador { color: var(--suave); font-size: .9rem; min-width: 60px; text-align: center; }
+    .dica { position: fixed; top: 16px; right: 18px; color: var(--suave); font-size: .8rem; }
+    .logo { width: 56px; height: 56px; flex: none; }
+  </style>
+</head>
+<body>
+  <div class="dica">← → para navegar</div>
+
+  <!-- 1 -->
+  <section class="slide ativo">
+    <div class="marca">
+      <svg class="logo" viewBox="0 0 36 36" aria-hidden="true">
+        <circle cx="18" cy="18" r="18" fill="#335061" />
+        <path d="M18 18 L9 13 L9 23 Z" fill="#d33834" /><path d="M18 18 L27 13 L27 23 Z" fill="#d33834" />
+        <circle cx="18" cy="18" r="2.4" fill="#b32f2b" />
+      </svg>
+      <div>
+        <div class="kicker">IA na Prática · estado zero</div>
+        <h1>Prioriza</h1>
+      </div>
+    </div>
+    <p>Um organizador de tarefas que <strong>calcula o que fazer agora</strong> por
+      <strong>urgência × importância</strong> — do Setup 0 ao app pronto.</p>
+    <p class="sub">Tema escolhido: Organizador de Tarefas e Prioridades · Inspiração visual: Jenkins</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="kicker">O problema</div>
+    <h2>Uma lista não diz o que fazer primeiro</h2>
+    <p>Todo mundo tem uma lista de tarefas. O difícil é decidir <strong>a ordem</strong>:
+      o que atacar agora, o que agendar, o que passar adiante e o que simplesmente cortar.</p>
+    <p class="sub">O Prioriza transforma a lista solta numa recomendação: "comece por esta".</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="kicker">O conceito (não é achismo)</div>
+    <h2>Matriz de Eisenhower + GTD + MoSCoW</h2>
+    <ul>
+      <li><strong>Eisenhower</strong> (urgente × importante): o motor da priorização — Covey formalizou os 4 quadrantes.</li>
+      <li><strong>GTD</strong> (David Allen): capturar tudo fora da cabeça.</li>
+      <li><strong>MoSCoW</strong> (Dai Clegg): classificar o essencial.</li>
+    </ul>
+    <div class="badges">
+      <span class="badge b-faca">Faça agora</span>
+      <span class="badge b-agende">Agende</span>
+      <span class="badge b-delegue">Delegue</span>
+      <span class="badge b-elimine">Elimine</span>
+    </div>
+    <p class="sub">Fontes reais e linkadas — registradas no GLOSSARIO.md antes de qualquer código.</p>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="kicker">As regras (Setup 0)</div>
+    <h2>Como a IA respondeu em TODAS as etapas</h2>
+    <ul>
+      <li>Partes pequenas, <strong>com testes junto</strong> (positivos e negativos).</li>
+      <li>Prioridade <strong>calculada por função pura</strong>, nunca digitada.</li>
+      <li>Acessibilidade <strong>WCAG AA</strong> com relatório de contraste ao vivo.</li>
+      <li>Usabilidade sem becos, LGPD com dados fictícios, tudo documentado.</li>
+      <li><strong>Decisões do usuário se perguntam</strong> — ex.: a marca de inspiração.</li>
+    </ul>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="kicker">A stack</div>
+    <h2>Simples de propósito</h2>
+    <div class="grid">
+      <div class="card"><b>HTML + CSS + JS puros</b><p class="sub">Abre no navegador, sem build.</p></div>
+      <div class="card"><b>localStorage</b><p class="sub">Sem servidor, sem banco.</p></div>
+      <div class="card"><b>Jest</b><p class="sub">Testa as regras puras.</p></div>
+      <div class="card"><b>Playwright</b><p class="sub">Testa o app real (E2E).</p></div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="kicker">Arquitetura</div>
+    <h2>Regra pura × mundo externo</h2>
+    <ul>
+      <li><strong>logica.js</strong> — funções puras (priorização, status, filtros, contraste). Testável e previsível.</li>
+      <li><strong>repositorio.js</strong> — localStorage, id e data (o não-puro).</li>
+      <li><strong>app.js</strong> — só liga a tela às regras.</li>
+    </ul>
+    <p class="sub">Tempo e aleatoriedade entram "de fora" — as funções continuam puras.</p>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="kicker">A jornada</div>
+    <h2>Prompt 0 → 12, um objetivo por vez</h2>
+    <ul>
+      <li><strong>0–1</strong> Setup + fundamentação (fontes, glossário).</li>
+      <li><strong>2–4</strong> Lógica pura → primeira tela → persistência.</li>
+      <li><strong>5–7</strong> Lista por quadrante → ciclo de status → painel "Foco do dia".</li>
+      <li><strong>8–10</strong> Filtros persistidos → ações destrutivas → exportar/limpar (LGPD).</li>
+      <li><strong>11–12</strong> Acessibilidade + E2E → README + estes slides.</li>
+    </ul>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="kicker">Acessibilidade</div>
+    <h2>WCAG AA desde o primeiro pixel</h2>
+    <p>Cada par de cores é medido por <strong>funções puras</strong> e mostrado ao vivo no rodapé.
+      Um teste "guarda" reprova qualquer cor abaixo do AA.</p>
+    <div class="grid">
+      <div class="card"><b>Texto/superfície</b><div class="num verde">16.1<span style="font-size:1rem">:1</span></div></div>
+      <div class="card"><b>Branco/navy</b><div class="num verde">8.5<span style="font-size:1rem">:1</span></div></div>
+      <div class="card"><b>Branco/carmim</b><div class="num verde">4.8<span style="font-size:1rem">:1</span></div></div>
+    </div>
+    <p class="sub">Conferido também contra a fórmula WCAG 2.1 (a mesma do Adobe Contrast Analyzer).</p>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="kicker">Inspiração visual</div>
+    <h2>Jenkins, o mordomo do CI/CD</h2>
+    <p>Paleta oficial: Worn Navy, <strong>Medium Carmine</strong> (a gravata), Bismark.
+      O vermelho puro do Todoist reprovava no AA; o <strong>carmim do Jenkins passou (4.79:1)</strong> — mantido autêntico.</p>
+    <p class="sub">A estética nunca fura a acessibilidade: quando a cor de marca reprova, ajusta-se o tom.</p>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="kicker">Privacidade</div>
+    <h2>LGPD: o dado é seu</h2>
+    <ul>
+      <li>Tudo fica <strong>só no seu navegador</strong> (localStorage), sem servidor.</li>
+      <li>Você pode <strong>exportar</strong> (.json) ou <strong>limpar</strong> quando quiser.</li>
+      <li>Exemplos com <strong>dados fictícios</strong>.</li>
+    </ul>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide">
+    <div class="kicker">Qualidade</div>
+    <h2>Testado dos dois lados</h2>
+    <div class="grid">
+      <div class="card"><b>Unitários (Jest)</b><div class="num">82</div><p class="sub">regras puras</p></div>
+      <div class="card"><b>E2E (Playwright)</b><div class="num">4</div><p class="sub">app real no navegador</p></div>
+      <div class="card"><b>Contraste</b><div class="num verde">AA</div><p class="sub">todos os pares</p></div>
+    </div>
+    <p class="sub">Positivos (o que deve funcionar) e negativos (o que deve ser bloqueado).</p>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <div class="kicker">Encerramento</div>
+    <h2>Do Setup 0 ao app pronto</h2>
+    <p>Um app pequeno, mas <strong>fundamentado, testado, acessível e documentado</strong> —
+      construído em passos pequenos, cada um com testes e um registro do porquê.</p>
+    <p class="sub">README.md, PROMPTS.md, RESUMAO.md e GLOSSARIO.md contam o resto da história.</p>
+    <div class="marca" style="margin-top:12px">
+      <svg class="logo" viewBox="0 0 36 36" aria-hidden="true">
+        <circle cx="18" cy="18" r="18" fill="#335061" />
+        <path d="M18 18 L9 13 L9 23 Z" fill="#d33834" /><path d="M18 18 L27 13 L27 23 Z" fill="#d33834" />
+        <circle cx="18" cy="18" r="2.4" fill="#b32f2b" />
+      </svg>
+      <h1 style="font-size:2rem">Prioriza</h1>
+    </div>
+  </section>
+
+  <nav class="nav">
+    <button id="anterior" aria-label="Slide anterior">← Anterior</button>
+    <span class="contador" id="contador">1 / 12</span>
+    <button id="proximo" aria-label="Próximo slide">Próximo →</button>
+  </nav>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const contador = document.getElementById('contador');
+    let atual = 0;
+
+    function mostrar(i) {
+      atual = Math.max(0, Math.min(slides.length - 1, i));
+      slides.forEach((s, k) => s.classList.toggle('ativo', k === atual));
+      contador.textContent = (atual + 1) + ' / ' + slides.length;
+    }
+    document.getElementById('proximo').addEventListener('click', () => mostrar(atual + 1));
+    document.getElementById('anterior').addEventListener('click', () => mostrar(atual - 1));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') mostrar(atual + 1);
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') mostrar(atual - 1);
+      if (e.key === 'Home') mostrar(0);
+      if (e.key === 'End') mostrar(slides.length - 1);
+    });
+    mostrar(0);
+  </script>
+</body>
+</html>

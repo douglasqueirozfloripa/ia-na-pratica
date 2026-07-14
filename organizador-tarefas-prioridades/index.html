@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prioriza — organizador de tarefas por urgência × importância</title>
+
+  <!--
+    INSPIRAÇÃO VISUAL (declarada pelo usuário): JENKINS (o mordomo do CI/CD).
+    Paleta OFICIAL do Jenkins (fonte: schemecolor.com/jerkins-logo-colors.php):
+      Worn Navy #335061 · Medium Carmine #D33834 · Bismark #48728B ·
+      Muted Sky Blue #80B0C4 · Pine Nut #F0D6B7 · Dove Gray #6D6B6D.
+    Azuis calmos + acento carmim (a gravata-borboleta) = ar de confiança/CI.
+    Todas as cores foram auditadas: passam no contraste WCAG AA (ver rodapé).
+    O carmim oficial (#D33834) passa AA com texto branco (4.79:1) — mantido.
+    Tela coberta por: e2e/app.spec.js (Playwright, Prompt 11).
+  -->
+  <style>
+    /* ---- DESIGN TOKENS (escala única, reutilizada em tudo) ---- */
+    :root {
+      /* Espaçamento: 4 / 8 / 12 / 16 / 24 */
+      --esp-1: 4px;  --esp-2: 8px;  --esp-3: 12px;  --esp-4: 16px;  --esp-6: 24px;
+      --raio: 8px;
+      --fonte: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+      /* Cores — paleta oficial do Jenkins, ajustada onde preciso para WCAG AA */
+      --cor-fundo: #f4f6f7;          /* cinza-azulado claro (ecoa o sky blue) */
+      --cor-superficie: #ffffff;
+      --cor-texto: #14232b;          /* navy bem escuro — 16.1:1 no branco (AAA) */
+      --cor-texto-suave: #6d6b6d;    /* Dove Gray — 5.28:1 (AA) */
+      --cor-primaria: #335061;       /* Worn Navy (o blazer) — branco 8.53:1 (AAA) */
+      --cor-primaria-forte: #26404e;
+      --cor-acento: #d33834;         /* Medium Carmine (a gravata) — branco 4.79:1 (AA) */
+      --cor-acento-forte: #b32f2b;
+      --cor-bismark: #48728b;        /* AA */
+      --cor-borda: #d9e0e4;
+      --cor-foco: #335061;
+      --sombra: 0 1px 3px rgba(20, 35, 43, 0.10), 0 1px 2px rgba(20, 35, 43, 0.06);
+
+      /* Cor de cada quadrante (usada nos selos) — todas AA sobre branco */
+      --q-faca-agora: #d33834;
+      --q-agende: #335061;
+      --q-delegue: #48728b;
+      --q-elimine: #6d6b6d;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--fonte);
+      background: var(--cor-fundo);
+      color: var(--cor-texto);
+      line-height: 1.5;
+    }
+
+    /* ---- HEADER ---- */
+    .cabecalho {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--esp-4);
+      padding: var(--esp-4) var(--esp-6);
+      background: var(--cor-superficie);
+      border-bottom: 3px solid var(--cor-primaria);
+    }
+    .cabecalho__marca { display: flex; align-items: center; gap: var(--esp-3); }
+    .cabecalho h1 { font-size: 1.25rem; margin: 0; }
+    .cabecalho__sub { margin: 0; font-size: 0.8rem; color: var(--cor-texto-suave); }
+
+    /* ---- LAYOUT PRINCIPAL ---- */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--esp-6) var(--esp-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--esp-6);
+    }
+    .cartao {
+      background: var(--cor-superficie);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+      padding: var(--esp-6);
+    }
+    .cartao h2 { margin: 0 0 var(--esp-4); font-size: 1.05rem; }
+
+    /* ---- PAINEL "FOCO DO DIA" (grid responsivo, sem quebra) ---- */
+    .painel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--esp-3);
+    }
+    .tile {
+      border: 1px solid var(--cor-borda); border-radius: var(--raio);
+      padding: var(--esp-4); background: var(--cor-fundo);
+      display: flex; flex-direction: column; gap: var(--esp-1);
+    }
+    .tile__num { font-size: 1.8rem; font-weight: 800; line-height: 1; color: var(--cor-primaria); }
+    .tile__rotulo { font-size: 0.8rem; color: var(--cor-texto-suave); }
+    .tile--destaque { background: #fbeae9; border-color: var(--cor-acento); }
+    .tile--destaque .tile__num { color: var(--cor-acento-forte); }
+    .tile--ok .tile__num { color: #2f6f2f; }
+    .tile--atencao { justify-content: center; }
+    .tile__titulo { font-weight: 700; font-size: 0.95rem; }
+    .tile__quadrante {
+      align-self: flex-start; margin-top: var(--esp-1);
+      font-size: 0.72rem; font-weight: 700; color: #fff;
+      border-radius: 999px; padding: 1px var(--esp-2);
+    }
+
+    /* ---- FORMULÁRIO ---- */
+    .campo { display: flex; flex-direction: column; gap: var(--esp-2); margin-bottom: var(--esp-4); }
+    .campo label { font-weight: 600; font-size: 0.9rem; }
+    .campo .dica { font-weight: 400; color: var(--cor-texto-suave); font-size: 0.8rem; }
+
+    input[type="text"], select {
+      font: inherit;
+      padding: var(--esp-3);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--raio);
+      background: var(--cor-superficie);
+      color: var(--cor-texto);
+      width: 100%;
+    }
+    input[type="text"]:focus, select:focus, .btn:focus-visible {
+      outline: 3px solid var(--cor-foco);
+      outline-offset: 2px;
+    }
+
+    .linha { display: flex; gap: var(--esp-4); flex-wrap: wrap; }
+    .linha .campo { flex: 1 1 200px; }
+
+    /* ---- BOTÕES (mesma classe base -> componentes consistentes) ---- */
+    .btn {
+      font: inherit; font-weight: 600;
+      height: 44px; padding: 0 var(--esp-4);
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--esp-2);
+      border: 1px solid transparent; border-radius: var(--raio);
+      cursor: pointer;
+    }
+    .btn--primario { background: var(--cor-primaria); color: #fff; }
+    .btn--primario:hover { background: var(--cor-primaria-forte); }
+    .btn--secundario { background: var(--cor-superficie); color: var(--cor-primaria); border-color: var(--cor-primaria); }
+    .btn--secundario:hover { background: #eef2f4; }
+
+    /* ---- MENSAGENS DE VALIDAÇÃO ---- */
+    .erros { list-style: none; margin: 0 0 var(--esp-4); padding: 0; display: none; }
+    .erros.visivel { display: block; }
+    .erros li {
+      background: #fbeae9; color: var(--cor-acento-forte);
+      border-left: 4px solid var(--cor-acento);
+      padding: var(--esp-2) var(--esp-3); border-radius: 4px; margin-bottom: var(--esp-2);
+      font-size: 0.9rem;
+    }
+
+    /* ---- PRÉVIA DO CÁLCULO (mostra as funções puras em ação) ---- */
+    .previa { display: none; margin-top: var(--esp-4); }
+    .previa.visivel { display: block; }
+    .previa__quadrante {
+      display: inline-flex; align-items: center; gap: var(--esp-2);
+      padding: var(--esp-2) var(--esp-3); border-radius: 999px;
+      font-weight: 700; font-size: 0.9rem; color: #fff; background: var(--cor-primaria);
+    }
+    .previa__nota { color: var(--cor-texto-suave); font-size: 0.9rem; margin-top: var(--esp-2); }
+
+    .salvas {
+      margin: var(--esp-4) 0 0; padding-top: var(--esp-3);
+      border-top: 1px dashed var(--cor-borda);
+      color: var(--cor-texto-suave); font-size: 0.9rem;
+    }
+    .salvas strong { color: var(--cor-primaria); }
+
+    /* ---- FILTROS ---- */
+    .filtros { display: flex; flex-wrap: wrap; gap: var(--esp-3); margin-bottom: var(--esp-6); }
+    .filtros__campo { display: flex; flex-direction: column; gap: var(--esp-1); flex: 1 1 150px; }
+    .filtros__campo label { font-size: 0.8rem; font-weight: 600; color: var(--cor-texto-suave); }
+
+    /* ---- LISTA ORGANIZADA POR QUADRANTE ---- */
+    .lista { display: flex; flex-direction: column; gap: var(--esp-6); }
+    .lista__vazio { color: var(--cor-texto-suave); font-size: 0.9rem; }
+
+    .grupo__cabecalho {
+      display: flex; align-items: center; gap: var(--esp-2);
+      margin-bottom: var(--esp-3);
+    }
+    .grupo__ponto { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+    .grupo__titulo { font-size: 0.95rem; font-weight: 700; margin: 0; }
+    .grupo__contador {
+      margin-left: var(--esp-1); font-size: 0.8rem; font-weight: 700;
+      color: #fff; background: var(--cor-primaria);
+      border-radius: 999px; padding: 1px var(--esp-2); min-width: 22px; text-align: center;
+    }
+    .grupo__vazio { color: var(--cor-texto-suave); font-size: 0.85rem; margin: 0 0 0 var(--esp-4); }
+
+    .grupo__itens { display: flex; flex-direction: column; gap: var(--esp-2); }
+    .tarefa {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--esp-3);
+      padding: var(--esp-3);
+      border: 1px solid var(--cor-borda); border-left-width: 4px;
+      border-radius: var(--raio); background: var(--cor-superficie);
+    }
+    .tarefa__titulo { font-weight: 600; }
+    .tarefa__meta { color: var(--cor-texto-suave); font-size: 0.8rem; margin-top: 2px; }
+    .tarefa__prioridade {
+      flex: none; font-weight: 700; font-size: 0.85rem;
+      color: var(--cor-texto); background: var(--cor-fundo);
+      border-radius: var(--raio); padding: var(--esp-1) var(--esp-2); text-align: center;
+    }
+    .tarefa--concluida { opacity: 0.72; }
+    .tarefa--concluida .tarefa__titulo { text-decoration: line-through; }
+
+    /* Linha de status: rótulo + botões avançar/voltar */
+    .status { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2); margin-top: var(--esp-2); }
+    .status__rotulo {
+      font-size: 0.75rem; font-weight: 700; border-radius: 999px;
+      padding: 1px var(--esp-2); border: 1px solid var(--cor-borda); color: var(--cor-texto-suave);
+    }
+    .status__rotulo--fazendo { color: #fff; background: var(--cor-bismark); border-color: transparent; }
+    .status__rotulo--concluida { color: #fff; background: #2f6f2f; border-color: transparent; }
+    .status__data { font-size: 0.72rem; color: var(--cor-texto-suave); }
+    .btn--mini {
+      height: 30px; padding: 0 var(--esp-2); font-size: 0.78rem; font-weight: 600;
+      border-radius: 6px; cursor: pointer;
+      background: var(--cor-superficie); color: var(--cor-primaria); border: 1px solid var(--cor-primaria);
+    }
+    .btn--mini:hover:not(:disabled) { background: #eef2f4; }
+    .btn--mini:disabled { color: var(--cor-texto-suave); border-color: var(--cor-borda); cursor: not-allowed; }
+    .btn--mini:focus-visible { outline: 3px solid var(--cor-foco); outline-offset: 2px; }
+    .btn--perigo { color: var(--cor-acento-forte); border-color: var(--cor-acento); margin-left: auto; }
+    .btn--perigo:hover:not(:disabled) { background: #fbeae9; }
+
+    /* ---- MEUS DADOS (LGPD) ---- */
+    .dados__nota { margin: 0 0 var(--esp-4); color: var(--cor-texto-suave); font-size: 0.9rem; }
+    .dados__acoes { display: flex; flex-wrap: wrap; gap: var(--esp-3); }
+    .btn--perigo-cheio { color: var(--cor-acento-forte); border-color: var(--cor-acento); }
+    .btn--perigo-cheio:hover { background: #fbeae9; }
+
+    /* ---- RODAPÉ DE CONTRASTE AO VIVO ---- */
+    .rodape { border-top: 1px solid var(--cor-borda); background: var(--cor-superficie); }
+    .rodape__inner { max-width: 720px; margin: 0 auto; padding: var(--esp-4); }
+    .rodape h2 { font-size: 0.95rem; margin: 0 0 var(--esp-3); }
+    .rodape__ref { font-size: 0.8rem; color: var(--cor-texto-suave); margin: 0 0 var(--esp-3); }
+    .contraste {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--esp-2); list-style: none; margin: 0; padding: 0;
+    }
+    .contraste li {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--esp-2);
+      padding: var(--esp-2) var(--esp-3); border: 1px solid var(--cor-borda); border-radius: var(--raio);
+      font-size: 0.82rem;
+    }
+    .selo { font-weight: 700; padding: 2px var(--esp-2); border-radius: 4px; color: #fff; }
+    .selo--AAA { background: #1f7a3d; }
+    .selo--AA { background: #2f6f2f; }
+    .selo--Reprovado { background: var(--cor-acento); }
+  </style>
+</head>
+<body>
+  <header class="cabecalho">
+    <div class="cabecalho__marca">
+      <!-- Logo com um aceno ao Jenkins: o laço-gravata (bow tie) carmim do mordomo. -->
+      <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" focusable="false">
+        <circle cx="18" cy="18" r="18" fill="#335061" />
+        <path d="M18 18 L9 13 L9 23 Z" fill="#d33834" />
+        <path d="M18 18 L27 13 L27 23 Z" fill="#d33834" />
+        <circle cx="18" cy="18" r="2.4" fill="#b32f2b" />
+      </svg>
+      <div>
+        <h1>Prioriza</h1>
+        <p class="cabecalho__sub">O que fazer agora, por urgência × importância</p>
+      </div>
+    </div>
+    <button type="button" class="btn btn--secundario" data-testid="btn-reiniciar">
+      Reiniciar experiência
+    </button>
+  </header>
+
+  <main>
+    <!-- Painel "Foco do dia" (Prompt 7): grid responsivo (auto-fit) para os
+         cartões nunca estourarem nem se sobreporem em nenhuma largura. -->
+    <section class="cartao" aria-labelledby="titulo-painel">
+      <h2 id="titulo-painel">Foco do dia</h2>
+      <div class="painel" data-testid="painel"></div>
+    </section>
+
+    <section class="cartao" aria-labelledby="titulo-form">
+      <h2 id="titulo-form">Nova tarefa</h2>
+
+      <ul class="erros" data-testid="erros" aria-live="polite"></ul>
+
+      <form id="form-tarefa" novalidate>
+        <div class="campo">
+          <label for="titulo">Título <span class="dica">(o que precisa ser feito)</span></label>
+          <input type="text" id="titulo" name="titulo" data-testid="campo-titulo"
+                 placeholder="Ex.: Corrigir a build quebrada da esteira" />
+        </div>
+
+        <div class="linha">
+          <div class="campo">
+            <label for="urgencia">Urgência <span class="dica">(tem prazo/pressão?)</span></label>
+            <select id="urgencia" name="urgencia" data-testid="campo-urgencia">
+              <option value="1">1 — nenhuma pressa</option>
+              <option value="2">2 — pouca</option>
+              <option value="3" selected>3 — média</option>
+              <option value="4">4 — alta</option>
+              <option value="5">5 — para ontem</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="importancia">Importância <span class="dica">(traz resultado?)</span></label>
+            <select id="importancia" name="importancia" data-testid="campo-importancia">
+              <option value="1">1 — irrelevante</option>
+              <option value="2">2 — pouca</option>
+              <option value="3" selected>3 — média</option>
+              <option value="4">4 — alta</option>
+              <option value="5">5 — essencial</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--primario" data-testid="btn-adicionar">
+          Calcular prioridade
+        </button>
+
+        <!-- Prévia: o quadrante e a nota são CALCULADOS (logica.js), nunca digitados. -->
+        <div class="previa" data-testid="previa" aria-live="polite">
+          <span class="previa__quadrante" data-testid="previa-quadrante"></span>
+          <p class="previa__nota" data-testid="previa-nota"></p>
+        </div>
+      </form>
+
+      <!-- Persistência (Prompt 4): as tarefas são salvas no localStorage e o
+           contador abaixo sobrevive ao recarregar. -->
+      <p class="salvas" data-testid="contador" aria-live="polite">
+        Tarefas salvas: <strong data-testid="contador-num">0</strong>
+      </p>
+    </section>
+
+    <!-- Lista organizada por quadrante de Eisenhower (Prompt 5). Cada grupo, na
+         ordem Faça agora → Agende → Delegue → Elimine, ordenado por prioridade
+         e com contador. O ciclo de status (avançar/voltar) vem no Prompt 6. -->
+    <section class="cartao" aria-labelledby="titulo-lista">
+      <h2 id="titulo-lista">Minhas tarefas</h2>
+
+      <!-- Filtros/ordenação (Prompt 8). A escolha é PERSISTIDA no localStorage e
+           volta aplicada ao reabrir o app. -->
+      <div class="filtros">
+        <div class="filtros__campo">
+          <label for="filtro-quadrante">Quadrante</label>
+          <select id="filtro-quadrante" data-testid="filtro-quadrante">
+            <option value="todos">Todos</option>
+            <option value="faca-agora">Faça agora</option>
+            <option value="agende">Agende</option>
+            <option value="delegue">Delegue</option>
+            <option value="elimine">Elimine</option>
+          </select>
+        </div>
+        <div class="filtros__campo">
+          <label for="filtro-status">Status</label>
+          <select id="filtro-status" data-testid="filtro-status">
+            <option value="todos">Todos</option>
+            <option value="a-fazer">A fazer</option>
+            <option value="fazendo">Fazendo</option>
+            <option value="concluida">Concluída</option>
+          </select>
+        </div>
+        <div class="filtros__campo">
+          <label for="filtro-ordem">Ordenar por</label>
+          <select id="filtro-ordem" data-testid="filtro-ordem">
+            <option value="prioridade">Prioridade</option>
+            <option value="recentes">Mais recentes</option>
+            <option value="antigas">Mais antigas</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="lista" data-testid="lista"></div>
+    </section>
+
+    <!-- Meus dados (Prompt 10 — LGPD): o dado é do usuário. Tudo fica só no
+         navegador (localStorage), sem servidor. Ele pode LEVAR (exportar) ou
+         APAGAR (limpar) a qualquer momento. Exemplos usam dados fictícios. -->
+    <section class="cartao" aria-labelledby="titulo-dados">
+      <h2 id="titulo-dados">Meus dados (LGPD)</h2>
+      <p class="dados__nota">
+        Suas tarefas ficam <strong>só neste navegador</strong> (localStorage), sem
+        servidor e sem enviar nada para lugar nenhum. Você pode baixar uma cópia ou
+        apagar tudo quando quiser.
+      </p>
+      <div class="dados__acoes">
+        <button type="button" class="btn btn--secundario" data-testid="btn-exportar">
+          Exportar (baixar .json)
+        </button>
+        <button type="button" class="btn btn--secundario btn--perigo-cheio" data-testid="btn-limpar">
+          Limpar meus dados
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape__inner">
+      <h2>Relatório de contraste (WCAG AA) — ao vivo</h2>
+      <p class="rodape__ref">Inspiração visual: <strong>Jenkins</strong> (paleta oficial). As cores abaixo são medidas em tempo real.</p>
+      <ul class="contraste" data-testid="relatorio-contraste"></ul>
+    </div>
+  </footer>
+
+  <script src="logica.js"></script>
+  <script src="repositorio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

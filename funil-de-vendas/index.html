@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Funil — gestor de oportunidades de venda</title>
+
+  <!--
+    index.html — primeira tela do app "Funil" (Prompt 3).
+    Coberto por: e2e/app.spec.js (Playwright). Regras de cálculo em: logica.js.
+
+    INSPIRAÇÃO VISUAL DECLARADA: Pipedrive (CRM de pipeline) — verde característico
+    e layout limpo. Dela derivam as CORES abaixo. Toda cor foi medida e aprovada
+    em contraste WCAG AA/AAA (ver rodapé ao vivo e os testes de contraste).
+  -->
+  <style>
+    /* ===== DESIGN TOKENS (única fonte da verdade — nada de valor solto) ===== */
+    :root {
+      /* Espaçamento: escala única 4/8/12/16/24 */
+      --esp-1: 4px;  --esp-2: 8px;  --esp-3: 12px;  --esp-4: 16px;  --esp-5: 24px;
+      /* Raio e sombra */
+      --raio: 10px;  --raio-pill: 999px;
+      --sombra: 0 1px 3px rgba(20, 35, 28, .12), 0 4px 12px rgba(20, 35, 28, .06);
+      /* Tipografia */
+      --fonte: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      /* Cores (derivadas do verde Pipedrive; todas verificadas WCAG AA+) */
+      --cor-fundo: #f3f6f4;
+      --cor-superficie: #ffffff;
+      --cor-texto: #14231c;
+      --cor-texto-secundario: #3d5245;
+      --cor-borda: #d5ded8;
+      --cor-primaria: #0b6a37;
+      --cor-primaria-escura: #08512a;
+      --cor-primaria-contraste: #ffffff;
+      --cor-erro: #b3261e;
+      --cor-sucesso: #0b6a37;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--fonte);
+      color: var(--cor-texto);
+      background: var(--cor-fundo);
+      line-height: 1.5;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--esp-4);
+      flex-wrap: wrap;
+      padding: var(--esp-4) var(--esp-5);
+      background: var(--cor-primaria);
+      color: var(--cor-primaria-contraste);
+    }
+    header .marca { display: flex; align-items: center; gap: var(--esp-3); }
+    header .logo {
+      width: 40px; height: 40px; border-radius: var(--raio);
+      background: var(--cor-primaria-contraste); color: var(--cor-primaria);
+      display: grid; place-items: center; font-weight: 800; font-size: 22px;
+    }
+    header h1 { font-size: 20px; margin: 0; }
+    header p { margin: 0; font-size: 13px; opacity: .9; }
+
+    /* ===== LAYOUT ===== */
+    main {
+      max-width: 960px; margin: 0 auto; padding: var(--esp-5);
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--esp-5);
+      align-items: start;
+    }
+    @media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+
+    .cartao {
+      background: var(--cor-superficie);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+      padding: var(--esp-5);
+    }
+    .cartao h2 { margin: 0 0 var(--esp-4); font-size: 17px; }
+
+    /* ===== FORMULÁRIO ===== */
+    .campo { margin-bottom: var(--esp-4); }
+    label { display: block; font-weight: 600; font-size: 14px; margin-bottom: var(--esp-2); }
+    .dica { font-weight: 400; color: var(--cor-texto-secundario); font-size: 12px; }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%; font: inherit; color: var(--cor-texto);
+      padding: 10px var(--esp-3);
+      background: var(--cor-superficie);
+      border: 1px solid var(--cor-borda); border-radius: var(--raio);
+      appearance: none;
+    }
+    select {
+      /* seta própria, para não ficar com a cara padrão do navegador */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%233d5245' d='M4 6l4 4 4-4z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right var(--esp-3) center;
+      padding-right: 36px;
+    }
+    input:focus-visible, select:focus-visible, button:focus-visible, label.check:focus-within {
+      outline: 3px solid var(--cor-primaria); outline-offset: 2px;
+    }
+
+    /* Checkboxes BANT estilizados (sem a cara padrão do navegador) */
+    .bant { display: grid; grid-template-columns: 1fr 1fr; gap: var(--esp-2); }
+    label.check {
+      display: flex; align-items: center; gap: var(--esp-2);
+      font-weight: 500; font-size: 14px; cursor: pointer;
+      border: 1px solid var(--cor-borda); border-radius: var(--raio);
+      padding: 10px var(--esp-3); margin: 0; background: var(--cor-superficie);
+    }
+    label.check input { accent-color: var(--cor-primaria); width: 18px; height: 18px; }
+    label.check:hover { border-color: var(--cor-primaria); }
+
+    /* ===== BOTÕES (classe base única — variam só na cor) ===== */
+    .btn {
+      font: inherit; font-weight: 600; cursor: pointer;
+      height: 44px; padding: 0 var(--esp-5);
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--esp-2);
+      border-radius: var(--raio); border: 1px solid transparent;
+    }
+    .btn-primario { background: var(--cor-primaria); color: var(--cor-primaria-contraste); }
+    .btn-primario:hover { background: var(--cor-primaria-escura); }
+    .btn-fantasma {
+      background: transparent; color: var(--cor-primaria-contraste);
+      border-color: var(--cor-primaria-contraste);
+    }
+    .btn-fantasma:hover { background: rgba(255,255,255,.15); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ===== MENSAGENS ===== */
+    .mensagem { display: block; margin-top: var(--esp-4); font-size: 14px; }
+    .mensagem ul { margin: var(--esp-2) 0 0; padding-left: var(--esp-5); }
+    .erro { color: var(--cor-erro); }
+    .sucesso { color: var(--cor-sucesso); font-weight: 600; }
+
+    /* ===== PRÉVIA (cálculo ao vivo) ===== */
+    .previa .num { font-size: 32px; font-weight: 800; color: var(--cor-primaria); }
+    .previa .linha { display: flex; justify-content: space-between; align-items: baseline;
+      padding: var(--esp-3) 0; border-bottom: 1px solid var(--cor-borda); }
+    .previa .linha:last-child { border-bottom: 0; }
+    .barra { height: 10px; border-radius: var(--raio-pill); background: var(--cor-borda); overflow: hidden; margin-top: var(--esp-2); }
+    .barra > i { display: block; height: 100%; background: var(--cor-primaria); transition: width .2s; }
+
+    /* ===== LISTA DO FUNIL (agrupada por etapa) ===== */
+    .funil { display: grid; gap: var(--esp-4); }
+    .grupo { border: 1px solid var(--cor-borda); border-radius: var(--raio); overflow: hidden; }
+    .grupo-cab {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--esp-3);
+      padding: var(--esp-3) var(--esp-4);
+      background: #eef4f0; border-bottom: 1px solid var(--cor-borda);
+    }
+    .grupo-cab h3 { margin: 0; font-size: 15px; }
+    .grupo-meta { font-size: 13px; color: var(--cor-texto-secundario); font-weight: 600; }
+    .grupo-corpo { display: grid; gap: var(--esp-2); padding: var(--esp-3) var(--esp-4); }
+    .item { padding: var(--esp-3) 0; }
+    .item + .item { border-top: 1px dashed var(--cor-borda); }
+    .item-info {
+      display: grid; grid-template-columns: 1fr auto auto auto; gap: var(--esp-4);
+      align-items: baseline;
+    }
+    .item-nome { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+    .item-valor, .item-prob { color: var(--cor-texto-secundario); font-size: 14px; white-space: nowrap; }
+    .item-pond { color: var(--cor-primaria); white-space: nowrap; }
+    .item-acoes { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin-top: var(--esp-3); }
+    .vazio { padding: var(--esp-3) var(--esp-4); color: var(--cor-texto-secundario); }
+    .selo.ganho { background: #e3f2e9; color: var(--cor-primaria); }
+    .selo.perdido { background: #fde8e7; color: var(--cor-erro); }
+    .item-data { color: var(--cor-texto-secundario); font-size: 12px; margin-left: var(--esp-2); }
+    @media (max-width: 480px) {
+      .item-info { grid-template-columns: 1fr auto; row-gap: var(--esp-1); }
+    }
+
+    /* Botão pequeno para as ações de cada negócio (mesma base .btn) */
+    .btn-mini { height: 34px; padding: 0 var(--esp-3); font-size: 13px; }
+    .btn-contorno {
+      background: transparent; color: var(--cor-primaria); border-color: var(--cor-primaria);
+    }
+    .btn-contorno:hover { background: #eef4f0; }
+    .btn-perigo { background: transparent; color: var(--cor-erro); border-color: var(--cor-erro); }
+    .btn-perigo:hover { background: #fdecea; }
+
+    /* Cabeçalho do cartão da lista: título + ações (exportar/limpar) */
+    .lista-cab {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--esp-3); flex-wrap: wrap; margin-bottom: var(--esp-3);
+    }
+    .lista-cab h2 { margin: 0; }
+    .lista-acoes { display: flex; gap: var(--esp-2); flex-wrap: wrap; }
+
+    /* ===== RODAPÉ DE CONTRASTE ===== */
+    footer {
+      max-width: 960px; margin: 0 auto; padding: var(--esp-4) var(--esp-5) var(--esp-5);
+      color: var(--cor-texto-secundario); font-size: 13px;
+    }
+    footer h3 { font-size: 13px; margin: 0 0 var(--esp-3); color: var(--cor-texto); }
+    .contraste { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+    .chip {
+      display: inline-flex; align-items: center; gap: var(--esp-2);
+      background: var(--cor-superficie); border: 1px solid var(--cor-borda);
+      border-radius: var(--raio-pill); padding: 6px var(--esp-3);
+    }
+    .selo { font-weight: 700; border-radius: var(--raio-pill); padding: 1px var(--esp-2); font-size: 12px; }
+    .selo.AAA, .selo.AA { background: #e3f2e9; color: var(--cor-primaria); }
+    .selo.reprovado { background: #fde8e7; color: var(--cor-erro); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="marca">
+      <div class="logo" aria-hidden="true">▽</div>
+      <div>
+        <h1>Funil</h1>
+        <p>Onde está cada negócio — e qual focar primeiro</p>
+      </div>
+    </div>
+    <button type="button" class="btn btn-fantasma" id="reiniciar" data-testid="reiniciar">
+      Reiniciar experiência
+    </button>
+  </header>
+
+  <main>
+    <!-- ===== Formulário de novo negócio ===== -->
+    <section class="cartao" aria-labelledby="tit-form">
+      <h2 id="tit-form">Novo negócio</h2>
+      <form id="form-negocio" novalidate>
+        <div class="campo">
+          <label for="nome">Nome do negócio ou contato</label>
+          <input type="text" id="nome" name="nome" data-testid="campo-nome"
+                 placeholder="Ex.: Clínica Sorriso — plano anual" autocomplete="off" />
+        </div>
+
+        <div class="campo">
+          <label for="valor">Valor <span class="dica">(em reais, maior que zero)</span></label>
+          <input type="number" id="valor" name="valor" data-testid="campo-valor"
+                 min="0" step="100" placeholder="Ex.: 4500" />
+        </div>
+
+        <div class="campo">
+          <label for="etapa">Etapa do funil</label>
+          <select id="etapa" name="etapa" data-testid="campo-etapa"></select>
+        </div>
+
+        <fieldset class="campo" style="border:0; padding:0; margin:0 0 var(--esp-4);">
+          <legend style="font-weight:600; font-size:14px; margin-bottom:var(--esp-2); padding:0;">
+            Qualificação <span class="dica">(BANT — o que já está atendido)</span>
+          </legend>
+          <div class="bant" id="bant"></div>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primario" data-testid="btn-salvar">
+          Adicionar ao funil
+        </button>
+
+        <output class="mensagem" id="mensagem" data-testid="mensagem" aria-live="polite"></output>
+        <p class="dica" data-testid="contador-negocios" aria-live="polite" style="margin-top:var(--esp-4)">
+          Nenhum negócio salvo ainda.
+        </p>
+      </form>
+    </section>
+
+    <!-- ===== Prévia calculada ao vivo ===== -->
+    <aside class="cartao previa" aria-labelledby="tit-previa" data-testid="previa">
+      <h2 id="tit-previa">Prévia deste negócio</h2>
+      <div class="linha">
+        <span>Probabilidade de fechamento</span>
+        <span class="num" data-testid="previa-probabilidade">—</span>
+      </div>
+      <div class="barra" aria-hidden="true"><i id="barra-prob" style="width:0%"></i></div>
+      <div class="linha" style="margin-top:var(--esp-3)">
+        <span>Valor ponderado (previsto)</span>
+        <strong data-testid="previa-ponderado">—</strong>
+      </div>
+      <p class="dica" style="margin-top:var(--esp-3)">
+        Calculado por função pura: valor × (chance da etapa + 5% por critério BANT).
+      </p>
+    </aside>
+
+    <!-- ===== Lista de negócios agrupada por etapa do funil ===== -->
+    <section class="cartao lista" aria-labelledby="tit-lista" style="grid-column: 1 / -1;">
+      <div class="lista-cab">
+        <h2 id="tit-lista">Negócios por etapa do funil</h2>
+        <div class="lista-acoes">
+          <button type="button" class="btn btn-mini btn-contorno" id="btn-exportar" data-testid="btn-exportar">
+            Exportar (.json)
+          </button>
+          <button type="button" class="btn btn-mini btn-perigo" id="btn-limpar" data-testid="btn-limpar">
+            Limpar tudo
+          </button>
+        </div>
+      </div>
+      <p class="dica" style="margin: 0 0 var(--esp-4);">
+        Seus dados ficam só neste navegador (LGPD). Você pode <strong>exportar</strong>
+        (levar embora) ou <strong>apagar</strong> tudo quando quiser.
+      </p>
+      <div id="lista-funil" class="funil" data-testid="lista-funil"></div>
+    </section>
+  </main>
+
+  <footer>
+    <h3>Auditoria de contraste (WCAG, ao vivo)</h3>
+    <div class="contraste" id="rodape-contraste" data-testid="rodape-contraste"></div>
+  </footer>
+
+  <!-- A MESMA lógica dos testes roda aqui (window.Logica). -->
+  <script src="logica.js"></script>
+  <script>
+    // app: apenas "cola" entre a tela e as funções puras de logica.js. -----------
+    const L = window.Logica;
+    const ROTULO_ETAPA = {
+      lead: 'Lead', qualificacao: 'Qualificação', proposta: 'Proposta',
+      negociacao: 'Negociação', fechado: 'Fechado',
+    };
+    const ROTULO_BANT = {
+      orcamento: 'Orçamento', autoridade: 'Autoridade',
+      necessidade: 'Necessidade', prazo: 'Prazo',
+    };
+    const brl = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    // Escapa texto do usuário antes de jogar em innerHTML (evita HTML/script injetado).
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]
+    ));
+
+    // Monta o <select> de etapas e os checkboxes BANT a partir das constantes.
+    const selEtapa = document.getElementById('etapa');
+    L.ETAPAS.forEach((e) => selEtapa.add(new Option(ROTULO_ETAPA[e], e)));
+
+    const boxBant = document.getElementById('bant');
+    L.CRITERIOS_BANT.forEach((c) => {
+      const lab = document.createElement('label');
+      lab.className = 'check';
+      lab.innerHTML = `<input type="checkbox" name="bant" value="${c}" data-testid="campo-bant-${c}" /> ${ROTULO_BANT[c]}`;
+      boxBant.appendChild(lab);
+    });
+
+    // Lê o formulário em um objeto de negócio.
+    function lerNegocio() {
+      const bant = {};
+      document.querySelectorAll('input[name="bant"]:checked').forEach((i) => { bant[i.value] = true; });
+      return {
+        nome: document.getElementById('nome').value,
+        valor: Number.parseFloat(document.getElementById('valor').value),
+        etapa: selEtapa.value,
+        bant,
+      };
+    }
+
+    // Atualiza a prévia (probabilidade + valor ponderado) a cada digitação.
+    function atualizarPrevia() {
+      const n = lerNegocio();
+      const prob = L.probabilidadeDeFechamento(n.etapa, n.bant);
+      document.querySelector('[data-testid="previa-probabilidade"]').textContent = Math.round(prob * 100) + '%';
+      document.getElementById('barra-prob').style.width = (prob * 100) + '%';
+      const alvo = document.querySelector('[data-testid="previa-ponderado"]');
+      // valorPonderado lança se o valor for inválido — aqui isso vira só um "—".
+      try { alvo.textContent = brl(L.valorPonderado(n.valor, n.etapa, n.bant)); }
+      catch { alvo.textContent = '—'; }
+    }
+
+    // ===== Persistência (localStorage) =====
+    // Guardamos a lista de negócios sob uma chave; a (de)serialização segura é
+    // feita pelas funções puras de logica.js.
+    const CHAVE = 'funil.negocios';
+    let negocios = [];
+
+    function carregarNegocios() {
+      negocios = L.desserializarNegocios(localStorage.getItem(CHAVE));
+      atualizarContador();
+      renderizarLista();
+    }
+    function salvarNegocios() {
+      localStorage.setItem(CHAVE, L.serializarNegocios(negocios));
+    }
+    // Renderiza a lista agrupada por etapa (usa a função pura agruparPorEtapa).
+    function renderizarLista() {
+      const grupos = L.agruparPorEtapa(negocios);
+      document.getElementById('lista-funil').innerHTML = grupos.map(renderGrupo).join('');
+    }
+    function renderGrupo(g) {
+      const corpo = g.itens.length
+        ? `<div class="grupo-corpo">${g.itens.map(renderItem).join('')}</div>`
+        : '<p class="vazio">Nenhum negócio nesta etapa.</p>';
+      return `<div class="grupo" data-testid="grupo-${g.etapa}">
+        <div class="grupo-cab">
+          <h3>${ROTULO_ETAPA[g.etapa]}</h3>
+          <span class="grupo-meta">${g.quantidade} · ${brl(g.somaValor)}</span>
+        </div>${corpo}</div>`;
+    }
+    function renderItem(n) {
+      const prob = Math.round(L.probabilidadeDoNegocio(n) * 100);
+      const pond = brl(L.valorPonderadoDoNegocio(n));
+      return `<div class="item" data-testid="negocio-item">
+        <div class="item-info">
+          <span class="item-nome">${esc(n.nome)}${seloDesfecho(n)}</span>
+          <span class="item-valor">${brl(n.valor)}</span>
+          <span class="item-prob">${prob}%</span>
+          <strong class="item-pond">${pond}</strong>
+        </div>
+        <div class="item-acoes">${acoesDoItem(n)}</div>
+      </div>`;
+    }
+    // Badge de desfecho + data, só quando o negócio está fechado.
+    function seloDesfecho(n) {
+      if (n.etapa !== 'fechado' || !n.desfecho) return '';
+      const rotulo = n.desfecho === 'ganho' ? 'Ganho' : 'Perdido';
+      const data = n.fechadoEm ? `<span class="item-data">em ${new Date(n.fechadoEm).toLocaleDateString('pt-BR')}</span>` : '';
+      return ` <span class="selo ${n.desfecho}">${rotulo}</span>${data}`;
+    }
+    // Botões de cada negócio conforme a etapa (sem beco sem saída).
+    function acoesDoItem(n) {
+      const btn = (acao, rotulo, variante) =>
+        `<button type="button" class="btn btn-mini ${variante}" data-action="${acao}" data-id="${n.id}" data-testid="${acao}-${n.id}">${rotulo}</button>`;
+      if (n.etapa === 'fechado') {
+        return btn('voltar', 'Reabrir', 'btn-contorno');
+      }
+      const voltar = n.etapa === 'lead' ? '' : btn('voltar', '◀ Voltar', 'btn-contorno');
+      if (n.etapa === 'negociacao') {
+        return voltar + btn('ganhar', 'Fechar: Ganho', 'btn-primario') + btn('perder', 'Fechar: Perdido', 'btn-contorno');
+      }
+      return voltar + btn('avancar', 'Avançar ▶', 'btn-primario');
+    }
+
+    function atualizarContador() {
+      const el = document.querySelector('[data-testid="contador-negocios"]');
+      const n = negocios.length;
+      if (n === 0) {
+        el.textContent = 'Nenhum negócio salvo ainda.';
+        return;
+      }
+      const plural = n > 1 ? 's' : '';
+      el.textContent = `${n} negócio${plural} no funil (salvos neste navegador).`;
+    }
+    function novoId() {
+      // id único; crypto.randomUUID existe em contexto seguro (localhost/https).
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'id-' + Date.now() + '-' + negocios.length; // fallback simples e determinístico
+    }
+
+    // Submissão: valida, SALVA no localStorage e atualiza o contador.
+    document.getElementById('form-negocio').addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const n = lerNegocio();
+      const { valido, erros } = L.validarNegocio(n);
+      const box = document.getElementById('mensagem');
+      if (valido) {
+        const salvo = { id: novoId(), nome: n.nome.trim(), valor: n.valor, etapa: n.etapa, bant: n.bant };
+        negocios.push(salvo);
+        salvarNegocios();
+        atualizarContador();
+        renderizarLista();
+        box.innerHTML = `<p class="sucesso">✓ "${esc(salvo.nome)}" salvo no funil (${ROTULO_ETAPA[salvo.etapa]}), valor ponderado ${brl(L.valorPonderado(salvo.valor, salvo.etapa, salvo.bant))}.</p>`;
+        document.getElementById('form-negocio').reset();
+        selEtapa.value = 'lead';
+        atualizarPrevia();
+      } else {
+        const itens = erros.map((e) => '<li>' + e + '</li>').join('');
+        box.innerHTML = `<p class="erro">Corrija antes de continuar:</p><ul class="erro">${itens}</ul>`;
+      }
+    });
+
+    document.getElementById('reiniciar').addEventListener('click', () => {
+      if (confirm('Reiniciar a experiência? Isso limpa o formulário.')) {
+        document.getElementById('form-negocio').reset();
+        document.getElementById('mensagem').textContent = '';
+        atualizarPrevia();
+      }
+    });
+
+    document.getElementById('form-negocio').addEventListener('input', atualizarPrevia);
+
+    // Ações de etapa em cada negócio (delegação: a lista é redesenhada a cada mudança).
+    document.getElementById('lista-funil').addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button[data-action]');
+      if (!btn) return;
+      const i = negocios.findIndex((n) => n.id === btn.dataset.id);
+      if (i < 0) return;
+      const agora = new Date().toISOString();
+      switch (btn.dataset.action) {
+        case 'avancar': negocios[i] = L.avancarNegocio(negocios[i], { agora }); break;
+        case 'ganhar': negocios[i] = L.avancarNegocio(negocios[i], { desfecho: 'ganho', agora }); break;
+        case 'perder': negocios[i] = L.avancarNegocio(negocios[i], { desfecho: 'perdido', agora }); break;
+        case 'voltar': negocios[i] = L.voltarNegocio(negocios[i]); break;
+        default: return;
+      }
+      salvarNegocios();
+      renderizarLista();
+    });
+
+    // ===== Exportar / Limpar dados (LGPD) =====
+    // Exporta: monta o JSON (função pura) e dispara o download via link temporário.
+    document.getElementById('btn-exportar').addEventListener('click', () => {
+      const conteudo = L.exportarJson(negocios, new Date().toISOString());
+      const blob = new Blob([conteudo], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'funil-negocios.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Limpar: ação destrutiva → só com confirmação.
+    document.getElementById('btn-limpar').addEventListener('click', () => {
+      if (!confirm('Apagar TODOS os negócios salvos? Esta ação não pode ser desfeita.')) return;
+      negocios = [];
+      localStorage.removeItem(CHAVE);
+      atualizarContador();
+      renderizarLista();
+      document.getElementById('mensagem').textContent = '';
+    });
+
+    // ===== Rodapé de contraste AO VIVO =====
+    // Lê os tokens de cor REAIS aplicados e mede o contraste com as funções puras.
+    function corToken(nome) {
+      return getComputedStyle(document.documentElement).getPropertyValue(nome).trim();
+    }
+    function chipContraste(nome, a, b) {
+      const r = L.razaoContraste(a, b);
+      const nivel = L.nivelWcag(r);
+      const razao = r.toFixed(2);
+      return `<span class="chip">${nome}: <strong>${razao}:1</strong> <span class="selo ${nivel}">${nivel}</span></span>`;
+    }
+    function montarContraste() {
+      const pares = [
+        ['Texto × fundo', corToken('--cor-texto'), corToken('--cor-fundo')],
+        ['Botão (branco × verde)', corToken('--cor-primaria-contraste'), corToken('--cor-primaria')],
+        ['Secundário × superfície', corToken('--cor-texto-secundario'), corToken('--cor-superficie')],
+        ['Erro × superfície', corToken('--cor-erro'), corToken('--cor-superficie')],
+      ];
+      document.getElementById('rodape-contraste').innerHTML =
+        pares.map(([nome, a, b]) => chipContraste(nome, a, b)).join('');
+    }
+
+    // Estado inicial.
+    selEtapa.value = 'lead';
+    carregarNegocios();
+    atualizarPrevia();
+    montarContraste();
+  </script>
+</body>
+</html>
