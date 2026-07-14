@@ -129,7 +129,7 @@ A cada avanço, adicione um bloco assim (o mais recente por último):
 > persistidos → **9** ações destrutivas com confirmação + "Reiniciar experiência"
 > → **10** exportar/limpar dados (LGPD) → **11** acessibilidade WCAG AA + E2E
 > (Playwright) → **12** entregas finais (README + slides).
-> Plan Test → **13** em portugûes para planejar os próximos testes unitarios ou de interface
+> Plan Test → **13** em português para planejar os próximos testes unitários ou de interface
 
 > **Primeiro prompt do roteiro é sempre a fundamentação (conceito central):** todo
 > app tem a seção obrigatória de FUNDAMENTAÇÃO (ver arquivo de instruções). Como o

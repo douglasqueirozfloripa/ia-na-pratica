@@ -149,7 +149,9 @@ Concluídos: **0** setup · **1** fundamentação · **2** lógica · **3** prim
 exportar/limpar · **11** acessibilidade + E2E.
 
 Features futuras: **7** painel "Visão do funil" (dashboard) · **8** filtros
-persistidos · **9** reiniciar/excluir com confirmação.
+persistidos · **9** reiniciar/excluir com confirmação. O
+[**plano de testes**](PLANO-DE-TESTES.md) já esboça os testes (unitários + E2E)
+dessas etapas — para escrever os testes junto do código.
 
 A história completa, prompt a prompt, está em [`PROMPTS.md`](PROMPTS.md) e
 [`RESUMAO.md`](RESUMAO.md); o vocabulário em [`GLOSSARIO.md`](GLOSSARIO.md). Os

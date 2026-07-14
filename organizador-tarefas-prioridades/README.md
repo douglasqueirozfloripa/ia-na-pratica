@@ -147,4 +147,5 @@ organizador-tarefas-prioridades/
 - **`PROMPTS.md`** — o caminho inteiro, prompt a prompt (Setup 0 → entregas).
 - **`RESUMAO.md`** — o que foi feito, decisões e aprendizados por etapa.
 - **`GLOSSARIO.md`** — todos os termos explicados com analogias.
+- **`PLANO-DE-TESTES.md`** — próximos passos: cobertura a reforçar + features candidatas, com o esboço dos testes.
 - **`slides.html`** — abra no navegador para a apresentação.
