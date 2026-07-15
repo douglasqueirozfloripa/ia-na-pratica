@@ -16,6 +16,41 @@ nasceram desse modelo.
 | [`template-project/`](template-project/) | **O modelo "estado zero"** — o ponto de partida e o **contexto** que guia a criação de qualquer projeto novo. |
 | [`funil-de-vendas/`](funil-de-vendas/) | **Experimento 1** — gestor de oportunidades de venda (funil AIDA + BANT). Inspiração visual: **Jira**. |
 | [`organizador-tarefas-prioridades/`](organizador-tarefas-prioridades/) | **Experimento 2** — organizador que prioriza tarefas (Matriz de Eisenhower). Inspiração visual: **Jenkins**. |
+| [`.claude/skills/estado-zero/`](.claude/skills/estado-zero/SKILL.md) | **A skill que dá o pontapé** — automatiza o Setup 0 a partir do `template-project/`. |
+
+## Skill `estado-zero` — como começar um projeto novo
+
+Para o método não depender de a IA "lembrar" de ler o template, o gatilho de um
+projeto novo virou uma **skill do Claude Code**:
+[`.claude/skills/estado-zero/SKILL.md`](.claude/skills/estado-zero/SKILL.md).
+
+**Como usar** — duas formas, ambas iniciam o mesmo **Setup 0**:
+
+1. **Gatilho `Tema:`** — comece a mensagem com a palavra `Tema:` seguida do
+   assunto do app. A skill dispara sozinha (a descrição dela reconhece o gatilho):
+
+   ```
+   Tema: um simulador de carteira de renda fixa de baixo risco baseado no CDI,
+   cobrindo Tesouro, CDB, Letras, Fundos e poupança.
+   ```
+
+2. **Invocação explícita** — digite `/estado-zero` no Claude Code.
+
+**O que a skill faz** (o ritual de abertura do experimento):
+
+1. Lê o `template-project/` como fonte da verdade das regras.
+2. Confirma com você o **conceito**, o **nome da pasta** e os **dados de exemplo**
+   (fictícios — LGPD).
+3. Cria a pasta do projeto e gera `CLAUDE.md`, `PROMPTS.md`, `GLOSSARIO.md` e
+   `RESUMAO.md` já preenchidos para o tema.
+4. Faz a **fundamentação** (Prompt 1): pesquisa referências reais **com links** —
+   antes de qualquer código.
+5. Monta o **roteiro previsto** (Prompt 1 → 13) no `PROMPTS.md`.
+6. Confirma que seguirá as regras em toda resposta e propõe o próximo passo.
+
+> A **inspiração visual** (marca/sistema de referência para a paleta) é definida
+> junto da primeira tela — e a skill **pergunta qual marca inspirar** em vez de
+> escolher sozinha.
 
 ## `template-project/` — o modelo (comece por aqui)
 
