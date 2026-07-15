@@ -1,0 +1,37 @@
+{
+  "name": "render-mais",
+  "version": "0.1.0",
+  "description": "Render Mais — simulador para aumentar a rentabilidade em renda fixa (trocas + plano mensal). Projeto didático IA na Prática",
+  "scripts": {
+    "test": "jest",
+    "test:e2e": "playwright test --headed",
+    "test:e2e:riscos": "playwright test simulacao-riscos --headed",
+    "tutorial": "node tutorial.js",
+    "cenario:baixo": "node simular.js baixo",
+    "cenario:medio": "node simular.js medio",
+    "cenario:alto": "node simular.js alto",
+    "cenario:dividendos": "node simular.js dividendos",
+    "cenario:plano": "node simular.js plano",
+    "cenario:troca-poupanca": "node simular.js troca-poupanca",
+    "cenario:fgc": "node simular.js fgc",
+    "cenario:concentracao": "node simular.js concentracao",
+    "cenario:yield-trap": "node simular.js yield-trap",
+    "cenario:tudo": "node simular.js tudo",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.45.0",
+    "eslint": "^8.57.1",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "prettier": "^3.9.5"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/e2e/"
+    ]
+  }
+}

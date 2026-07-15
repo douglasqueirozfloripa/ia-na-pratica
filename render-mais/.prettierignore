@@ -1,0 +1,10 @@
+node_modules/
+test-results/
+playwright-report/
+package-lock.json
+# HTML feito à mão (index.html/slides.html) é formatado manualmente para
+# preservar alinhamento e comentários dos slides — fora do Prettier.
+*.html
+# Docs em Markdown têm quebras de linha e listas feitas à mão (diários/relatórios);
+# o Prettier reflui e às vezes quebra placares — mantê-las fora do formatador.
+*.md

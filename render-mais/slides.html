@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Slides do "Render Mais" — a história do Setup 0 ao app pronto.
+      Paleta parametrizada pela inspiração visual XP Investimentos (preto + amarelo),
+      os mesmos tokens do index.html. Toda cor respeita contraste WCAG AA.
+    -->
+    <title>Render Mais — a história do projeto (slides)</title>
+    <style>
+      :root {
+        --cor-principal: #2a2a2a; /* fundo de botões/realces neutros */
+        --cor-principal-forte: #3a3a3a; /* hover */
+        --cor-acento: #ffcc00; /* amarelo XP — kicker/ênfase */
+        --cor-terciaria: #48728b; /* apoio */
+        --fundo: #0a0a0a; /* deck escuro (XP) */
+        --claro: #ffffff;
+        --suave: #b9b9b9;
+        --fonte: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: var(--fonte);
+        background: var(--fundo);
+        color: var(--claro);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .slide {
+        display: none;
+        width: min(900px, 92vw);
+        min-height: 70vh;
+        padding: clamp(24px, 5vw, 56px);
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+      }
+      .slide.ativo {
+        display: flex;
+        animation: entra 0.35s ease;
+      }
+      @keyframes entra {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .kicker {
+        color: var(--cor-acento);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+      }
+      h1 {
+        font-size: clamp(2rem, 6vw, 3.4rem);
+        line-height: 1.05;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        line-height: 1.1;
+      }
+      p,
+      li {
+        font-size: clamp(1rem, 2.4vw, 1.2rem);
+        color: #e6e6e6;
+        line-height: 1.55;
+      }
+      ul {
+        padding-left: 1.2em;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      strong {
+        color: #fff;
+      }
+      a {
+        color: var(--suave);
+      }
+      .sub {
+        color: var(--suave);
+      }
+      .selo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        background: var(--cor-acento);
+        color: #0a0a0a;
+        font-weight: 800;
+        border-radius: 10px;
+      }
+      .marca {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .card b {
+        color: #fff;
+      }
+      .num {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .ok {
+        color: #7fd39a;
+        font-weight: 800;
+      }
+      .amarelo {
+        color: var(--cor-acento);
+      }
+      .nav {
+        position: fixed;
+        bottom: 18px;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+      .nav button {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        color: #fff;
+        background: var(--cor-principal);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 8px 14px;
+      }
+      .nav button:hover {
+        background: var(--cor-principal-forte);
+      }
+      .contador {
+        color: var(--suave);
+        font-size: 0.9rem;
+        min-width: 60px;
+        text-align: center;
+      }
+      .dica {
+        position: fixed;
+        top: 16px;
+        right: 18px;
+        color: var(--suave);
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dica">← → para navegar</div>
+
+    <!-- 1 · CAPA -->
+    <section class="slide ativo">
+      <div class="marca"><span class="selo">R+</span><div class="kicker">IA na Prática · estado zero</div></div>
+      <h1>Render <span class="amarelo">Mais</span></h1>
+      <p>Um simulador que mostra <strong>como aumentar a rentabilidade</strong> da sua carteira de renda fixa — trocando aplicações fracas e/ou começando um plano mensal de aportes.</p>
+      <p class="sub">Tema escolhido: aumentar a renda em renda fixa · Inspiração visual: XP Investimentos</p>
+    </section>
+
+    <!-- 2 · O PROBLEMA -->
+    <section class="slide">
+      <div class="kicker">O problema</div>
+      <h2>Dinheiro parado em aplicação que rende pouco</h2>
+      <p>Poupança a 70% do CDI, CDB PRÉ fraco, dinheiro que "está lá" sem ninguém dizer se dá para render mais — e quanto.</p>
+      <p class="sub">A promessa do Render Mais: transformar "estou parado" em <strong>próximas ações concretas para lucrar mais</strong>.</p>
+    </section>
+
+    <!-- 3 · O CONCEITO -->
+    <section class="slide">
+      <div class="kicker">O conceito (não é achismo)</div>
+      <h2>Maximizar o retorno líquido na fronteira eficiente</h2>
+      <ul>
+        <li><strong>Markowitz (1952)</strong> — diversificação e fronteira eficiente: mais retorno para o risco que você aceita.</li>
+        <li><strong>CDI + IR regressivo</strong> — o que importa é o líquido; LCI/LCA e poupança são isentas.</li>
+        <li><strong>Suitability (CVM 30)</strong> — o perfil-alvo é bússola, não amarra.</li>
+      </ul>
+      <p class="sub">Fontes reais e linkadas — registradas no GLOSSARIO.md antes de qualquer código.</p>
+    </section>
+
+    <!-- 4 · AS DUAS ALAVANCAS -->
+    <section class="slide">
+      <div class="kicker">O coração do app</div>
+      <h2>Duas alavancas para render mais</h2>
+      <div class="grid">
+        <div class="card"><b>1. Trocar o que rende pouco</b><p class="sub">Dicas ordenadas pelo ganho em R$/ano + botão "Simular trocas" com o antes × depois.</p></div>
+        <div class="card"><b>2. Plano mensal</b><p class="sub">Aportar todo mês e ver os juros compostos crescerem: total investido × montante final × ganho.</p></div>
+      </div>
+    </section>
+
+    <!-- 5 · SIMULAR TROCAS -->
+    <section class="slide">
+      <div class="kicker">Simular trocas</div>
+      <h2>Antes × depois: aumenta ou não?</h2>
+      <p>No exemplo (carteira de ~R$ 88 mil), aplicar as trocas leva a rentabilidade média de <strong>8,7%</strong> para <strong class="amarelo">10,3% a.a.</strong>:</p>
+      <div class="grid">
+        <div class="card"><b>Renda hoje</b><div class="num">R$ 7.671<span style="font-size: 1rem">/ano</span></div></div>
+        <div class="card"><b>Renda depois</b><div class="num ok">R$ 9.101<span style="font-size: 1rem">/ano</span></div></div>
+        <div class="card"><b>Ganho</b><div class="num ok">+ R$ 1.429<span style="font-size: 1rem">/ano</span></div></div>
+      </div>
+    </section>
+
+    <!-- 6 · RENDA FIXA + VARIÁVEL -->
+    <section class="slide">
+      <div class="kicker">Composição por risco</div>
+      <h2>Da renda fixa às ações</h2>
+      <p>Cada aporte é classificado em <strong>muito baixo → baixo → médio → alto</strong>. Renda fixa rende por <strong>% do CDI</strong>; renda variável (ações/multimercado) usa a <strong>rentabilidade esperada</strong> que você informa (sem garantia).</p>
+      <p class="sub">O painel mostra a fatia de cada risco e alerta quando a carteira sai do teto do perfil-alvo ou passa do teto do FGC.</p>
+    </section>
+
+    <!-- 7 · AS REGRAS (Setup 0) -->
+    <section class="slide">
+      <div class="kicker">As regras (Setup 0)</div>
+      <h2>Como a IA respondeu em TODAS as etapas</h2>
+      <ul>
+        <li>Partes pequenas, <strong>com testes junto</strong> (positivos e negativos).</li>
+        <li>Valores derivados <strong>calculados por função pura</strong>, nunca digitados.</li>
+        <li>Acessibilidade <strong>WCAG AA</strong> com relatório de contraste ao vivo.</li>
+        <li>Usabilidade sem becos, LGPD com dados fictícios, tudo documentado.</li>
+      </ul>
+    </section>
+
+    <!-- 8 · A STACK -->
+    <section class="slide">
+      <div class="kicker">A stack</div>
+      <h2>Simples de propósito</h2>
+      <div class="grid">
+        <div class="card"><b>HTML + CSS + JS puros</b><p class="sub">Abre no navegador, sem build.</p></div>
+        <div class="card"><b>localStorage</b><p class="sub">Sem servidor, sem banco.</p></div>
+        <div class="card"><b>Jest</b><p class="sub">Testa as regras puras.</p></div>
+        <div class="card"><b>Playwright</b><p class="sub">Testa o app real (E2E).</p></div>
+      </div>
+    </section>
+
+    <!-- 9 · QUALIDADE DE CÓDIGO -->
+    <section class="slide">
+      <div class="kicker">Qualidade de código</div>
+      <h2>Lint, formatação e hook de commit</h2>
+      <ul>
+        <li><strong>ESLint</strong> (<code>npm run lint</code>) aponta erros e maus hábitos.</li>
+        <li><strong>Prettier</strong> (<code>npm run format</code>) mantém um padrão único.</li>
+        <li><strong>Husky</strong> roda os dois no <strong>pre-commit</strong>, em qualquer branch.</li>
+      </ul>
+      <p class="sub">Placar atual: <strong>99 unitários + 24 E2E</strong> passando.</p>
+    </section>
+
+    <!-- 10 · ACESSIBILIDADE -->
+    <section class="slide">
+      <div class="kicker">Acessibilidade</div>
+      <h2>WCAG AA desde o primeiro pixel</h2>
+      <p>Cada par de cores é medido por <strong>funções puras</strong> e mostrado ao vivo no rodapé. Um teste "guarda" reprova qualquer cor abaixo do AA.</p>
+      <div class="grid">
+        <div class="card"><b>Texto / fundo</b><div class="num ok">19.8<span style="font-size: 1rem">:1</span></div></div>
+        <div class="card"><b>Botão preto/amarelo</b><div class="num ok">13.1<span style="font-size: 1rem">:1</span></div></div>
+        <div class="card"><b>Alerta / cartão</b><div class="num ok">6.5<span style="font-size: 1rem">:1</span></div></div>
+      </div>
+    </section>
+
+    <!-- 11 · INSPIRAÇÃO VISUAL -->
+    <section class="slide">
+      <div class="kicker">Inspiração visual</div>
+      <h2>XP Investimentos — preto + amarelo</h2>
+      <p>A paleta parte da <strong>identidade da XP</strong> — referência real de mercado no domínio de investimentos: alto contraste e ar de corretora premium.</p>
+      <p class="sub">A referência é declarada no código e toda cor foi medida em WCAG AA — a estética nunca fura a acessibilidade.</p>
+    </section>
+
+    <!-- 12 · PRIVACIDADE (LGPD) -->
+    <section class="slide">
+      <div class="kicker">Privacidade</div>
+      <h2>LGPD: o dado é seu</h2>
+      <ul>
+        <li>Tudo fica <strong>só no seu navegador</strong> (localStorage), sem servidor.</li>
+        <li>Você pode <strong>exportar (JSON)</strong> ou <strong>limpar</strong> quando quiser.</li>
+        <li>Exemplos com <strong>dados fictícios</strong> (a carteira real dos prints não sobe ao repositório).</li>
+      </ul>
+    </section>
+
+    <!-- 13 · ENCERRAMENTO -->
+    <section class="slide">
+      <div class="kicker">Encerramento</div>
+      <h2>Do Setup 0 ao Render Mais</h2>
+      <p>Um app pequeno, mas <strong>fundamentado, testado, acessível e documentado</strong> — que até mudou de nome e de foco no caminho, sempre com o placar verde.</p>
+      <p class="sub">README.md, PROMPTS.md, RESUMAO.md e GLOSSARIO.md contam o resto — e o <strong>tutorial ao vivo</strong> (<code>node tutorial.js</code>) mostra tudo funcionando.</p>
+    </section>
+
+    <nav class="nav">
+      <button id="anterior" aria-label="Slide anterior">← Anterior</button>
+      <span class="contador" id="contador">1 / 1</span>
+      <button id="proximo" aria-label="Próximo slide">Próximo →</button>
+    </nav>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const contador = document.getElementById('contador');
+      let atual = 0;
+      function mostrar(i) {
+        atual = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s, k) => s.classList.toggle('ativo', k === atual));
+        contador.textContent = atual + 1 + ' / ' + slides.length;
+      }
+      document.getElementById('proximo').addEventListener('click', () => mostrar(atual + 1));
+      document.getElementById('anterior').addEventListener('click', () => mostrar(atual - 1));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'PageDown') mostrar(atual + 1);
+        if (e.key === 'ArrowLeft' || e.key === 'PageUp') mostrar(atual - 1);
+        if (e.key === 'Home') mostrar(0);
+        if (e.key === 'End') mostrar(slides.length - 1);
+      });
+      mostrar(0);
+    </script>
+  </body>
+</html>

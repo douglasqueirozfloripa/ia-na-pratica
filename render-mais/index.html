@@ -1,0 +1,1800 @@
+<!doctype html>
+<!--
+  index.html — tela do app "Render Mais" (aumentar a rentabilidade).
+  Inspiração visual: XP Investimentos (preto + amarelo, ar de corretora premium).
+  As regras vivem em logica.js (window.Logica); esta tela só chama as funções puras.
+  Coberta por: logica.test.js (contraste/espaçamento) e e2e/app.spec.js (fluxo).
+-->
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Render Mais</title>
+    <style>
+      /* ---- Design tokens (derivados da inspiração XP) ---------------------
+         Escala ÚNICA de espaçamento, cores, raio e tipografia. Nada de valor
+         solto: tudo referencia estas variáveis. Cores validadas para WCAG AA
+         (o rodapé mede ao vivo). */
+      :root {
+        --esp-1: 4px;
+        --esp-2: 8px;
+        --esp-3: 12px;
+        --esp-4: 16px;
+        --esp-6: 24px;
+        --esp-8: 32px;
+
+        --preto: #0a0a0a; /* fundo da página */
+        --preto-2: #161616; /* cartões */
+        --preto-3: #232323; /* inputs / bordas */
+        --amarelo: #ffcc00; /* marca XP — destaque e botão primário */
+        --branco: #ffffff; /* texto principal */
+        --cinza: #b9b9b9; /* texto secundário (passa AA no fundo escuro) */
+        --verde: #35d07f; /* rendimento positivo */
+        --vermelho: #ff6b6b; /* erros/atenção */
+
+        --raio: 12px;
+        --raio-sm: 8px;
+        --fonte: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+        --sombra: 0 8px 24px rgba(0, 0, 0, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      /* Skip-link: some da tela, mas aparece ao receber foco pelo teclado (WCAG). */
+      .pular-link {
+        position: absolute;
+        left: var(--esp-4);
+        top: -60px;
+        z-index: 10;
+        background: var(--amarelo);
+        color: var(--preto);
+        font-weight: 700;
+        padding: var(--esp-2) var(--esp-4);
+        border-radius: var(--raio-sm);
+        transition: top 0.15s ease;
+      }
+      .pular-link:focus {
+        top: var(--esp-3);
+        outline: 3px solid var(--branco);
+      }
+      body {
+        margin: 0;
+        font-family: var(--fonte);
+        background: var(--preto);
+        color: var(--branco);
+        line-height: 1.5;
+      }
+
+      /* ---- Header --------------------------------------------------------- */
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--esp-4);
+        padding: var(--esp-4) var(--esp-6);
+        background: var(--preto-2);
+        border-bottom: 3px solid var(--amarelo);
+      }
+      .marca {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-3);
+      }
+      .selo {
+        background: var(--amarelo);
+        color: var(--preto);
+        font-weight: 800;
+        padding: var(--esp-1) var(--esp-2);
+        border-radius: var(--raio-sm);
+        letter-spacing: 0.5px;
+      }
+      .marca h1 {
+        font-size: 1.15rem;
+        margin: 0;
+      }
+      .marca p {
+        margin: 0;
+        color: var(--cinza);
+        font-size: 0.8rem;
+      }
+      .acoes-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-3);
+      }
+
+      /* ---- Painel lateral de siglas ------------------------------------- */
+      .siglas {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 20;
+        width: min(360px, 90vw);
+        height: 100vh;
+        overflow-y: auto;
+        background: var(--preto-2);
+        border-left: 3px solid var(--amarelo);
+        box-shadow: var(--sombra);
+        padding: var(--esp-6);
+      }
+      .siglas-cab {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--esp-3);
+        margin-bottom: var(--esp-4);
+      }
+      .siglas-cab h2 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+      .siglas-lista {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-3);
+      }
+      .siglas-lista dt {
+        font-weight: 800;
+        color: var(--amarelo);
+      }
+      .siglas-lista dd {
+        margin: 2px 0 0;
+        color: var(--cinza);
+        font-size: 0.9rem;
+      }
+
+      /* ---- Botões (mesma base; variam só na cor) -------------------------- */
+      .botao {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: var(--raio-sm);
+        padding: var(--esp-3) var(--esp-4);
+        min-height: 44px;
+        transition:
+          transform 0.05s ease,
+          filter 0.15s ease;
+      }
+      .botao:active {
+        transform: translateY(1px);
+      }
+      .botao:focus-visible {
+        outline: 3px solid var(--amarelo);
+        outline-offset: 2px;
+      }
+      .botao--primario {
+        background: var(--amarelo);
+        color: var(--preto);
+      }
+      .botao--primario:hover {
+        filter: brightness(1.08);
+      }
+      .botao--fantasma {
+        background: transparent;
+        color: var(--branco);
+        border-color: var(--preto-3);
+      }
+      .botao--fantasma:hover {
+        border-color: var(--amarelo);
+      }
+
+      /* ---- Layout principal ---------------------------------------------- */
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: var(--esp-6);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--esp-6);
+      }
+      @media (min-width: 760px) {
+        main {
+          grid-template-columns: 1.1fr 0.9fr;
+          align-items: start;
+        }
+      }
+
+      .cartao {
+        background: var(--preto-2);
+        border: 1px solid var(--preto-3);
+        border-radius: var(--raio);
+        padding: var(--esp-6);
+        box-shadow: var(--sombra);
+      }
+      .cartao h2 {
+        margin: 0 0 var(--esp-4);
+        font-size: 1.05rem;
+      }
+
+      /* ---- Dashboard / painel ------------------------------------------- */
+      .painel {
+        grid-column: 1 / -1; /* ocupa a largura toda do grid */
+      }
+      .indicadores {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--esp-4);
+      }
+      .indicador {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-2);
+        background: var(--preto-3);
+        border-radius: var(--raio-sm);
+        padding: var(--esp-4);
+      }
+      .ind-rotulo {
+        color: var(--cinza);
+        font-size: 0.82rem;
+      }
+      .ind-valor {
+        font-size: 1.25rem;
+        font-weight: 800;
+      }
+      .ind-valor.aderente {
+        color: var(--verde);
+      }
+      .ind-valor.nao-aderente {
+        color: var(--vermelho);
+      }
+      .composicao {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-3);
+        margin-top: var(--esp-4);
+      }
+      .barra-linha {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-3);
+      }
+      .barra-rotulo {
+        width: 92px;
+        color: var(--cinza);
+        font-size: 0.82rem;
+        text-transform: capitalize;
+      }
+      .barra-trilho {
+        flex: 1;
+        height: 14px;
+        background: var(--preto-3);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .barra-preenchida {
+        height: 100%;
+        background: var(--amarelo);
+      }
+      .barra-pct {
+        width: 46px;
+        text-align: right;
+        font-weight: 700;
+        font-size: 0.82rem;
+      }
+      .alertas-painel {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-2);
+        margin-top: var(--esp-4);
+      }
+      .alerta {
+        display: flex;
+        gap: var(--esp-2);
+        background: rgba(255, 107, 107, 0.12);
+        border: 1px solid var(--vermelho);
+        color: var(--vermelho);
+        border-radius: var(--raio-sm);
+        padding: var(--esp-3);
+        font-size: 0.85rem;
+      }
+      .sem-alertas {
+        color: var(--verde);
+        font-size: 0.85rem;
+        margin: 0;
+      }
+
+      /* ---- Simulador de melhoria ---------------------------------------- */
+      .opcao-risco {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-2);
+        margin: 0 0 var(--esp-3);
+        color: var(--cinza);
+        font-size: 0.88rem;
+        cursor: pointer;
+      }
+      .opcao-risco input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--amarelo);
+        cursor: pointer;
+      }
+      .opcao-risco strong {
+        color: var(--branco);
+      }
+      .melhoria-resumo {
+        margin: 0 0 var(--esp-4);
+        color: var(--branco);
+      }
+      .melhoria-resumo strong {
+        color: var(--verde);
+      }
+      .dicas {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-3);
+      }
+      .dicas li {
+        background: var(--preto-3);
+        border-radius: var(--raio-sm);
+        border-left: 4px solid var(--amarelo);
+        padding: var(--esp-3) var(--esp-4);
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-1);
+      }
+      .dica-topo {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--esp-2);
+      }
+      .dica-topo .nome {
+        font-weight: 700;
+      }
+      .dica-topo .ganho {
+        color: var(--verde);
+        font-weight: 800;
+      }
+      .dica-detalhe {
+        color: var(--cinza);
+        font-size: 0.85rem;
+      }
+      .dica-detalhe strong {
+        color: var(--branco);
+      }
+      .dica-meta {
+        margin-top: var(--esp-1);
+        font-size: 0.8rem;
+        color: var(--cinza);
+      }
+      .dica-meta strong {
+        color: var(--branco);
+      }
+      .risco-sobe {
+        color: var(--vermelho);
+        font-weight: 700;
+      }
+      .risco-igual {
+        color: var(--verde);
+        font-weight: 700;
+      }
+      .simulacao {
+        margin-top: var(--esp-4);
+        background: var(--preto-3);
+        border: 1px solid var(--verde);
+        border-radius: var(--raio);
+        padding: var(--esp-4) var(--esp-6);
+      }
+      .simulacao.piora {
+        border-color: var(--cinza);
+      }
+      .antes-depois {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--esp-4);
+        margin-bottom: var(--esp-4);
+      }
+      .ad-item {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-1);
+      }
+      .ad-item .rotulo {
+        color: var(--cinza);
+        font-size: 0.82rem;
+      }
+      .ad-item .valor {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+      .veredito {
+        grid-column: 1 / -1;
+        color: var(--verde);
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
+      .veredito.piora {
+        color: var(--cinza);
+      }
+      .simulacao ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-2);
+      }
+      .simulacao li {
+        font-size: 0.85rem;
+        color: var(--branco);
+        padding: var(--esp-2) 0;
+        border-top: 1px solid #2a2a2a;
+      }
+      .simulacao li .seta {
+        color: var(--amarelo);
+      }
+      .simulacao li .mais {
+        color: var(--verde);
+        font-weight: 700;
+      }
+      .melhoria-nota {
+        margin: var(--esp-4) 0 0;
+        color: var(--cinza);
+        font-size: 0.78rem;
+        line-height: 1.5;
+      }
+      .plano-intro {
+        margin: 0 0 var(--esp-4);
+        color: var(--cinza);
+      }
+      .plano-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: var(--esp-4);
+        margin-bottom: var(--esp-4);
+      }
+      .plano-dica {
+        margin: var(--esp-4) 0 0;
+        color: var(--cinza);
+        font-size: 0.82rem;
+      }
+      .plano-dica strong {
+        color: var(--verde);
+      }
+      .meta-titulo {
+        margin: var(--esp-4) 0 var(--esp-3);
+        font-size: 0.95rem;
+      }
+      .melhoria-nota strong {
+        color: var(--branco);
+      }
+
+      /* ---- Formulário ---------------------------------------------------- */
+      .campo {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-2);
+        margin-bottom: var(--esp-4);
+      }
+      .campo label {
+        font-size: 0.85rem;
+        color: var(--cinza);
+      }
+      .linha {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-4);
+      }
+      .linha .campo {
+        flex: 1 1 140px;
+        margin-bottom: 0;
+      }
+      input,
+      select {
+        font: inherit;
+        color: var(--branco);
+        background: var(--preto-3);
+        border: 1px solid #3a3a3a;
+        border-radius: var(--raio-sm);
+        padding: var(--esp-3);
+        min-height: 44px;
+      }
+      input:focus,
+      select:focus {
+        outline: 2px solid var(--amarelo);
+        outline-offset: 1px;
+      }
+      .form-acoes {
+        margin-top: var(--esp-4);
+      }
+      .form-acoes .botao {
+        width: 100%;
+      }
+
+      /* ---- Prévia ao vivo ------------------------------------------------ */
+      .previa .item {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--esp-4);
+        padding: var(--esp-3) 0;
+        border-bottom: 1px solid var(--preto-3);
+      }
+      .previa .item:last-child {
+        border-bottom: none;
+      }
+      .previa .rotulo {
+        color: var(--cinza);
+      }
+      .previa .valor {
+        font-weight: 700;
+      }
+      .valor--positivo {
+        color: var(--verde);
+      }
+      .tag-risco {
+        display: inline-block;
+        padding: var(--esp-1) var(--esp-2);
+        border-radius: var(--raio-sm);
+        background: var(--preto-3);
+        font-size: 0.8rem;
+      }
+      .erros {
+        list-style: none;
+        margin: var(--esp-3) 0 0;
+        padding: var(--esp-3);
+        border-radius: var(--raio-sm);
+        background: rgba(255, 107, 107, 0.12);
+        border: 1px solid var(--vermelho);
+        color: var(--vermelho);
+      }
+      .erros li + li {
+        margin-top: var(--esp-1);
+      }
+      [hidden] {
+        display: none !important;
+      }
+
+      /* ---- Carteira salva ------------------------------------------------ */
+      .carteira .contador {
+        color: var(--cinza);
+        font-weight: 400;
+        font-size: 0.85rem;
+      }
+      .filtros {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: var(--esp-3);
+        margin-bottom: var(--esp-4);
+        padding-bottom: var(--esp-4);
+        border-bottom: 1px solid var(--preto-3);
+      }
+      .campo-filtro {
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-1);
+      }
+      .campo-filtro label {
+        font-size: 0.78rem;
+        color: var(--cinza);
+      }
+      .grupo-risco {
+        margin-bottom: var(--esp-4);
+      }
+      .grupo-risco:last-child {
+        margin-bottom: 0;
+      }
+      .grupo-cab {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--esp-2);
+        margin-bottom: var(--esp-2);
+        padding-bottom: var(--esp-2);
+        border-bottom: 2px solid var(--amarelo);
+      }
+      .grupo-cab .nivel {
+        font-weight: 700;
+        text-transform: capitalize;
+      }
+      .grupo-cab .ind {
+        color: var(--cinza);
+        font-size: 0.82rem;
+      }
+      .grupo-cab .peso {
+        background: var(--amarelo);
+        color: var(--preto);
+        font-weight: 800;
+        border-radius: 999px;
+        padding: var(--esp-1) var(--esp-2);
+        font-size: 0.78rem;
+      }
+      .lista {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--esp-3);
+      }
+      .lista li {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--esp-2);
+        background: var(--preto-3);
+        border-radius: var(--raio-sm);
+        padding: var(--esp-3) var(--esp-4);
+      }
+      .lista .nome {
+        font-weight: 700;
+      }
+      .lista .meta {
+        color: var(--cinza);
+        font-size: 0.82rem;
+      }
+      .lista .liquido {
+        color: var(--verde);
+        font-weight: 700;
+      }
+      .item-topo {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--esp-2);
+      }
+      .item-rodape {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--esp-2);
+        margin-top: var(--esp-2);
+      }
+      .status {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        padding: var(--esp-1) var(--esp-2);
+        border-radius: 999px;
+        background: #2f2f2f;
+        color: var(--cinza);
+        border: 1px solid #3a3a3a;
+      }
+      .status--aplicado {
+        background: rgba(53, 208, 127, 0.16);
+        color: var(--verde);
+        border-color: var(--verde);
+      }
+      .status--resgatavel {
+        background: rgba(255, 204, 0, 0.16);
+        color: var(--amarelo);
+        border-color: var(--amarelo);
+      }
+      .status--resgatado {
+        background: #2f2f2f;
+        color: var(--branco);
+      }
+      .acoes-item {
+        display: flex;
+        gap: var(--esp-2);
+      }
+      .botao-mini {
+        font: inherit;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        min-height: 34px;
+        padding: var(--esp-1) var(--esp-3);
+        border-radius: var(--raio-sm);
+        background: var(--preto-2);
+        color: var(--branco);
+        border: 1px solid #3a3a3a;
+      }
+      .botao-mini:hover:not(:disabled) {
+        border-color: var(--amarelo);
+      }
+      .botao-mini:focus-visible {
+        outline: 3px solid var(--amarelo);
+        outline-offset: 2px;
+      }
+      .botao-mini:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .botao-mini--perigo {
+        color: var(--vermelho);
+        border-color: var(--vermelho);
+      }
+      .botao-mini--perigo:hover:not(:disabled) {
+        background: rgba(255, 107, 107, 0.12);
+        border-color: var(--vermelho);
+      }
+      .vazio {
+        color: var(--cinza);
+        font-size: 0.88rem;
+        margin: var(--esp-2) 0 0;
+      }
+
+      /* ---- Rodapé de contraste (auditoria WCAG ao vivo) ------------------ */
+      footer {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: var(--esp-6);
+      }
+      .contraste {
+        background: var(--preto-2);
+        border: 1px solid var(--preto-3);
+        border-radius: var(--raio);
+        padding: var(--esp-4) var(--esp-6);
+      }
+      .contraste h2 {
+        font-size: 0.95rem;
+        margin: 0 0 var(--esp-3);
+      }
+      .contraste ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--esp-3);
+      }
+      .contraste li {
+        display: flex;
+        align-items: center;
+        gap: var(--esp-2);
+        background: var(--preto-3);
+        border-radius: var(--raio-sm);
+        padding: var(--esp-2) var(--esp-3);
+        font-size: 0.82rem;
+      }
+      .badge {
+        font-weight: 800;
+        padding: var(--esp-1) var(--esp-2);
+        border-radius: 999px;
+        background: var(--amarelo);
+        color: var(--preto);
+      }
+      .badge--reprovado {
+        background: var(--vermelho);
+        color: var(--branco);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="pular-link" href="#conteudo" data-testid="pular-link">Pular para o conteúdo</a>
+    <header>
+      <div class="marca">
+        <span class="selo" aria-hidden="true">R+</span>
+        <div>
+          <h1>Render Mais</h1>
+          <p>Simule como aumentar a rentabilidade da sua carteira</p>
+        </div>
+      </div>
+      <div class="acoes-header">
+        <button type="button" class="botao botao--fantasma" data-testid="abrir-siglas"
+          aria-expanded="false" aria-controls="painel-siglas">
+          Siglas
+        </button>
+        <button type="button" class="botao botao--fantasma" data-testid="exportar">
+          Exportar (JSON)
+        </button>
+        <button type="button" class="botao botao--fantasma" data-testid="reiniciar">
+          Reiniciar experiência
+        </button>
+      </div>
+    </header>
+
+    <!-- Painel lateral de siglas / legendas (abre/fecha) -->
+    <aside id="painel-siglas" class="siglas" data-testid="painel-siglas" aria-label="Legendas das siglas do sistema" hidden>
+      <div class="siglas-cab">
+        <h2 id="siglas-titulo">Siglas &amp; legendas</h2>
+        <button type="button" class="botao-mini" data-testid="fechar-siglas">✕ Fechar</button>
+      </div>
+      <dl class="siglas-lista" data-testid="siglas-lista"></dl>
+    </aside>
+
+    <main id="conteudo">
+      <!-- Dashboard: visão geral da carteira -->
+      <section class="cartao painel" data-testid="dashboard" aria-labelledby="titulo-painel">
+        <h2 id="titulo-painel">Painel da carteira</h2>
+        <div class="indicadores" aria-live="polite">
+          <div class="indicador">
+            <span class="ind-rotulo">Patrimônio total</span>
+            <span class="ind-valor" data-testid="ind-total">—</span>
+          </div>
+          <div class="indicador">
+            <span class="ind-rotulo">Rendimento líquido projetado</span>
+            <span class="ind-valor valor--positivo" data-testid="ind-rendimento">—</span>
+          </div>
+          <div class="indicador">
+            <span class="ind-rotulo" id="rotulo-aderencia">Aderência ao perfil conservador</span>
+            <span class="ind-valor" data-testid="ind-aderencia">—</span>
+          </div>
+        </div>
+        <div class="composicao" data-testid="composicao" aria-label="Composição por risco"></div>
+        <div class="alertas-painel" data-testid="alertas"></div>
+      </section>
+
+      <!-- Simulador de melhoria: como render mais -->
+      <section class="cartao painel melhoria-card" data-testid="melhoria" aria-labelledby="titulo-melhoria">
+        <h2 id="titulo-melhoria">Como render mais 🚀</h2>
+        <label class="opcao-risco">
+          <input type="checkbox" data-testid="manter-risco" />
+          Só trocas que <strong>não aumentam o risco</strong>
+        </label>
+        <p class="melhoria-resumo" data-testid="melhoria-resumo"></p>
+        <ul class="dicas" data-testid="dicas"></ul>
+        <div class="form-acoes" data-testid="simular-acoes" hidden>
+          <button type="button" class="botao botao--primario" data-testid="simular-trocas">
+            Simular trocas e ver antes × depois
+          </button>
+        </div>
+        <div class="simulacao" data-testid="simulacao-resultado" hidden></div>
+        <p class="melhoria-nota">
+          As dicas comparam apenas a <strong>rentabilidade líquida</strong>. Antes de
+          trocar, considere também <strong>liquidez</strong> e <strong>objetivo</strong>
+          (ex.: o Tesouro Selic costuma ser sua reserva de emergência) e o
+          <strong>teto do FGC</strong>. Simulação didática com dados fictícios.
+        </p>
+      </section>
+
+      <!-- Plano mensal de aportes (2ª alavanca: juros compostos) -->
+      <section class="cartao painel plano-card" data-testid="plano" aria-labelledby="titulo-plano">
+        <h2 id="titulo-plano">Plano mensal para crescer 📈</h2>
+        <p class="plano-intro">
+          Aportar todo mês faz os juros compostos trabalharem por você. Simule:
+        </p>
+        <div class="plano-form">
+          <div class="campo">
+            <label for="plano-aporte">Aporte mensal (R$)</label>
+            <input id="plano-aporte" type="number" min="0" step="50" value="500"
+              data-testid="plano-aporte" />
+          </div>
+          <div class="campo">
+            <label for="plano-anos">Prazo (anos)</label>
+            <input id="plano-anos" type="number" min="1" step="1" value="10"
+              data-testid="plano-anos" />
+          </div>
+          <div class="campo">
+            <label for="plano-taxa">Rentabilidade (% a.a.)</label>
+            <input id="plano-taxa" type="number" min="0" step="0.1" value="10.65"
+              data-testid="plano-taxa" />
+          </div>
+        </div>
+        <div class="indicadores" aria-live="polite">
+          <div class="indicador">
+            <span class="ind-rotulo">Total investido (só aportes)</span>
+            <span class="ind-valor" data-testid="plano-investido">—</span>
+          </div>
+          <div class="indicador">
+            <span class="ind-rotulo">Montante final (com juros)</span>
+            <span class="ind-valor valor--positivo" data-testid="plano-montante">—</span>
+          </div>
+          <div class="indicador">
+            <span class="ind-rotulo">Ganho em juros</span>
+            <span class="ind-valor valor--positivo" data-testid="plano-ganho">—</span>
+          </div>
+        </div>
+        <p class="plano-dica" data-testid="plano-dica"></p>
+      </section>
+
+      <!-- Renda passiva de dividendos (ações com DY esperado) -->
+      <section class="cartao painel dividendos-card" data-testid="dividendos" aria-labelledby="titulo-div">
+        <h2 id="titulo-div">Renda passiva de dividendos 💰</h2>
+        <p class="plano-intro">
+          Soma os dividendos esperados das suas ações (pelo DY informado).
+        </p>
+        <div class="indicadores" aria-live="polite">
+          <div class="indicador">
+            <span class="ind-rotulo">Dividendos por ano</span>
+            <span class="ind-valor valor--positivo" data-testid="div-anual">—</span>
+          </div>
+          <div class="indicador">
+            <span class="ind-rotulo">Por mês (média)</span>
+            <span class="ind-valor valor--positivo" data-testid="div-mensal">—</span>
+          </div>
+        </div>
+        <ul class="dicas" data-testid="div-lista"></ul>
+
+        <h3 class="meta-titulo">Meta de renda passiva</h3>
+        <div class="plano-form">
+          <div class="campo">
+            <label for="meta-mensal">Quero receber (R$/mês)</label>
+            <input id="meta-mensal" type="number" min="0" step="100" value="1000"
+              data-testid="meta-mensal" />
+          </div>
+          <div class="campo">
+            <label for="meta-dy">DY médio considerado (% a.a.)</label>
+            <input id="meta-dy" type="number" min="0" step="0.1" value="6"
+              data-testid="meta-dy" />
+          </div>
+          <div class="campo">
+            <label for="meta-anos">Chegar lá em (anos)</label>
+            <input id="meta-anos" type="number" min="1" step="1" value="10"
+              data-testid="meta-anos" />
+          </div>
+        </div>
+        <p class="plano-dica" data-testid="meta-resultado"></p>
+        <p class="plano-dica" data-testid="meta-plano"></p>
+
+        <p class="melhoria-nota">
+          Dividendo <strong>não é garantido</strong> e pode ser cortado; DY muito alto
+          pode ser <strong>"yield trap"</strong>. Renda variável — valores estimados.
+        </p>
+      </section>
+
+      <!-- Formulário de novo aporte -->
+      <section class="cartao" aria-labelledby="titulo-form">
+        <h2 id="titulo-form">Novo aporte</h2>
+        <form id="form-aporte" novalidate>
+          <div class="campo">
+            <label for="produto">Produto</label>
+            <input
+              id="produto"
+              name="produto"
+              type="text"
+              placeholder="Ex.: Tesouro Selic 2031"
+              data-testid="campo-produto"
+            />
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="categoria">Categoria</label>
+              <select id="categoria" name="categoria" data-testid="campo-categoria">
+                <optgroup label="Renda fixa">
+                  <option value="tesouro">Tesouro (público)</option>
+                  <option value="cdb-pre">CDB PRÉ</option>
+                  <option value="cdb-di">CDB DI (% do CDI)</option>
+                  <option value="letra">Letra (LCI/LCA/LF)</option>
+                  <option value="fundo">Fundo RF</option>
+                  <option value="poupanca">Poupança</option>
+                </optgroup>
+                <optgroup label="Renda variável">
+                  <option value="multimercado">Fundo Multimercado</option>
+                  <option value="acoes">Ações / Fundo de ações</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="valor">Valor aplicado (R$)</label>
+              <input
+                id="valor"
+                name="valor"
+                type="number"
+                min="0"
+                step="100"
+                placeholder="5000"
+                data-testid="campo-valor"
+              />
+            </div>
+          </div>
+
+          <div class="linha">
+            <div class="campo campo-rf">
+              <label for="pctCDI">% do CDI</label>
+              <input
+                id="pctCDI"
+                name="pctCDI"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="110"
+                data-testid="campo-pctcdi"
+              />
+            </div>
+            <div class="campo campo-rf">
+              <label for="cdiAnual">CDI anual (% a.a.)</label>
+              <input
+                id="cdiAnual"
+                name="cdiAnual"
+                type="number"
+                min="0"
+                step="0.01"
+                value="10.65"
+                data-testid="campo-cdi"
+              />
+            </div>
+            <div class="campo campo-rv" hidden>
+              <label for="rentab">Rentabilidade esperada (% a.a., bruta)</label>
+              <input
+                id="rentab"
+                name="rentab"
+                type="number"
+                step="0.1"
+                placeholder="12"
+                data-testid="campo-rentab"
+              />
+            </div>
+            <div class="campo campo-acoes" hidden>
+              <label for="dy">Dividend yield esperado (% a.a.)</label>
+              <input
+                id="dy"
+                name="dy"
+                type="number"
+                step="0.1"
+                placeholder="6"
+                data-testid="campo-dy"
+              />
+            </div>
+            <div class="campo">
+              <label for="dias">Prazo (dias corridos)</label>
+              <input
+                id="dias"
+                name="dias"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="365"
+                data-testid="campo-dias"
+              />
+            </div>
+          </div>
+
+          <div class="form-acoes">
+            <button type="submit" class="botao botao--primario" data-testid="adicionar">
+              Adicionar à carteira
+            </button>
+          </div>
+
+          <ul class="erros" data-testid="erros" hidden></ul>
+        </form>
+      </section>
+
+      <!-- Prévia ao vivo do resultado -->
+      <section class="cartao previa" aria-labelledby="titulo-previa">
+        <h2 id="titulo-previa">Prévia da simulação</h2>
+        <div id="previa" data-testid="previa" aria-live="polite">
+          <div class="item">
+            <span class="rotulo">Nível de risco</span>
+            <span class="valor"><span class="tag-risco" data-testid="previa-risco">—</span></span>
+          </div>
+          <div class="item">
+            <span class="rotulo">Rendimento bruto</span>
+            <span class="valor" data-testid="previa-bruto">—</span>
+          </div>
+          <div class="item">
+            <span class="rotulo">Imposto de Renda</span>
+            <span class="valor" data-testid="previa-ir">—</span>
+          </div>
+          <div class="item">
+            <span class="rotulo">Rendimento líquido</span>
+            <span class="valor valor--positivo" data-testid="previa-liquido">—</span>
+          </div>
+          <div class="item">
+            <span class="rotulo">Total ao resgatar</span>
+            <span class="valor" data-testid="previa-total">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Carteira salva (persistida no localStorage) -->
+      <section class="cartao carteira" aria-labelledby="titulo-carteira">
+        <h2 id="titulo-carteira">
+          Sua carteira <span class="contador" data-testid="contador">(0 aportes)</span>
+        </h2>
+
+        <!-- Filtros e preferências (persistidos no localStorage) -->
+        <div class="filtros" data-testid="filtros">
+          <div class="campo-filtro">
+            <label for="f-categoria">Categoria</label>
+            <select id="f-categoria" data-testid="filtro-categoria">
+              <option value="">Todas</option>
+              <option value="tesouro">Tesouro</option>
+              <option value="cdb-pre">CDB PRÉ</option>
+              <option value="cdb-di">CDB DI</option>
+              <option value="letra">Letra (LCI/LCA/LF)</option>
+              <option value="fundo">Fundo RF</option>
+              <option value="poupanca">Poupança</option>
+              <option value="multimercado">Multimercado</option>
+              <option value="acoes">Ações</option>
+            </select>
+          </div>
+          <div class="campo-filtro">
+            <label for="f-risco">Risco</label>
+            <select id="f-risco" data-testid="filtro-risco">
+              <option value="">Todos</option>
+              <option value="muito baixo">Muito baixo</option>
+              <option value="baixo">Baixo</option>
+              <option value="médio">Médio</option>
+              <option value="alto">Alto</option>
+            </select>
+          </div>
+          <div class="campo-filtro">
+            <label for="f-horizonte">Horizonte</label>
+            <select id="f-horizonte" data-testid="filtro-horizonte">
+              <option value="">Todos</option>
+              <option value="curto">Curto (≤ 1 ano)</option>
+              <option value="medio">Médio (1–2 anos)</option>
+              <option value="longo">Longo (&gt; 2 anos)</option>
+            </select>
+          </div>
+          <div class="campo-filtro">
+            <label for="f-perfil">Perfil-alvo</label>
+            <select id="f-perfil" data-testid="filtro-perfil">
+              <option value="conservador">Conservador</option>
+              <option value="moderado">Moderado</option>
+              <option value="agressivo">Agressivo</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="lista-carteira" data-testid="lista-carteira"></div>
+        <p class="vazio" data-testid="carteira-vazia">
+          Nenhum aporte ainda. Preencha o formulário e clique em “Adicionar à carteira”
+          — ou carregue uma carteira de exemplo para explorar o app.
+        </p>
+        <div class="form-acoes">
+          <button type="button" class="botao botao--fantasma" data-testid="carregar-exemplo">
+            Carregar carteira de exemplo
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <section class="contraste" aria-labelledby="titulo-contraste">
+        <h2 id="titulo-contraste">Acessibilidade — contraste WCAG (ao vivo)</h2>
+        <ul id="lista-contraste" data-testid="contraste"></ul>
+      </section>
+    </footer>
+
+    <script src="logica.js"></script>
+    <script>
+      // Ponte tela → funções puras (window.Logica). Nada de regra de negócio aqui.
+      const L = window.Logica;
+      const $ = (sel) => document.querySelector(sel);
+      const reais = (n) =>
+        n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      // Onde a carteira mora no navegador (localStorage). A lista fica em memória
+      // e é espelhada nesta chave a cada mudança.
+      const CHAVE = 'rfc.aportes';
+      // Rótulos legíveis do ciclo de status (a lógica usa as chaves em minúsculo).
+      const ROTULO_STATUS = {
+        planejado: 'Planejado',
+        aplicado: 'Aplicado',
+        resgatavel: 'Resgatável',
+        resgatado: 'Resgatado',
+      };
+      let seqId = 0; // fallback simples de id, caso crypto.randomUUID não exista
+      const novoId = () => window.crypto?.randomUUID?.() ?? `id-${Date.now()}-${seqId++}`;
+      const hoje = () => new Date().toISOString().slice(0, 10); // AAAA-MM-DD
+
+      // Carteira de EXEMPLO (LGPD): espelha a ESTRUTURA de uma carteira real (dos
+      // prints em docs/), com VALORES ARREDONDADOS — nunca dados reais de pessoas.
+      // Revisada conforme os docs (total ~R$ 88 mil):
+      //   CDB 35% · Títulos 20,6% · Poupança 19,8% · Fundos 17,9% · Letras 6,5%.
+      // NÃO inclui as fatias de AÇÕES/multimercado dos fundos reais (renda variável,
+      // fora do escopo de renda fixa) — ver aviso ao carregar.
+      // Total = R$ 88.344 (conforme o perfil dos docs).
+      const DADOS_EXEMPLO = [
+        // CDB (~35%): BB CDB PRE + BB CDB DI
+        { produto: 'CDB Prefixado BB', categoria: 'cdb-pre', valor: 30434, pctCDI: 1.0, cdiAnual: 0.1065, dias: 720, status: 'aplicado' },
+        { produto: 'CDB DI BB', categoria: 'cdb-di', valor: 610, pctCDI: 1.02, cdiAnual: 0.1065, dias: 365, status: 'aplicado' },
+        // Títulos públicos (~20,6%): LFT-010331
+        { produto: 'Tesouro Selic 2031 (LFT)', categoria: 'tesouro', valor: 18200, pctCDI: 1.0, cdiAnual: 0.1065, dias: 1825, status: 'aplicado' },
+        // Poupança (~19,8%)
+        { produto: 'Poupança BB', categoria: 'poupanca', valor: 17530, pctCDI: 0.7, cdiAnual: 0.1065, dias: 365, status: 'aplicado' },
+        // Fundos (~17,9%): a parte de renda fixa + a parcela de renda variável dos docs
+        { produto: 'Fundo RF Reserva (cofrinho)', categoria: 'fundo', valor: 14810, pctCDI: 0.98, cdiAnual: 0.1065, dias: 365, status: 'aplicado' },
+        { produto: 'Fundo RF Crédito Privado', categoria: 'fundo', valor: 400, pctCDI: 1.05, cdiAnual: 0.1065, dias: 720, status: 'planejado' },
+        { produto: 'Fundo RF Tesouro', categoria: 'fundo', valor: 290, pctCDI: 0.95, cdiAnual: 0.1065, dias: 720, status: 'aplicado' },
+        // Renda variável (estava dentro de FUNDOS nos docs): multimercado + ações
+        { produto: 'Fundo Multimercado', categoria: 'multimercado', valor: 180, rentabilidadeAnual: 0.11, dias: 720, status: 'aplicado' },
+        { produto: 'Ações Bolsa Brasil', categoria: 'acoes', valor: 80, rentabilidadeAnual: 0.12, dyAnual: 0.06, dias: 365, status: 'aplicado' },
+        { produto: 'Ações Globais Ativo', categoria: 'acoes', valor: 50, rentabilidadeAnual: 0.1, dyAnual: 0.02, dias: 365, status: 'planejado' },
+        // Letras (~6,5%): BB LCI POS CDI + BB LCA PREFIXADA
+        { produto: 'LCI Pós CDI BB', categoria: 'letra', valor: 5230, pctCDI: 0.95, cdiAnual: 0.1065, dias: 540, status: 'aplicado' },
+        { produto: 'LCA Prefixada BB', categoria: 'letra', valor: 530, pctCDI: 0.92, cdiAnual: 0.1065, dias: 365, status: 'planejado' },
+      ];
+
+      // Ao carregar, garante que cada aporte tenha id e status (retrocompatível
+      // com carteiras salvas antes do ciclo de status existir).
+      let aportes = L.desserializarAportes(localStorage.getItem(CHAVE)).map((a) => ({
+        status: 'planejado',
+        ...a,
+        id: a.id || novoId(),
+      }));
+
+      // Grava a lista atual no localStorage (serialização blindada na lógica).
+      function salvarCarteira() {
+        localStorage.setItem(CHAVE, L.serializarAportes(aportes));
+      }
+
+      // Preferências (filtros + perfil-alvo) persistidas à parte da carteira.
+      const CHAVE_PREFS = 'rfc.prefs';
+      function carregarPrefs() {
+        const padrao = {
+          categoria: '',
+          risco: '',
+          horizonte: '',
+          perfil: 'conservador',
+          manterRisco: false,
+        };
+        try {
+          const p = JSON.parse(localStorage.getItem(CHAVE_PREFS));
+          return p && typeof p === 'object' ? { ...padrao, ...p } : padrao;
+        } catch {
+          return padrao; // pref corrompida: volta ao padrão sem quebrar
+        }
+      }
+      let prefs = carregarPrefs();
+      function salvarPrefs() {
+        localStorage.setItem(CHAVE_PREFS, JSON.stringify(prefs));
+      }
+
+      // Escapa texto do usuário antes de injetar no HTML (evita quebra/injeção).
+      function escapar(txt) {
+        return String(txt).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+        );
+      }
+
+      // Monta o <li> de um aporte. Valores derivados (líquido) são SEMPRE
+      // recalculados por função pura na hora de mostrar — nunca vêm salvos.
+      // Traz o badge de status e os botões do ciclo (Voltar/Avançar).
+      function itemHtml(a) {
+        const liquido = L.rendimentoLiquidoDeAporte(a);
+        const st = a.status || 'planejado';
+        const noInicio = st === 'planejado';
+        const noFim = st === 'resgatado';
+        return `<li data-testid="item-${a.id}">
+            <div class="item-topo">
+              <span class="nome">${escapar(a.produto)}</span>
+              <span class="liquido">+ ${reais(liquido)}</span>
+            </div>
+            <div class="item-rodape">
+              <span class="meta">
+                ${reais(a.valor)} · ${a.dias}d
+                <span class="status status--${st}" data-testid="status-${a.id}">${ROTULO_STATUS[st]}</span>
+              </span>
+              <span class="acoes-item">
+                <button type="button" class="botao-mini" data-acao="voltar" data-id="${a.id}"
+                  ${noInicio ? 'disabled' : ''} aria-label="Voltar status de ${escapar(a.produto)}">◀ Voltar</button>
+                <button type="button" class="botao-mini" data-acao="avancar" data-id="${a.id}"
+                  ${noFim ? 'disabled' : ''} aria-label="Avançar status de ${escapar(a.produto)}">Avançar ▶</button>
+                <button type="button" class="botao-mini botao-mini--perigo" data-acao="remover" data-id="${a.id}"
+                  aria-label="Remover ${escapar(a.produto)}">Remover</button>
+              </span>
+            </div>
+          </li>`;
+      }
+
+      // Desenha a carteira AGRUPADA por nível de risco, com indicadores por grupo
+      // (quantidade, soma e % da carteira). Grupos vazios não aparecem.
+      function renderizarCarteira() {
+        const pct = (fracao) => `${Math.round(fracao * 100)}%`;
+        // testid em ASCII (sem acento/espaço): "médio" -> "grupo-medio".
+        const slug = (txt) =>
+          txt
+            .normalize('NFD')
+            .replace(/[̀-ͯ]/g, '')
+            .replace(/\s+/g, '-');
+
+        // Só os aportes que passam nos filtros ficam visíveis; o PESO de cada grupo
+        // segue relativo à carteira INTEIRA (a composição real não muda com o filtro).
+        const visiveis = new Set(L.filtrarAportes(aportes, prefs).map((a) => a.id));
+        const total = aportes.length;
+        const nVisiveis = visiveis.size;
+        const temFiltro = prefs.categoria || prefs.risco || prefs.horizonte;
+        const plural = total === 1 ? 'aporte' : 'aportes';
+        $('[data-testid="contador"]').textContent = temFiltro
+          ? `(${nVisiveis} de ${total} aportes)`
+          : `(${total} ${plural})`;
+        $('[data-testid="carteira-vazia"]').hidden = total > 0;
+
+        $('#lista-carteira').innerHTML = L.agruparPorRisco(aportes)
+          .map((g) => ({ ...g, visiveis: g.itens.filter((a) => visiveis.has(a.id)) }))
+          .filter((g) => g.visiveis.length > 0)
+          .map(
+            (g) => `<div class="grupo-risco" data-testid="grupo-${slug(g.nivel)}">
+              <div class="grupo-cab">
+                <span class="nivel">${g.nivel}</span>
+                <span class="ind">${g.quantidade} · ${reais(g.somaValor)}</span>
+                <span class="peso">${pct(g.peso)} da carteira</span>
+              </div>
+              <ul class="lista">${g.visiveis.map(itemHtml).join('')}</ul>
+            </div>`
+          )
+          .join('');
+        // Mensagem quando o filtro esconde todos os itens de uma carteira não vazia.
+        if (total > 0 && nVisiveis === 0) {
+          $('#lista-carteira').innerHTML =
+            '<p class="vazio">Nenhum aporte com esse filtro. Ajuste os filtros acima.</p>';
+        }
+        renderizarDashboard(); // painel sempre reflete a carteira atual
+        renderizarMelhoria(); // e as dicas de "como render mais"
+        renderizarDividendos(); // e a renda passiva das ações
+      }
+
+      // Cartão "renda passiva": dividendos esperados das ações (DY × valor).
+      function renderizarDividendos() {
+        const { anual, mensal, porAtivo, quantidade } = L.rendaPassivaCarteira(aportes);
+        $('[data-testid="div-anual"]').textContent = quantidade ? reais(anual) : '—';
+        $('[data-testid="div-mensal"]').textContent = quantidade ? reais(mensal) : '—';
+        const lista = $('[data-testid="div-lista"]');
+        if (!quantidade) {
+          lista.innerHTML =
+            '<p class="vazio">Cadastre ações com DY esperado para ver a renda de dividendos.</p>';
+          return;
+        }
+        const pctAa = (x) => `${(x * 100).toFixed(1).replace('.', ',')}% a.a.`;
+        lista.innerHTML = porAtivo
+          .map(
+            (x) => `<li>
+              <div class="dica-topo">
+                <span class="nome">${escapar(x.produto)}</span>
+                <span class="ganho">${reais(x.anual)}/ano</span>
+              </div>
+              <div class="dica-detalhe">Dividend yield esperado: <strong>${pctAa(x.dyAnual)}</strong></div>
+            </li>`
+          )
+          .join('');
+        renderizarMeta();
+      }
+
+      // Meta de renda passiva: quanto é preciso ter investido para a renda desejada.
+      function renderizarMeta() {
+        const metaMensal = Number.parseFloat($('#meta-mensal').value) || 0;
+        const dy = (Number.parseFloat($('#meta-dy').value) || 0) / 100;
+        const rendaAtual = L.rendaPassivaCarteira(aportes).anual;
+        const m = L.metaRendaPassiva(metaMensal, dy, rendaAtual);
+        const el = $('[data-testid="meta-resultado"]');
+        const elPlano = $('[data-testid="meta-plano"]');
+        elPlano.textContent = '';
+        if (m.capitalNecessario <= 0) {
+          el.textContent = 'Informe a meta e o DY para calcular quanto precisa investir.';
+          return;
+        }
+        if (m.atingiu) {
+          el.innerHTML = `✓ Você já recebe ${reais(rendaAtual)}/ano em dividendos — <strong>meta atingida!</strong>`;
+          return;
+        }
+        el.innerHTML = `Para <strong>${reais(metaMensal)}/mês</strong> a ${$('#meta-dy').value}% a.a., precisa de <strong>${reais(m.capitalNecessario)}</strong> investido em ações. Hoje você recebe ${reais(rendaAtual)}/ano — faltam investir cerca de <strong>${reais(m.capitalFalta)}</strong>.`;
+
+        // Liga a meta ao PLANO: quanto aportar/mês para juntar o que falta, rendendo
+        // a taxa do plano mensal (rentabilidade média da carteira).
+        const anos = Number.parseInt($('#meta-anos').value, 10) || 0;
+        const taxaPlano = (Number.parseFloat($('#plano-taxa').value) || 0) / 100;
+        const aporte = L.aporteMensalParaMeta(m.capitalFalta, taxaPlano, anos * 12);
+        if (aporte > 0) {
+          elPlano.innerHTML = `📈 Para juntar esses <strong>${reais(m.capitalFalta)}</strong> em ${anos} ${anos === 1 ? 'ano' : 'anos'} (rendendo ${$('#plano-taxa').value}% a.a.), aporte cerca de <strong>${reais(aporte)}/mês</strong>.`;
+        }
+      }
+
+      // Cartão "como render mais": dicas de troca ordenadas pelo ganho anual.
+      function renderizarMelhoria() {
+        const opts = { manterRisco: prefs.manterRisco };
+        const { sugestoes, ganhoAnualTotal, quantidade } = L.resumoMelhoria(aportes, opts);
+        const resumo = $('[data-testid="melhoria-resumo"]');
+        const dicas = $('[data-testid="dicas"]');
+        const pctAa = (x) => `${(x * 100).toFixed(1).replace('.', ',')}% a.a.`;
+
+        // Esconde o botão de simular e limpa um resultado anterior a cada re-render.
+        $('[data-testid="simular-acoes"]').hidden = quantidade === 0;
+        const resultado = $('[data-testid="simulacao-resultado"]');
+        resultado.hidden = true;
+        resultado.innerHTML = '';
+
+        if (quantidade === 0) {
+          let msg = '✓ Sua carteira já está bem posicionada — nada óbvio para trocar agora.';
+          if (aportes.length === 0) {
+            msg = 'Cadastre aportes (ou carregue o exemplo) para ver como render mais.';
+          } else if (prefs.manterRisco) {
+            msg =
+              '✓ Sem trocas que melhorem mantendo o risco atual. Desmarque a opção acima para ver trocas que sobem um pouco o risco.';
+          }
+          resumo.textContent = msg;
+          dicas.innerHTML = '';
+          return;
+        }
+        const plural = quantidade === 1 ? 'troca' : 'trocas';
+        resumo.innerHTML = `Aplicando ${quantidade} ${plural}, sua renda subiria cerca de <strong>${reais(ganhoAnualTotal)}/ano</strong>.`;
+        dicas.innerHTML = sugestoes
+          .map((s) => {
+            // Risco: mostra a mudança e destaca quando SOBE.
+            const risco = s.subiuRisco
+              ? `<span class="risco-sobe">⚠ risco sobe: ${s.riscoAtual} → ${s.riscoAlvo}</span>`
+              : `<span class="risco-igual">risco: ${s.riscoAtual} → ${s.riscoAlvo}</span>`;
+            // IR descontado no período: hoje × no alvo (LCI/LCA é isenta).
+            const ir =
+              s.irAtual > 0
+                ? `IR descontado: <strong>${reais(s.irAtual)}</strong> hoje → <strong>Isento</strong> (economia de ${reais(s.economiaIR)})`
+                : `IR descontado: <strong>Isento</strong> nos dois (não muda)`;
+            return `<li>
+              <div class="dica-topo">
+                <span class="nome">${escapar(s.produto)}</span>
+                <span class="ganho">+ ${reais(s.ganhoAnual)}/ano</span>
+              </div>
+              <div class="dica-detalhe">
+                Trocar por <strong>${escapar(s.alvoRotulo)}</strong> — de ${pctAa(s.taxaAtual)} para ${pctAa(s.taxaAlvo)}.
+              </div>
+              <div class="dica-meta">${risco} · ${ir}</div>
+            </li>`;
+          })
+          .join('');
+      }
+
+      // Plano mensal: projeta o crescimento por juros compostos a cada tecla.
+      function renderizarPlano() {
+        const aporteMensal = Number.parseFloat($('#plano-aporte').value) || 0;
+        const anos = Number.parseInt($('#plano-anos').value, 10) || 0;
+        const taxa = (Number.parseFloat($('#plano-taxa').value) || 0) / 100;
+        const p = L.projetarPlanoMensal(aporteMensal, taxa, anos * 12);
+        $('[data-testid="plano-investido"]').textContent = reais(p.totalInvestido);
+        $('[data-testid="plano-montante"]').textContent = reais(p.montanteFinal);
+        $('[data-testid="plano-ganho"]').textContent = '+ ' + reais(p.ganho);
+        const dica = $('[data-testid="plano-dica"]');
+        if (p.montanteFinal > 0) {
+          dica.innerHTML = `Em ${anos} ${anos === 1 ? 'ano' : 'anos'}, você teria <strong>${reais(p.montanteFinal)}</strong> — sendo ${reais(p.ganho)} só de juros sobre ${reais(p.totalInvestido)} aportados.`;
+        } else {
+          dica.textContent = 'Informe um aporte mensal e um prazo para ver a projeção.';
+        }
+      }
+
+      // Simula aplicar TODAS as trocas e mostra o antes × depois (rentabilidade e
+      // renda anual), o veredito (aumenta ou não) e a lista das trocas.
+      function renderizarSimulacao() {
+        const sim = L.simularMelhoria(aportes, { manterRisco: prefs.manterRisco });
+        const box = $('[data-testid="simulacao-resultado"]');
+        const pctAa = (x) => `${(x * 100).toFixed(1).replace('.', ',')}% a.a.`;
+        const classe = sim.melhora ? 'simulacao' : 'simulacao piora';
+        const veredito = sim.melhora
+          ? `✓ Sua rentabilidade aumenta: + ${reais(sim.ganhoAnual)} por ano`
+          : 'Sem ganho: as trocas não aumentam sua rentabilidade agora.';
+        box.className = classe;
+        box.innerHTML = `
+          <div class="antes-depois">
+            <div class="ad-item">
+              <span class="rotulo">Rentabilidade média (a.a.)</span>
+              <span class="valor">${pctAa(sim.rentAntes)} <span class="seta">→</span> ${pctAa(sim.rentDepois)}</span>
+            </div>
+            <div class="ad-item">
+              <span class="rotulo">Renda líquida por ano</span>
+              <span class="valor">${reais(sim.rendaAnualAntes)} <span class="seta">→</span> ${reais(sim.rendaAnualDepois)}</span>
+            </div>
+            <div class="veredito ${sim.melhora ? '' : 'piora'}">${veredito}</div>
+          </div>
+          <ul>
+            ${sim.trocas
+              .map(
+                (t) =>
+                  `<li>${escapar(t.produto)} <span class="seta">→</span> ${escapar(t.para)} <span class="mais">+ ${reais(t.ganhoAnual)}/ano</span></li>`
+              )
+              .join('')}
+          </ul>`;
+        box.hidden = false;
+      }
+
+      // Desenha o painel: patrimônio, rendimento líquido, aderência, composição
+      // por risco e alertas. Tudo vem das funções puras — zero cálculo aqui.
+      function renderizarDashboard() {
+        const total = L.totalCarteira(aportes);
+        const pct = (fracao) => `${Math.round(fracao * 100)}%`;
+        $('[data-testid="ind-total"]').textContent = reais(total);
+        $('[data-testid="ind-rendimento"]').textContent =
+          '+ ' + reais(L.rendimentoLiquidoCarteira(aportes));
+
+        // Aderência ao PERFIL escolhido (neutra quando a carteira está vazia).
+        $('#rotulo-aderencia').textContent = `Aderência ao perfil ${prefs.perfil}`;
+        const ader = L.aderenciaPerfil(aportes, prefs.perfil);
+        const elAder = $('[data-testid="ind-aderencia"]');
+        if (aportes.length === 0) {
+          elAder.textContent = '—';
+          elAder.className = 'ind-valor';
+        } else {
+          elAder.textContent = ader.aderente ? 'Aderente' : 'Fora do perfil';
+          elAder.className = 'ind-valor ' + (ader.aderente ? 'aderente' : 'nao-aderente');
+        }
+
+        // Composição por risco (barras).
+        $('[data-testid="composicao"]').innerHTML = L.agruparPorRisco(aportes)
+          .map((g) => {
+            const p = Math.round(g.peso * 100);
+            return `<div class="barra-linha">
+                <span class="barra-rotulo">${g.nivel}</span>
+                <span class="barra-trilho"><span class="barra-preenchida" style="width:${p}%"></span></span>
+                <span class="barra-pct">${p}%</span>
+              </div>`;
+          })
+          .join('');
+
+        // Alertas do que exige atenção agora.
+        const alertas = L.alertasCarteira(aportes, prefs.perfil);
+        const cont = $('[data-testid="alertas"]');
+        if (alertas.length === 0) {
+          cont.innerHTML = '<p class="sem-alertas">✓ Nada exige atenção agora.</p>';
+          return;
+        }
+        const mensagemAlerta = (al) => {
+          if (al.tipo === 'risco-medio') {
+            return `Risco médio/alto em ${pct(al.peso)} — acima do teto do perfil ${prefs.perfil} (${pct(al.teto)}).`;
+          }
+          if (al.tipo === 'fgc') {
+            return `${escapar(al.produto)}: ${reais(al.valor)} acima do teto do FGC (${reais(al.teto)}).`;
+          }
+          if (al.tipo === 'dy-alto') {
+            return `${escapar(al.produto)}: dividend yield de ${pct(al.dyAnual)} — alto demais, pode ser "yield trap".`;
+          }
+          // concentracao
+          return `${escapar(al.produto)}: ${pct(al.peso)} da carteira num só produto — concentração (acima de ${pct(al.teto)}).`;
+        };
+        cont.innerHTML = alertas
+          .map((al) => `<div class="alerta" role="alert">⚠ ${mensagemAlerta(al)}</div>`)
+          .join('');
+      }
+
+      // Lê o formulário e devolve um objeto de aporte já com números.
+      function lerFormulario() {
+        return {
+          produto: $('#produto').value,
+          categoria: $('#categoria').value,
+          valor: Number.parseFloat($('#valor').value),
+          pctCDI: Number.parseFloat($('#pctCDI').value) / 100, // 110 -> 1.10
+          cdiAnual: Number.parseFloat($('#cdiAnual').value) / 100, // 10,65 -> 0.1065
+          rentabilidadeAnual: Number.parseFloat($('#rentab').value) / 100, // 12 -> 0.12
+          dyAnual: Number.parseFloat($('#dy').value) / 100, // 6 -> 0.06 (só ações)
+          dias: Number.parseInt($('#dias').value, 10),
+        };
+      }
+
+      // Mostra os campos certos conforme a categoria: renda fixa usa % do CDI;
+      // renda variável usa a rentabilidade esperada.
+      function alternarCamposPorCategoria() {
+        const cat = $('#categoria').value;
+        const rv = L.ehRendaVariavel(cat);
+        document.querySelectorAll('.campo-rf').forEach((el) => (el.hidden = rv));
+        document.querySelectorAll('.campo-rv').forEach((el) => (el.hidden = !rv));
+        // DY (dividendos) só faz sentido para ações.
+        document.querySelectorAll('.campo-acoes').forEach((el) => (el.hidden = cat !== 'acoes'));
+      }
+
+      // Atualiza a prévia ao vivo. Se inválido, mostra os erros e zera os números.
+      function atualizarPrevia() {
+        const a = lerFormulario();
+        const erros = $('[data-testid="erros"]');
+        const { valido, erros: listaErros } = L.validarAporte(a);
+        const rv = L.ehRendaVariavel(a.categoria);
+
+        // O risco depende só da categoria — sempre dá para mostrar.
+        $('[data-testid="previa-risco"]').textContent = L.nivelDeRisco(a.categoria);
+
+        if (!valido) {
+          erros.hidden = false;
+          erros.innerHTML = listaErros.map((e) => `<li>${e}</li>`).join('');
+          ['bruto', 'ir', 'liquido', 'total'].forEach((k) => {
+            $(`[data-testid="previa-${k}"]`).textContent = '—';
+          });
+          return;
+        }
+
+        erros.hidden = true;
+        erros.innerHTML = '';
+        const liquido = L.rendimentoLiquidoDeAporte(a);
+        if (rv) {
+          // Renda variável: rentabilidade ESPERADA (bruta) e IR da RV (ações 15% /
+          // multimercado regressivo). Sem garantia — é estimativa.
+          const r = typeof a.rentabilidadeAnual === 'number' ? a.rentabilidadeAnual : 0;
+          const bruto = a.valor * (Math.pow(1 + r, a.dias / 365) - 1);
+          const ir = L.impostoRendaVariavel(bruto, a.dias, a.categoria);
+          $('[data-testid="previa-bruto"]').textContent = `${reais(bruto)} (estimado)`;
+          $('[data-testid="previa-ir"]').textContent = ir === 0 ? '—' : `− ${reais(ir)}`;
+        } else {
+          const bruto = L.rendimentoBruto(a.valor, a.pctCDI, a.cdiAnual, a.dias);
+          const ir = L.ehIsento(a.categoria) ? 0 : L.impostoRegressivo(bruto, a.dias);
+          $('[data-testid="previa-bruto"]').textContent = reais(bruto);
+          $('[data-testid="previa-ir"]').textContent = ir === 0 ? 'Isento' : `− ${reais(ir)}`;
+        }
+        $('[data-testid="previa-liquido"]').textContent = reais(liquido);
+        $('[data-testid="previa-total"]').textContent = reais(a.valor + liquido);
+      }
+
+      // Auditoria de contraste ao vivo: mede os pares reais da paleta e mostra o nível.
+      function montarContraste() {
+        const raiz = getComputedStyle(document.documentElement);
+        const cor = (nome) => raiz.getPropertyValue(nome).trim();
+        const pares = [
+          { nome: 'Texto / fundo', fg: cor('--branco'), bg: cor('--preto') },
+          { nome: 'Botão (preto / amarelo)', fg: cor('--preto'), bg: cor('--amarelo') },
+          { nome: 'Texto 2º / cartão', fg: cor('--cinza'), bg: cor('--preto-2') },
+          { nome: 'Ganho (verde) / cartão', fg: cor('--verde'), bg: cor('--preto-2') },
+          { nome: 'Alerta (vermelho) / cartão', fg: cor('--vermelho'), bg: cor('--preto-2') },
+        ];
+        $('#lista-contraste').innerHTML = pares
+          .map((p) => {
+            const razao = L.razaoContraste(p.fg, p.bg);
+            const nivel = L.nivelWcag(razao);
+            const cls = nivel === 'reprovado' ? 'badge badge--reprovado' : 'badge';
+            return `<li>${p.nome}: <strong>${razao}:1</strong> <span class="${cls}">${nivel}</span></li>`;
+          })
+          .join('');
+      }
+
+      // Eventos
+      $('#form-aporte').addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const a = lerFormulario();
+        const { valido } = L.validarAporte(a);
+        atualizarPrevia(); // mostra os erros se houver
+        if (!valido) return;
+        // guarda os campos de entrada + id e status inicial (derivados são calculados)
+        aportes.push({ ...a, id: novoId(), status: 'planejado' });
+        salvarCarteira();
+        renderizarCarteira();
+        $('#form-aporte').reset();
+        atualizarPrevia();
+      });
+      $('#form-aporte').addEventListener('input', atualizarPrevia);
+      $('#categoria').addEventListener('change', () => {
+        alternarCamposPorCategoria();
+        atualizarPrevia();
+      });
+
+      // Botões Avançar/Voltar/Remover dos itens (delegação: um listener para a lista).
+      $('#lista-carteira').addEventListener('click', (ev) => {
+        const btn = ev.target.closest('button[data-acao]');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        const i = aportes.findIndex((a) => a.id === id);
+        if (i < 0) return;
+        const acao = btn.dataset.acao;
+
+        if (acao === 'remover') {
+          if (!confirm(`Remover "${aportes[i].produto}" da carteira?`)) return;
+          aportes = L.removerAporte(aportes, id);
+        } else if (acao === 'avancar') {
+          aportes[i] = L.avancarAporte(aportes[i], { agora: hoje() });
+        } else {
+          aportes[i] = L.voltarAporte(aportes[i]);
+        }
+        salvarCarteira();
+        renderizarCarteira();
+      });
+
+      // Filtros e perfil-alvo: ao mudar, salva a preferência e re-renderiza.
+      const mapaFiltro = {
+        'f-categoria': 'categoria',
+        'f-risco': 'risco',
+        'f-horizonte': 'horizonte',
+        'f-perfil': 'perfil',
+      };
+      Object.keys(mapaFiltro).forEach((id) => {
+        document.getElementById(id).addEventListener('change', (ev) => {
+          prefs[mapaFiltro[id]] = ev.target.value;
+          salvarPrefs();
+          renderizarCarteira();
+        });
+      });
+
+      // Reflete as preferências salvas nos controles ao abrir o app.
+      function aplicarPrefsNosControles() {
+        $('#f-categoria').value = prefs.categoria;
+        $('#f-risco').value = prefs.risco;
+        $('#f-horizonte').value = prefs.horizonte;
+        $('#f-perfil').value = prefs.perfil;
+        $('[data-testid="manter-risco"]').checked = prefs.manterRisco;
+      }
+
+      // Carrega a carteira de exemplo (substitui a atual, com confirmação se houver).
+      $('[data-testid="carregar-exemplo"]').addEventListener('click', () => {
+        if (aportes.length > 0 && !confirm('Substituir a carteira atual pelos dados de exemplo?')) {
+          return;
+        }
+        aportes = DADOS_EXEMPLO.map((a) => ({ ...a, id: novoId() }));
+        salvarCarteira();
+        renderizarCarteira();
+      });
+
+      // Simular trocas: mostra o antes × depois de aplicar as dicas.
+      $('[data-testid="simular-trocas"]').addEventListener('click', renderizarSimulacao);
+
+      // "Só trocas sem subir o risco": salva a preferência e re-renderiza as dicas.
+      $('[data-testid="manter-risco"]').addEventListener('change', (ev) => {
+        prefs.manterRisco = ev.target.checked;
+        salvarPrefs();
+        renderizarMelhoria();
+      });
+
+      // Plano mensal: recalcula ao mudar qualquer campo. A taxa do plano também
+      // alimenta a meta (ritmo de aporte), então atualiza a meta junto.
+      ['plano-aporte', 'plano-anos', 'plano-taxa'].forEach((id) => {
+        document.getElementById(id).addEventListener('input', () => {
+          renderizarPlano();
+          renderizarMeta();
+        });
+      });
+
+      // Meta de renda passiva: recalcula ao mudar a meta, o DY ou o prazo.
+      ['meta-mensal', 'meta-dy', 'meta-anos'].forEach((id) => {
+        document.getElementById(id).addEventListener('input', renderizarMeta);
+      });
+
+      // Exportar (LGPD): baixa a carteira + preferências como JSON. O dado é do usuário.
+      $('[data-testid="exportar"]').addEventListener('click', () => {
+        const json = L.exportarJson(aportes, prefs, hoje());
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'carteira-renda-fixa.json';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      $('[data-testid="reiniciar"]').addEventListener('click', () => {
+        if (confirm('Reiniciar a experiência? Isso apaga a carteira salva e limpa os campos.')) {
+          aportes = [];
+          prefs = { categoria: '', risco: '', horizonte: '', perfil: 'conservador' };
+          salvarCarteira();
+          salvarPrefs();
+          aplicarPrefsNosControles();
+          renderizarCarteira();
+          $('#form-aporte').reset();
+          atualizarPrevia();
+        }
+      });
+
+      // --- Painel de siglas / legendas ---------------------------------------
+      // Fonte única das legendas do sistema (mostradas no painel lateral).
+      const SIGLAS = [
+        ['CDB', 'Certificado de Depósito Bancário — empréstimo ao banco, coberto pelo FGC.'],
+        ['CDI', 'Certificado de Depósito Interbancário — a "régua" da renda fixa; anda colado na Selic.'],
+        ['% do CDI', 'Quanto um produto paga em relação ao CDI (ex.: 110% do CDI).'],
+        ['LCI', 'Letra de Crédito Imobiliário — renda fixa isenta de IR.'],
+        ['LCA', 'Letra de Crédito do Agronegócio — renda fixa isenta de IR.'],
+        ['LF', 'Letra Financeira — título de renda fixa de bancos.'],
+        ['LFT', 'Letra Financeira do Tesouro — o Tesouro Selic (pós-fixado na Selic).'],
+        ['Selic', 'Taxa básica de juros do país, definida pelo Copom.'],
+        ['IR', 'Imposto de Renda — na renda fixa é regressivo (22,5% → 15%).'],
+        ['FGC', 'Fundo Garantidor de Créditos — garante R$ 250 mil por CPF e por instituição.'],
+        ['DY', 'Dividend Yield — quanto uma ação paga de dividendo em % do preço, por ano.'],
+        ['RF', 'Renda Fixa — retorno previsível (Tesouro, CDB, LCI/LCA, etc.).'],
+        ['RV', 'Renda Variável — sem garantia (ações, multimercado); pode render mais e oscila.'],
+        ['CVM', 'Comissão de Valores Mobiliários — reguladora; define o suitability (perfil).'],
+        ['WCAG', 'Web Content Accessibility Guidelines — padrão de acessibilidade (níveis AA/AAA).'],
+        ['a.a.', 'ao ano (taxa anual).'],
+        ['p.p.', 'pontos percentuais (diferença entre duas taxas).'],
+      ];
+      const painelSiglas = $('[data-testid="painel-siglas"]');
+      const botaoSiglas = $('[data-testid="abrir-siglas"]');
+      $('[data-testid="siglas-lista"]').innerHTML = SIGLAS.map(
+        ([sigla, texto]) => `<div><dt>${escapar(sigla)}</dt><dd>${escapar(texto)}</dd></div>`
+      ).join('');
+
+      function abrirSiglas(abrir) {
+        painelSiglas.hidden = !abrir;
+        botaoSiglas.setAttribute('aria-expanded', String(abrir));
+        if (abrir) {
+          $('[data-testid="fechar-siglas"]').focus();
+        } else {
+          botaoSiglas.focus();
+        }
+      }
+      botaoSiglas.addEventListener('click', () => abrirSiglas(painelSiglas.hidden));
+      $('[data-testid="fechar-siglas"]').addEventListener('click', () => abrirSiglas(false));
+      document.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape' && !painelSiglas.hidden) abrirSiglas(false);
+      });
+
+      montarContraste();
+      aplicarPrefsNosControles();
+      alternarCamposPorCategoria();
+      renderizarCarteira();
+      atualizarPrevia();
+
+      // Pré-preenche a taxa do plano com a rentabilidade média da carteira (se houver).
+      const mediaCarteira = L.rentabilidadeMediaAnual(aportes);
+      if (mediaCarteira > 0) $('#plano-taxa').value = (mediaCarteira * 100).toFixed(1);
+      renderizarPlano();
+    </script>
+  </body>
+</html>

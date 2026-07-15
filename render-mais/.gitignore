@@ -1,0 +1,6 @@
+node_modules/
+test-results/
+playwright-report/
+.DS_Store
+# Prints da carteira REAL usados só como referência de estrutura (LGPD): não sobem.
+docs/
