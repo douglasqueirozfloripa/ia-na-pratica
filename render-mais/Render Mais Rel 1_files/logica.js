@@ -13,17 +13,15 @@ const CATEGORIAS = [
   'cdb-pre', // CDB prefixado
   'cdb-di', // CDB pós-fixado (% do CDI)
   'letra', // LCI / LCA / LF
-  'debenture', // debênture incentivada (crédito privado isento de IR, SEM FGC)
   'fundo', // fundo de renda fixa
   'poupanca', // poupança
   'multimercado', // fundo multimercado (renda variável)
   'acoes', // ações / fundos de ações (renda variável)
 ];
 
-// Produtos ISENTOS de Imposto de Renda. Convenção calibrada pela lei: LCI/LCA,
-// poupança e debêntures incentivadas (Lei 12.431/2011) não pagam IR — por isso um
-// "% do CDI" menor pode render mais LÍQUIDO.
-const CATEGORIAS_ISENTAS = ['letra', 'poupanca', 'debenture'];
+// Produtos ISENTOS de Imposto de Renda. Convenção calibrada pela lei: LCI/LCA e
+// poupança não pagam IR — por isso um "% do CDI" menor pode render mais LÍQUIDO.
+const CATEGORIAS_ISENTAS = ['letra', 'poupanca'];
 
 // Renda VARIÁVEL: não rende "% do CDI" (não há garantia). Nessas categorias o
 // usuário informa a RENTABILIDADE ESPERADA ao ano (líquida), e o app projeta com
@@ -34,8 +32,7 @@ const CATEGORIAS_RENDA_VARIAVEL = ['multimercado', 'acoes'];
 // referências (FGC, natureza do emissor / volatilidade):
 // - Tesouro e Poupança: risco soberano/garantia estatal → muito baixo.
 // - CDB e Letras: cobertos pelo FGC até o teto → baixo.
-// - Debênture, Fundo RF e Multimercado: crédito privado SEM FGC / marcação a
-//   mercado / come-cotas → médio.
+// - Fundo RF e Multimercado: marcação a mercado / come-cotas → médio.
 // - Ações: renda variável, sem garantia e volátil → alto.
 const RISCO_POR_CATEGORIA = {
   tesouro: 'muito baixo',
@@ -43,7 +40,6 @@ const RISCO_POR_CATEGORIA = {
   'cdb-pre': 'baixo',
   'cdb-di': 'baixo',
   letra: 'baixo',
-  debenture: 'médio',
   fundo: 'médio',
   multimercado: 'médio',
   acoes: 'alto',
@@ -97,7 +93,7 @@ function nivelDeRisco(categoria) {
   return nivel;
 }
 
-// Uma categoria é isenta de IR? (LCI/LCA, poupança e debênture incentivada são.)
+// Uma categoria é isenta de IR? (LCI/LCA e poupança são.)
 function ehIsento(categoria) {
   return CATEGORIAS_ISENTAS.includes(categoria);
 }
@@ -377,47 +373,12 @@ function filtrarAportes(lista, filtros = {}) {
 // rentabilidade líquida ANUALIZADA de cada aporte com alvos de referência e
 // estimamos o ganho anual em reais.
 
-// Produtos-alvo de referência (convenção interna, calibrada pelas fontes): um
-// MENU realista de renda fixa, não só LCI/LCA. A dica sempre compara com o MELHOR
-// deles no LÍQUIDO — e o alvo pode subir o nível de risco (isso é sinalizado).
-// Cada alvo declara a taxa de UM jeito:
-//   - `pctCDI`  → produto pós-fixado (rende um % do CDI); ou
-//   - `taxaAnual` → taxa anual "cheia" (prefixado/IPCA+), convertida em % do CDI
-//                   equivalente pelo CDI do próprio aporte (didático).
-// Por que estes: cobre as 3 famílias que competem de verdade na renda fixa —
-// pós-fixado (CDB de corretora), isento com FGC (LCI/LCA), soberano indexado à
-// inflação (Tesouro IPCA+) e crédito privado isento sem FGC (debênture).
+// Produtos-alvo de referência (convenção interna, calibrada pelas fontes): um bom
+// CDB pós e uma boa LCI isenta. A dica sempre compara com o MELHOR deles.
 const ALVOS_MELHORIA = [
-  // Tesouro IPCA+: risco MUITO BAIXO (soberano) que protege da inflação — a opção
-  // de "render mais sem sair do muito baixo" para quem hoje está na poupança.
-  {
-    rotulo: 'Tesouro IPCA+ (~11% a.a., protege da inflação)',
-    categoria: 'tesouro',
-    taxaAnual: 0.11,
-  },
-  // CDB de corretora a 118% do CDI: pós tributado que, no longo prazo (IR 15%),
-  // costuma bater a LCI/LCA no líquido — quebra a monocultura de "sempre LCI".
-  { rotulo: 'CDB DI de corretora a 118% do CDI', categoria: 'cdb-di', pctCDI: 1.18 },
-  // LCI/LCA a 95% do CDI (isenta): patamar realista de varejo (o comum é 85–95%,
-  // não os 97% otimistas de antes). Vence em prazos curtos, onde o IR morde mais.
-  { rotulo: 'LCI/LCA a 95% do CDI (isenta de IR)', categoria: 'letra', pctCDI: 0.95 },
-  // Debênture incentivada: isenta de IR e sem FGC → risco MÉDIO. Rende mais para
-  // quem aceita subir o risco; some quando "não aumentar o risco" está marcado.
-  {
-    rotulo: 'Debênture incentivada (~13% a.a., isenta de IR)',
-    categoria: 'debenture',
-    taxaAnual: 0.13,
-  },
+  { rotulo: 'CDB DI a 110% do CDI', categoria: 'cdb-di', pctCDI: 1.1 },
+  { rotulo: 'LCI/LCA a 97% do CDI (isenta de IR)', categoria: 'letra', pctCDI: 0.97 },
 ];
-
-// % do CDI EQUIVALENTE de um alvo, para um aporte. Alvo pós já traz `pctCDI`; alvo
-// com `taxaAnual` (prefixado/IPCA+) é convertido pelo CDI do aporte — assim tudo
-// passa pela MESMA função de rendimento. CDI ausente/zero → 0 (blindado).
-function pctCDIequivalenteDoAlvo(alvo, cdiAnual) {
-  if (typeof alvo.pctCDI === 'number') return alvo.pctCDI;
-  if (!(cdiAnual > 0)) return 0;
-  return alvo.taxaAnual / cdiAnual;
-}
 
 // Rentabilidade líquida ANUALIZADA de um aporte (decimal, ex.: 0.11 = 11% a.a.).
 // Anualiza o líquido do período para comparar produtos de prazos diferentes na
@@ -434,15 +395,12 @@ function taxaLiquidaAnualizada(aporte) {
 // considera alvos que NÃO aumentam o nível de risco do aporte (respeita o apetite).
 function melhorAlvoMelhoria(aporte, opts = {}) {
   const nivelAtual = NIVEIS_DE_RISCO.indexOf(nivelDeRisco(aporte.categoria));
-  const candidatos = ALVOS_MELHORIA.map((alvo) => {
-    const pctCDI = pctCDIequivalenteDoAlvo(alvo, aporte.cdiAnual);
-    return {
-      rotulo: alvo.rotulo,
-      categoria: alvo.categoria,
-      pctCDI,
-      taxa: taxaLiquidaAnualizada({ ...aporte, pctCDI, categoria: alvo.categoria }),
-    };
-  }).filter(
+  const candidatos = ALVOS_MELHORIA.map((alvo) => ({
+    rotulo: alvo.rotulo,
+    categoria: alvo.categoria,
+    pctCDI: alvo.pctCDI,
+    taxa: taxaLiquidaAnualizada({ ...aporte, pctCDI: alvo.pctCDI, categoria: alvo.categoria }),
+  })).filter(
     (c) => !opts.manterRisco || NIVEIS_DE_RISCO.indexOf(nivelDeRisco(c.categoria)) <= nivelAtual
   );
   return candidatos.reduce((melhor, c) => (c.taxa > melhor.taxa ? c : melhor), {
@@ -453,37 +411,19 @@ function melhorAlvoMelhoria(aporte, opts = {}) {
   });
 }
 
-// É a RESERVA DE EMERGÊNCIA? Tratamos assim o Tesouro Selic (título público
-// pós-fixado, colado no CDI): risco muito baixo E liquidez diária. Trocá-lo por
-// LCI/LCA/debênture ganharia alguns reais no papel, mas destruiria a liquidez
-// (carência) e subiria o risco — então essas dicas NÃO devem aparecer. Heurística
-// pura: categoria 'tesouro' com pós-fixado perto de 100% do CDI (≤105%). Um
-// Tesouro IPCA+/prefixado (sem pctCDI ~1) não cai aqui — ele pode ser melhorado.
-function ehReservaEmergencia(a) {
-  return a.categoria === 'tesouro' && typeof a.pctCDI === 'number' && a.pctCDI <= 1.05;
-}
-
 // Dicas de rebalanceamento: para cada aporte cujo rendimento fica ABAIXO do melhor
 // alvo por mais que o limiar (padrão 0,5 p.p. ao ano), sugere a troca e estima o
 // ganho anual em reais. Ordenadas do maior ganho para o menor.
-// Dois filtros de RELEVÂNCIA (para não poluir com ruído):
-//   - `protegerReserva` (padrão true): não sugere trocar a reserva de emergência.
-//   - `pisoGanhoAnual` (padrão R$ 50): ignora trocas cujo ganho anual é irrisório
-//     (ex.: +R$ 3/ano não paga o atrito/spread de mudar de produto).
 function sugestoesRebalanceamento(lista, opts = {}) {
-  const { limiar = 0.005, manterRisco = false, protegerReserva = true, pisoGanhoAnual = 50 } = opts;
+  const { limiar = 0.005, manterRisco = false } = opts;
   const sugestoes = [];
   (Array.isArray(lista) ? lista : []).forEach((a) => {
     // Renda variável não entra no rebalanceamento (é outra classe de ativo).
     if (ehRendaVariavel(a.categoria)) return;
-    // Blindagem da reserva: liquidez > alguns reais a mais no ano.
-    if (protegerReserva && ehReservaEmergencia(a)) return;
     const taxaAtual = taxaLiquidaAnualizada(a);
     const alvo = melhorAlvoMelhoria(a, { manterRisco });
     const ganhoTaxa = alvo.taxa - taxaAtual;
-    const ganhoAnual = arredondar2(a.valor * ganhoTaxa);
-    // Só sugere se o ganho de TAXA passa do limiar E o ganho em R$ é material.
-    if (ganhoTaxa > limiar && ganhoAnual >= pisoGanhoAnual) {
+    if (ganhoTaxa > limiar) {
       // Risco: a troca pode SUBIR o nível (ex.: Tesouro "muito baixo" → LCI "baixo").
       const riscoAtual = nivelDeRisco(a.categoria);
       const riscoAlvo = nivelDeRisco(alvo.categoria);
@@ -501,7 +441,7 @@ function sugestoesRebalanceamento(lista, opts = {}) {
         taxaAlvo: alvo.taxa,
         alvoRotulo: alvo.rotulo,
         ganhoTaxa,
-        ganhoAnual,
+        ganhoAnual: arredondar2(a.valor * ganhoTaxa),
         riscoAtual,
         riscoAlvo,
         subiuRisco,
@@ -827,9 +767,7 @@ const API = {
   horizonteDoAporte,
   filtrarAportes,
   taxaLiquidaAnualizada,
-  pctCDIequivalenteDoAlvo,
   melhorAlvoMelhoria,
-  ehReservaEmergencia,
   sugestoesRebalanceamento,
   resumoMelhoria,
   rentabilidadeMediaAnual,

@@ -251,14 +251,17 @@ test('(positivo) simular trocas mostra o antes × depois e o ganho', async ({ pa
   await expect(resultado).toContainText('/ano');
 });
 
-test('(positivo) carteira só com produto ótimo não tem o que melhorar', async ({ page }) => {
+test('(positivo) CDB ótimo não tem troca melhor mantendo o risco', async ({ page }) => {
+  // Com "não aumentar o risco" ligado, um CDB a 130% do CDI não tem alvo melhor
+  // no mesmo nível (a debênture isenta o superaria, mas subiria o risco).
+  await page.getByTestId('manter-risco').check();
   await page.getByTestId('campo-produto').fill('CDB Excelente');
   await page.getByTestId('campo-categoria').selectOption('cdb-di');
   await page.getByTestId('campo-valor').fill('10000');
   await page.getByTestId('campo-pctcdi').fill('130');
   await page.getByTestId('campo-dias').fill('365');
   await page.getByTestId('adicionar').click();
-  await expect(page.getByTestId('melhoria-resumo')).toContainText('bem posicionada');
+  await expect(page.getByTestId('melhoria-resumo')).toContainText('mantendo o risco atual');
 });
 
 test('(positivo/negativo) remover um aporte pede confirmação', async ({ page }) => {

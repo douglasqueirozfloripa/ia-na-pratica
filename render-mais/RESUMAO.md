@@ -685,3 +685,31 @@
 ### Testes
 - **117 unitários + 33 E2E = 150 passando.** Novo E2E: painel de siglas abre,
   mostra as legendas e fecha. `yield-trap` executado ponta a ponta.
+
+### Etapa 25 — Fim da monocultura "tudo vira LCI/LCA"
+
+### O que foi feito
+- **Menu de alvos realista** no simulador de trocas: além de CDB e LCI/LCA,
+  entraram **Tesouro IPCA+** (muito baixo, protege da inflação) e **debênture
+  incentivada** (isenta, sem FGC, risco médio). O motor escolhe o melhor no
+  líquido — então a dica agora **varia por prazo e apetite de risco**, em vez de
+  cair sempre em LCI/LCA.
+- Nova **categoria `debenture`** (isenta de IR pela Lei 12.431/2011, **sem FGC** →
+  risco médio), no formulário, no filtro e nas siglas.
+- **Blindagem da reserva** (`ehReservaEmergencia`): o Tesouro Selic (pós ~100% do
+  CDI) não é mais sugerido para troca — liquidez vale mais que alguns reais/ano.
+- **Piso de relevância** (R$ 50/ano): trocas de ganho irrisório somem da lista.
+- Análise e decisões registradas em [`docs/analise-lci-lca.md`](docs/analise-lci-lca.md).
+
+### Decisões e o porquê
+| Decisão | Por quê |
+|---|---|
+| Alvo aceita `taxaAnual` além de `pctCDI` | Representar prefixado/IPCA+ sem sair da mesma função de rendimento (conversão pelo CDI do aporte) |
+| Debênture = risco **médio**, sem FGC | Honestidade: crédito privado isento rende mais, mas não tem garantia do FGC |
+| Blindar a reserva por padrão | Coerência com Markowitz/liquidez: não trocar a reserva de emergência por +R$/ano marginal |
+| Manter o checkbox de risco **desmarcado** por padrão | Mostrar todas as oportunidades com "⚠ risco sobe" visível; o usuário decide/filtra |
+
+### Testes
+- **120 unitários + 33 E2E = 153 passando.** Novos casos: blindagem da reserva,
+  piso de ganho irrisório, poupança → Tesouro IPCA+ (mesmo risco) e "prazo longo
+  prefere CDB 118% à LCI". Testes de "produto ótimo" passaram a fixar `manterRisco`.

@@ -561,6 +561,7 @@ priorizados por risco.
 - [x] **Prompt 15** — Renda variável (ações/multimercado, risco alto). **123 testes (99+24).**
 - [x] **Prompt 16** — Entregas finais: README + slides + **tutorial ao vivo** (`tutorial.js`).
 - [x] **Prompt 17** — Plano de Testes (`PLANO-DE-TESTES.md`, 12 casos priorizados por risco).
+- [x] **Prompt 18** — Fim da monocultura "tudo vira LCI/LCA": menu de alvos realista (Tesouro IPCA+, CDB 118%, LCI/LCA 95%, **debênture incentivada**), blindagem da reserva e piso de ganho. Análise em `docs/analise-lci-lca.md`. **153 testes (120+33).**
 
 > **Nota (2º pivô no Prompt 13):** o app deixou de ser "conservador" e virou
 > **Render Mais** (foco em aumentar a rentabilidade). Pasta renomeada para

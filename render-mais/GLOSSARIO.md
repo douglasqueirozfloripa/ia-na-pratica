@@ -335,6 +335,20 @@
 - **Risco alto** — o nível novo, para ações: maior potencial de retorno e de perda.
   Entra na composição e na aderência (médio + alto contam contra o teto do perfil).
 
+## Etapa 25 — Menu de alvos realista (fim do "tudo vira LCI/LCA")
+
+- **Debênture incentivada** — dívida de empresa de infraestrutura, **isenta de
+  IR** (Lei 12.431/2011). Costuma render mais que LCI/LCA, mas **não tem FGC** —
+  risco de crédito maior (no app, risco **médio**).
+- **Tesouro IPCA+** — título público que paga **inflação (IPCA) + uma taxa**;
+  protege o poder de compra. Risco **muito baixo** (soberano) — a opção de render
+  mais **sem sair** do nível mais seguro.
+- **Reserva de emergência** — o dinheiro de liquidez imediata (no app, o **Tesouro
+  Selic** pós-fixado). O simulador **não sugere trocá-la**: liquidez vale mais que
+  alguns reais a mais no ano.
+- **Piso de relevância** — ganho mínimo (R$ 50/ano) para uma troca virar dica;
+  abaixo disso é ruído (não paga o atrito de mudar de produto).
+
 ## Etapa 16 — Entregas finais
 
 - **README** — o "manual" do projeto: o que é, como rodar, como testar, arquitetura

@@ -1,13 +1,9 @@
 <!doctype html>
-<!--
-  index.html — tela do app "Render Mais" (aumentar a rentabilidade).
-  Inspiração visual: XP Investimentos (preto + amarelo, ar de corretora premium).
-  As regras vivem em logica.js (window.Logica); esta tela só chama as funções puras.
-  Coberta por: logica.test.js (contraste/espaçamento) e e2e/app.spec.js (fluxo).
--->
+<!-- saved from url=(0065)file:///Users/douglasqueiroz/ia-na-pratica/render-mais/index.html -->
 <html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Render Mais</title>
     <style>
@@ -765,7 +761,12 @@
     </style>
   </head>
   <body>
-    <a class="pular-link" href="#conteudo" data-testid="pular-link">Pular para o conteúdo</a>
+    <a
+      class="pular-link"
+      href="file:///Users/douglasqueiroz/ia-na-pratica/render-mais/index.html#conteudo"
+      data-testid="pular-link"
+      >Pular para o conteúdo</a
+    >
     <header>
       <div class="marca">
         <span class="selo" aria-hidden="true">R+</span>
@@ -775,8 +776,13 @@
         </div>
       </div>
       <div class="acoes-header">
-        <button type="button" class="botao botao--fantasma" data-testid="abrir-siglas"
-          aria-expanded="false" aria-controls="painel-siglas">
+        <button
+          type="button"
+          class="botao botao--fantasma"
+          data-testid="abrir-siglas"
+          aria-expanded="false"
+          aria-controls="painel-siglas"
+        >
           Siglas
         </button>
         <button type="button" class="botao botao--fantasma" data-testid="exportar">
@@ -789,12 +795,89 @@
     </header>
 
     <!-- Painel lateral de siglas / legendas (abre/fecha) -->
-    <aside id="painel-siglas" class="siglas" data-testid="painel-siglas" aria-label="Legendas das siglas do sistema" hidden>
+    <aside
+      id="painel-siglas"
+      class="siglas"
+      data-testid="painel-siglas"
+      aria-label="Legendas das siglas do sistema"
+      hidden=""
+    >
       <div class="siglas-cab">
         <h2 id="siglas-titulo">Siglas &amp; legendas</h2>
         <button type="button" class="botao-mini" data-testid="fechar-siglas">✕ Fechar</button>
       </div>
-      <dl class="siglas-lista" data-testid="siglas-lista"></dl>
+      <dl class="siglas-lista" data-testid="siglas-lista">
+        <div>
+          <dt>CDB</dt>
+          <dd>Certificado de Depósito Bancário — empréstimo ao banco, coberto pelo FGC.</dd>
+        </div>
+        <div>
+          <dt>CDI</dt>
+          <dd>
+            Certificado de Depósito Interbancário — a "régua" da renda fixa; anda colado na Selic.
+          </dd>
+        </div>
+        <div>
+          <dt>% do CDI</dt>
+          <dd>Quanto um produto paga em relação ao CDI (ex.: 110% do CDI).</dd>
+        </div>
+        <div>
+          <dt>LCI</dt>
+          <dd>Letra de Crédito Imobiliário — renda fixa isenta de IR.</dd>
+        </div>
+        <div>
+          <dt>LCA</dt>
+          <dd>Letra de Crédito do Agronegócio — renda fixa isenta de IR.</dd>
+        </div>
+        <div>
+          <dt>LF</dt>
+          <dd>Letra Financeira — título de renda fixa de bancos.</dd>
+        </div>
+        <div>
+          <dt>LFT</dt>
+          <dd>Letra Financeira do Tesouro — o Tesouro Selic (pós-fixado na Selic).</dd>
+        </div>
+        <div>
+          <dt>Selic</dt>
+          <dd>Taxa básica de juros do país, definida pelo Copom.</dd>
+        </div>
+        <div>
+          <dt>IR</dt>
+          <dd>Imposto de Renda — na renda fixa é regressivo (22,5% → 15%).</dd>
+        </div>
+        <div>
+          <dt>FGC</dt>
+          <dd>Fundo Garantidor de Créditos — garante R$ 250 mil por CPF e por instituição.</dd>
+        </div>
+        <div>
+          <dt>DY</dt>
+          <dd>Dividend Yield — quanto uma ação paga de dividendo em % do preço, por ano.</dd>
+        </div>
+        <div>
+          <dt>RF</dt>
+          <dd>Renda Fixa — retorno previsível (Tesouro, CDB, LCI/LCA, etc.).</dd>
+        </div>
+        <div>
+          <dt>RV</dt>
+          <dd>Renda Variável — sem garantia (ações, multimercado); pode render mais e oscila.</dd>
+        </div>
+        <div>
+          <dt>CVM</dt>
+          <dd>Comissão de Valores Mobiliários — reguladora; define o suitability (perfil).</dd>
+        </div>
+        <div>
+          <dt>WCAG</dt>
+          <dd>Web Content Accessibility Guidelines — padrão de acessibilidade (níveis AA/AAA).</dd>
+        </div>
+        <div>
+          <dt>a.a.</dt>
+          <dd>ao ano (taxa anual).</dd>
+        </div>
+        <div>
+          <dt>p.p.</dt>
+          <dd>pontos percentuais (diferença entre duas taxas).</dd>
+        </div>
+      </dl>
     </aside>
 
     <main id="conteudo">
@@ -804,39 +887,250 @@
         <div class="indicadores" aria-live="polite">
           <div class="indicador">
             <span class="ind-rotulo">Patrimônio total</span>
-            <span class="ind-valor" data-testid="ind-total">—</span>
+            <span class="ind-valor" data-testid="ind-total">R$&nbsp;88.344,00</span>
           </div>
           <div class="indicador">
             <span class="ind-rotulo">Rendimento líquido projetado</span>
-            <span class="ind-valor valor--positivo" data-testid="ind-rendimento">—</span>
+            <span class="ind-valor valor--positivo" data-testid="ind-rendimento"
+              >+ R$&nbsp;19.377,11</span
+            >
           </div>
           <div class="indicador">
             <span class="ind-rotulo" id="rotulo-aderencia">Aderência ao perfil conservador</span>
-            <span class="ind-valor" data-testid="ind-aderencia">—</span>
+            <span class="ind-valor nao-aderente" data-testid="ind-aderencia">Fora do perfil</span>
           </div>
         </div>
-        <div class="composicao" data-testid="composicao" aria-label="Composição por risco"></div>
-        <div class="alertas-painel" data-testid="alertas"></div>
+        <div class="composicao" data-testid="composicao" aria-label="Composição por risco">
+          <div class="barra-linha">
+            <span class="barra-rotulo">muito baixo</span>
+            <span class="barra-trilho"
+              ><span class="barra-preenchida" style="width: 40%"></span
+            ></span>
+            <span class="barra-pct">40%</span>
+          </div>
+          <div class="barra-linha">
+            <span class="barra-rotulo">baixo</span>
+            <span class="barra-trilho"
+              ><span class="barra-preenchida" style="width: 42%"></span
+            ></span>
+            <span class="barra-pct">42%</span>
+          </div>
+          <div class="barra-linha">
+            <span class="barra-rotulo">médio</span>
+            <span class="barra-trilho"
+              ><span class="barra-preenchida" style="width: 18%"></span
+            ></span>
+            <span class="barra-pct">18%</span>
+          </div>
+          <div class="barra-linha">
+            <span class="barra-rotulo">alto</span>
+            <span class="barra-trilho"
+              ><span class="barra-preenchida" style="width: 0%"></span
+            ></span>
+            <span class="barra-pct">0%</span>
+          </div>
+        </div>
+        <div class="alertas-painel" data-testid="alertas">
+          <div class="alerta" role="alert">
+            ⚠ Risco médio/alto em 18% — acima do teto do perfil conservador (15%).
+          </div>
+          <div class="alerta" role="alert">
+            ⚠ CDB Prefixado BB: 34% da carteira num só produto — concentração (acima de 30%).
+          </div>
+        </div>
       </section>
 
       <!-- Simulador de melhoria: como render mais -->
-      <section class="cartao painel melhoria-card" data-testid="melhoria" aria-labelledby="titulo-melhoria">
+      <section
+        class="cartao painel melhoria-card"
+        data-testid="melhoria"
+        aria-labelledby="titulo-melhoria"
+      >
         <h2 id="titulo-melhoria">Como render mais 🚀</h2>
         <label class="opcao-risco">
           <input type="checkbox" data-testid="manter-risco" />
           Só trocas que <strong>não aumentam o risco</strong>
         </label>
-        <p class="melhoria-resumo" data-testid="melhoria-resumo"></p>
-        <ul class="dicas" data-testid="dicas"></ul>
-        <div class="form-acoes" data-testid="simular-acoes" hidden>
+        <p class="melhoria-resumo" data-testid="melhoria-resumo">
+          Aplicando 8 trocas, sua renda subiria cerca de <strong>R$&nbsp;1.423,21/ano</strong>.
+        </p>
+        <ul class="dicas" data-testid="dicas">
+          <li>
+            <div class="dica-topo">
+              <span class="nome">Poupança BB</span>
+              <span class="ganho">+ R$&nbsp;521,20/ano</span>
+            </div>
+            <div class="dica-detalhe">
+              Trocar por <strong>LCI/LCA a 97% do CDI (isenta de IR)</strong> — de 7,3% a.a. para
+              10,3% a.a..
+            </div>
+            <div class="dica-meta">
+              <span class="risco-sobe">⚠ risco sobe: muito baixo → baixo</span> · IR descontado:
+              <strong>Isento</strong> nos dois (não muda)
+            </div>
+          </li>
+          <li>
+            <div class="dica-topo">
+              <span class="nome">CDB Prefixado BB</span>
+              <span class="ganho">+ R$&nbsp;442,86/ano</span>
+            </div>
+            <div class="dica-detalhe">
+              Trocar por <strong>LCI/LCA a 97% do CDI (isenta de IR)</strong> — de 8,9% a.a. para
+              10,3% a.a..
+            </div>
+            <div class="dica-meta">
+              <span class="risco-igual">risco: baixo → baixo</span> · IR descontado:
+              <strong>R$&nbsp;1.176,78</strong> hoje → <strong>Isento</strong> (economia de
+              R$&nbsp;1.176,78)
+            </div>
+          </li>
+          <li>
+            <div class="dica-topo">
+              <span class="nome">Fundo RF Reserva (cofrinho)</span>
+              <span class="ganho">+ R$&nbsp;253,68/ano</span>
+            </div>
+            <div class="dica-detalhe">
+              Trocar por <strong>LCI/LCA a 97% do CDI (isenta de IR)</strong> — de 8,6% a.a. para
+              10,3% a.a..
+            </div>
+            <div class="dica-meta">
+              <span class="risco-igual">risco: médio → baixo</span> · IR descontado:
+              <strong>R$&nbsp;270,22</strong> hoje → <strong>Isento</strong> (economia de
+              R$&nbsp;270,22)
+            </div>
+          </li>
+          <li>
+            <div class="dica-topo">
+              <span class="nome">Tesouro Selic 2031 (LFT)</span>
+              <span class="ganho">+ R$&nbsp;184,80/ano</span>
+            </div>
+            <div class="dica-detalhe">
+              Trocar por <strong>LCI/LCA a 97% do CDI (isenta de IR)</strong> — de 9,3% a.a. para
+              10,3% a.a..
+            </div>
+            <div class="dica-meta">
+              <span class="risco-sobe">⚠ risco sobe: muito baixo → baixo</span> · IR descontado:
+              <strong>R$&nbsp;1.798,14</strong> hoje → <strong>Isento</strong> (economia de
+              R$&nbsp;1.798,14)
+            </div>
+          </li>
+          <li>
+            <div class="dica-topo">
+              <span class="nome">CDB DI BB</span>
+              <span class="ganho">+ R$&nbsp;8,20/ano</span>
+            </div>
+            <div class="dica-detalhe">
+              Trocar por <strong>LCI/LCA a 97% do CDI (isenta de IR)</strong> — de 9,0% a.a. para
+              10,3% a.a..
+            </div>
+            <div class="dica-meta">
+              <span class="risco-igual">risco: baixo → baixo</span> · IR descontado:
+              <strong>R$&nbsp;11,61</strong> hoje → <strong>Isento</strong> (economia de
+              R$&nbsp;11,61)
+            </div>
+          </li>
+          <li>
+            <div class="dica-topo">
+              <span class="nome">Fundo RF Tesouro</span>
+              <span class="ganho">+ R$&nbsp;5,58/ano</span>
+            </div>
+            <div class="dica-detalhe">
+              Trocar por <strong>LCI/LCA a 97% do CDI (isenta de IR)</strong> — de 8,4% a.a. para
+              10,3% a.a..
+            </div>
+            <div class="dica-meta">
+              <span class="risco-igual">risco: médio → baixo</span> · IR descontado:
+              <strong>R$&nbsp;10,60</strong> hoje → <strong>Isento</strong> (economia de
+              R$&nbsp;10,60)
+            </div>
+          </li>
+          <li>
+            <div class="dica-topo">
+              <span class="nome">Fundo RF Crédito Privado</span>
+              <span class="ganho">+ R$&nbsp;3,94/ano</span>
+            </div>
+            <div class="dica-detalhe">
+              Trocar por <strong>LCI/LCA a 97% do CDI (isenta de IR)</strong> — de 9,3% a.a. para
+              10,3% a.a..
+            </div>
+            <div class="dica-meta">
+              <span class="risco-igual">risco: médio → baixo</span> · IR descontado:
+              <strong>R$&nbsp;16,32</strong> hoje → <strong>Isento</strong> (economia de
+              R$&nbsp;16,32)
+            </div>
+          </li>
+          <li>
+            <div class="dica-topo">
+              <span class="nome">LCA Prefixada BB</span>
+              <span class="ganho">+ R$&nbsp;2,95/ano</span>
+            </div>
+            <div class="dica-detalhe">
+              Trocar por <strong>LCI/LCA a 97% do CDI (isenta de IR)</strong> — de 9,8% a.a. para
+              10,3% a.a..
+            </div>
+            <div class="dica-meta">
+              <span class="risco-igual">risco: baixo → baixo</span> · IR descontado:
+              <strong>Isento</strong> nos dois (não muda)
+            </div>
+          </li>
+        </ul>
+        <div class="form-acoes" data-testid="simular-acoes">
           <button type="button" class="botao botao--primario" data-testid="simular-trocas">
             Simular trocas e ver antes × depois
           </button>
         </div>
-        <div class="simulacao" data-testid="simulacao-resultado" hidden></div>
+        <div class="simulacao" data-testid="simulacao-resultado">
+          <div class="antes-depois">
+            <div class="ad-item">
+              <span class="rotulo">Rentabilidade média (a.a.)</span>
+              <span class="valor">8,7% a.a. <span class="seta">→</span> 10,3% a.a.</span>
+            </div>
+            <div class="ad-item">
+              <span class="rotulo">Renda líquida por ano</span>
+              <span class="valor"
+                >R$&nbsp;7.674,38 <span class="seta">→</span> R$&nbsp;9.097,59</span
+              >
+            </div>
+            <div class="veredito">✓ Sua rentabilidade aumenta: + R$&nbsp;1.423,21 por ano</div>
+          </div>
+          <ul>
+            <li>
+              Poupança BB <span class="seta">→</span> LCI/LCA a 97% do CDI (isenta de IR)
+              <span class="mais">+ R$&nbsp;521,20/ano</span>
+            </li>
+            <li>
+              CDB Prefixado BB <span class="seta">→</span> LCI/LCA a 97% do CDI (isenta de IR)
+              <span class="mais">+ R$&nbsp;442,86/ano</span>
+            </li>
+            <li>
+              Fundo RF Reserva (cofrinho) <span class="seta">→</span> LCI/LCA a 97% do CDI (isenta
+              de IR) <span class="mais">+ R$&nbsp;253,68/ano</span>
+            </li>
+            <li>
+              Tesouro Selic 2031 (LFT) <span class="seta">→</span> LCI/LCA a 97% do CDI (isenta de
+              IR) <span class="mais">+ R$&nbsp;184,80/ano</span>
+            </li>
+            <li>
+              CDB DI BB <span class="seta">→</span> LCI/LCA a 97% do CDI (isenta de IR)
+              <span class="mais">+ R$&nbsp;8,20/ano</span>
+            </li>
+            <li>
+              Fundo RF Tesouro <span class="seta">→</span> LCI/LCA a 97% do CDI (isenta de IR)
+              <span class="mais">+ R$&nbsp;5,58/ano</span>
+            </li>
+            <li>
+              Fundo RF Crédito Privado <span class="seta">→</span> LCI/LCA a 97% do CDI (isenta de
+              IR) <span class="mais">+ R$&nbsp;3,94/ano</span>
+            </li>
+            <li>
+              LCA Prefixada BB <span class="seta">→</span> LCI/LCA a 97% do CDI (isenta de IR)
+              <span class="mais">+ R$&nbsp;2,95/ano</span>
+            </li>
+          </ul>
+        </div>
         <p class="melhoria-nota">
-          As dicas comparam apenas a <strong>rentabilidade líquida</strong>. Antes de
-          trocar, considere também <strong>liquidez</strong> e <strong>objetivo</strong>
+          As dicas comparam apenas a <strong>rentabilidade líquida</strong>. Antes de trocar,
+          considere também <strong>liquidez</strong> e <strong>objetivo</strong>
           (ex.: o Tesouro Selic costuma ser sua reserva de emergência) e o
           <strong>teto do FGC</strong>. Simulação didática com dados fictícios.
         </p>
@@ -851,86 +1145,146 @@
         <div class="plano-form">
           <div class="campo">
             <label for="plano-aporte">Aporte mensal (R$)</label>
-            <input id="plano-aporte" type="number" min="0" step="50" value="500"
-              data-testid="plano-aporte" />
+            <input
+              id="plano-aporte"
+              type="number"
+              min="0"
+              step="50"
+              value="500"
+              data-testid="plano-aporte"
+            />
           </div>
           <div class="campo">
             <label for="plano-anos">Prazo (anos)</label>
-            <input id="plano-anos" type="number" min="1" step="1" value="10"
-              data-testid="plano-anos" />
+            <input
+              id="plano-anos"
+              type="number"
+              min="1"
+              step="1"
+              value="10"
+              data-testid="plano-anos"
+            />
           </div>
           <div class="campo">
             <label for="plano-taxa">Rentabilidade (% a.a.)</label>
-            <input id="plano-taxa" type="number" min="0" step="0.1" value="10.65"
-              data-testid="plano-taxa" />
+            <input
+              id="plano-taxa"
+              type="number"
+              min="0"
+              step="0.1"
+              value="10.65"
+              data-testid="plano-taxa"
+            />
           </div>
         </div>
         <div class="indicadores" aria-live="polite">
           <div class="indicador">
             <span class="ind-rotulo">Total investido (só aportes)</span>
-            <span class="ind-valor" data-testid="plano-investido">—</span>
+            <span class="ind-valor" data-testid="plano-investido">R$&nbsp;6.000,00</span>
           </div>
           <div class="indicador">
             <span class="ind-rotulo">Montante final (com juros)</span>
-            <span class="ind-valor valor--positivo" data-testid="plano-montante">—</span>
+            <span class="ind-valor valor--positivo" data-testid="plano-montante"
+              >R$&nbsp;7.777,15</span
+            >
           </div>
           <div class="indicador">
             <span class="ind-rotulo">Ganho em juros</span>
-            <span class="ind-valor valor--positivo" data-testid="plano-ganho">—</span>
+            <span class="ind-valor valor--positivo" data-testid="plano-ganho"
+              >+ R$&nbsp;1.777,15</span
+            >
           </div>
         </div>
-        <p class="plano-dica" data-testid="plano-dica"></p>
+        <p class="plano-dica" data-testid="plano-dica">
+          Em 5 anos, você teria <strong>R$&nbsp;7.777,15</strong> — sendo R$&nbsp;1.777,15 só de
+          juros sobre R$&nbsp;6.000,00 aportados.
+        </p>
       </section>
 
       <!-- Renda passiva de dividendos (ações com DY esperado) -->
-      <section class="cartao painel dividendos-card" data-testid="dividendos" aria-labelledby="titulo-div">
+      <section
+        class="cartao painel dividendos-card"
+        data-testid="dividendos"
+        aria-labelledby="titulo-div"
+      >
         <h2 id="titulo-div">Renda passiva de dividendos 💰</h2>
-        <p class="plano-intro">
-          Soma os dividendos esperados das suas ações (pelo DY informado).
-        </p>
+        <p class="plano-intro">Soma os dividendos esperados das suas ações (pelo DY informado).</p>
         <div class="indicadores" aria-live="polite">
           <div class="indicador">
             <span class="ind-rotulo">Dividendos por ano</span>
-            <span class="ind-valor valor--positivo" data-testid="div-anual">—</span>
+            <span class="ind-valor valor--positivo" data-testid="div-anual">R$&nbsp;5,80</span>
           </div>
           <div class="indicador">
             <span class="ind-rotulo">Por mês (média)</span>
-            <span class="ind-valor valor--positivo" data-testid="div-mensal">—</span>
+            <span class="ind-valor valor--positivo" data-testid="div-mensal">R$&nbsp;0,48</span>
           </div>
         </div>
-        <ul class="dicas" data-testid="div-lista"></ul>
+        <ul class="dicas" data-testid="div-lista">
+          <li>
+            <div class="dica-topo">
+              <span class="nome">Ações Bolsa Brasil</span>
+              <span class="ganho">R$&nbsp;4,80/ano</span>
+            </div>
+            <div class="dica-detalhe">Dividend yield esperado: <strong>6,0% a.a.</strong></div>
+          </li>
+          <li>
+            <div class="dica-topo">
+              <span class="nome">Ações Globais Ativo</span>
+              <span class="ganho">R$&nbsp;1,00/ano</span>
+            </div>
+            <div class="dica-detalhe">Dividend yield esperado: <strong>2,0% a.a.</strong></div>
+          </li>
+        </ul>
 
         <h3 class="meta-titulo">Meta de renda passiva</h3>
         <div class="plano-form">
           <div class="campo">
             <label for="meta-mensal">Quero receber (R$/mês)</label>
-            <input id="meta-mensal" type="number" min="0" step="100" value="1000"
-              data-testid="meta-mensal" />
+            <input
+              id="meta-mensal"
+              type="number"
+              min="0"
+              step="100"
+              value="1000"
+              data-testid="meta-mensal"
+            />
           </div>
           <div class="campo">
             <label for="meta-dy">DY médio considerado (% a.a.)</label>
-            <input id="meta-dy" type="number" min="0" step="0.1" value="6"
-              data-testid="meta-dy" />
+            <input id="meta-dy" type="number" min="0" step="0.1" value="6" data-testid="meta-dy" />
           </div>
           <div class="campo">
             <label for="meta-anos">Chegar lá em (anos)</label>
-            <input id="meta-anos" type="number" min="1" step="1" value="10"
-              data-testid="meta-anos" />
+            <input
+              id="meta-anos"
+              type="number"
+              min="1"
+              step="1"
+              value="10"
+              data-testid="meta-anos"
+            />
           </div>
         </div>
-        <p class="plano-dica" data-testid="meta-resultado"></p>
-        <p class="plano-dica" data-testid="meta-plano"></p>
+        <p class="plano-dica" data-testid="meta-resultado">
+          Para <strong>R$&nbsp;1.000,00/mês</strong> a 6% a.a., precisa de
+          <strong>R$&nbsp;200.000,00</strong> investido em ações. Hoje você recebe R$&nbsp;5,80/ano
+          — faltam investir cerca de <strong>R$&nbsp;199.903,33</strong>.
+        </p>
+        <p class="plano-dica" data-testid="meta-plano">
+          📈 Para juntar esses <strong>R$&nbsp;199.903,33</strong> em 10 anos (rendendo 10.65%
+          a.a.), aporte cerca de <strong>R$&nbsp;966,80/mês</strong>.
+        </p>
 
         <p class="melhoria-nota">
-          Dividendo <strong>não é garantido</strong> e pode ser cortado; DY muito alto
-          pode ser <strong>"yield trap"</strong>. Renda variável — valores estimados.
+          Dividendo <strong>não é garantido</strong> e pode ser cortado; DY muito alto pode ser
+          <strong>"yield trap"</strong>. Renda variável — valores estimados.
         </p>
       </section>
 
       <!-- Formulário de novo aporte -->
       <section class="cartao" aria-labelledby="titulo-form">
         <h2 id="titulo-form">Novo aporte</h2>
-        <form id="form-aporte" novalidate>
+        <form id="form-aporte" novalidate="">
           <div class="campo">
             <label for="produto">Produto</label>
             <input
@@ -951,7 +1305,6 @@
                   <option value="cdb-pre">CDB PRÉ</option>
                   <option value="cdb-di">CDB DI (% do CDI)</option>
                   <option value="letra">Letra (LCI/LCA/LF)</option>
-                  <option value="debenture">Debênture incentivada</option>
                   <option value="fundo">Fundo RF</option>
                   <option value="poupanca">Poupança</option>
                 </optgroup>
@@ -1000,7 +1353,7 @@
                 data-testid="campo-cdi"
               />
             </div>
-            <div class="campo campo-rv" hidden>
+            <div class="campo campo-rv" hidden="">
               <label for="rentab">Rentabilidade esperada (% a.a., bruta)</label>
               <input
                 id="rentab"
@@ -1011,7 +1364,7 @@
                 data-testid="campo-rentab"
               />
             </div>
-            <div class="campo campo-acoes" hidden>
+            <div class="campo campo-acoes" hidden="">
               <label for="dy">Dividend yield esperado (% a.a.)</label>
               <input
                 id="dy"
@@ -1042,7 +1395,11 @@
             </button>
           </div>
 
-          <ul class="erros" data-testid="erros" hidden></ul>
+          <ul class="erros" data-testid="erros">
+            <li>Informe o nome do produto.</li>
+            <li>O valor deve ser um número maior que zero.</li>
+            <li>O prazo (dias) deve ser um número maior que zero.</li>
+          </ul>
         </form>
       </section>
 
@@ -1052,7 +1409,9 @@
         <div id="previa" data-testid="previa" aria-live="polite">
           <div class="item">
             <span class="rotulo">Nível de risco</span>
-            <span class="valor"><span class="tag-risco" data-testid="previa-risco">—</span></span>
+            <span class="valor"
+              ><span class="tag-risco" data-testid="previa-risco">muito baixo</span></span
+            >
           </div>
           <div class="item">
             <span class="rotulo">Rendimento bruto</span>
@@ -1076,7 +1435,7 @@
       <!-- Carteira salva (persistida no localStorage) -->
       <section class="cartao carteira" aria-labelledby="titulo-carteira">
         <h2 id="titulo-carteira">
-          Sua carteira <span class="contador" data-testid="contador">(0 aportes)</span>
+          Sua carteira <span class="contador" data-testid="contador">(12 aportes)</span>
         </h2>
 
         <!-- Filtros e preferências (persistidos no localStorage) -->
@@ -1089,7 +1448,6 @@
               <option value="cdb-pre">CDB PRÉ</option>
               <option value="cdb-di">CDB DI</option>
               <option value="letra">Letra (LCI/LCA/LF)</option>
-              <option value="debenture">Debênture incentivada</option>
               <option value="fundo">Fundo RF</option>
               <option value="poupanca">Poupança</option>
               <option value="multimercado">Multimercado</option>
@@ -1125,10 +1483,590 @@
           </div>
         </div>
 
-        <div id="lista-carteira" data-testid="lista-carteira"></div>
-        <p class="vazio" data-testid="carteira-vazia">
-          Nenhum aporte ainda. Preencha o formulário e clique em “Adicionar à carteira”
-          — ou carregue uma carteira de exemplo para explorar o app.
+        <div id="lista-carteira" data-testid="lista-carteira">
+          <div class="grupo-risco" data-testid="grupo-muito-baixo">
+            <div class="grupo-cab">
+              <span class="nivel">muito baixo</span>
+              <span class="ind">2 · R$&nbsp;35.730,00</span>
+              <span class="peso">40% da carteira</span>
+            </div>
+            <ul class="lista">
+              <li data-testid="item-5a8662d3-44bb-495f-ad59-bfa4d13dfb8c">
+                <div class="item-topo">
+                  <span class="nome">Tesouro Selic 2031 (LFT)</span>
+                  <span class="liquido">+ R$&nbsp;10.189,45</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;18.200,00 · 1825d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-5a8662d3-44bb-495f-ad59-bfa4d13dfb8c"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="5a8662d3-44bb-495f-ad59-bfa4d13dfb8c"
+                      aria-label="Voltar status de Tesouro Selic 2031 (LFT)"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="5a8662d3-44bb-495f-ad59-bfa4d13dfb8c"
+                      aria-label="Avançar status de Tesouro Selic 2031 (LFT)"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="5a8662d3-44bb-495f-ad59-bfa4d13dfb8c"
+                      aria-label="Remover Tesouro Selic 2031 (LFT)"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+              <li data-testid="item-72bd4bdf-1892-4785-bfac-ccb94fd6765a">
+                <div class="item-topo">
+                  <span class="nome">Poupança BB</span>
+                  <span class="liquido">+ R$&nbsp;1.286,95</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;17.530,00 · 365d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-72bd4bdf-1892-4785-bfac-ccb94fd6765a"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="72bd4bdf-1892-4785-bfac-ccb94fd6765a"
+                      aria-label="Voltar status de Poupança BB"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="72bd4bdf-1892-4785-bfac-ccb94fd6765a"
+                      aria-label="Avançar status de Poupança BB"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="72bd4bdf-1892-4785-bfac-ccb94fd6765a"
+                      aria-label="Remover Poupança BB"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="grupo-risco" data-testid="grupo-baixo">
+            <div class="grupo-cab">
+              <span class="nivel">baixo</span>
+              <span class="ind">4 · R$&nbsp;36.804,00</span>
+              <span class="peso">42% da carteira</span>
+            </div>
+            <ul class="lista">
+              <li data-testid="item-5effeb57-bd26-468f-a13b-4c262d50d4b1">
+                <div class="item-topo">
+                  <span class="nome">CDB Prefixado BB</span>
+                  <span class="liquido">+ R$&nbsp;5.547,68</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;30.434,00 · 720d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-5effeb57-bd26-468f-a13b-4c262d50d4b1"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="5effeb57-bd26-468f-a13b-4c262d50d4b1"
+                      aria-label="Voltar status de CDB Prefixado BB"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="5effeb57-bd26-468f-a13b-4c262d50d4b1"
+                      aria-label="Avançar status de CDB Prefixado BB"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="5effeb57-bd26-468f-a13b-4c262d50d4b1"
+                      aria-label="Remover CDB Prefixado BB"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+              <li data-testid="item-77fd007b-79d4-4c24-ae92-3ce8c8fe42ae">
+                <div class="item-topo">
+                  <span class="nome">LCI Pós CDI BB</span>
+                  <span class="liquido">+ R$&nbsp;799,41</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;5.230,00 · 540d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-77fd007b-79d4-4c24-ae92-3ce8c8fe42ae"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="77fd007b-79d4-4c24-ae92-3ce8c8fe42ae"
+                      aria-label="Voltar status de LCI Pós CDI BB"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="77fd007b-79d4-4c24-ae92-3ce8c8fe42ae"
+                      aria-label="Avançar status de LCI Pós CDI BB"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="77fd007b-79d4-4c24-ae92-3ce8c8fe42ae"
+                      aria-label="Remover LCI Pós CDI BB"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+              <li data-testid="item-8a38828e-a71a-4bad-a97a-4131afabd6d5">
+                <div class="item-topo">
+                  <span class="nome">CDB DI BB</span>
+                  <span class="liquido">+ R$&nbsp;54,72</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;610,00 · 365d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-8a38828e-a71a-4bad-a97a-4131afabd6d5"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="8a38828e-a71a-4bad-a97a-4131afabd6d5"
+                      aria-label="Voltar status de CDB DI BB"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="8a38828e-a71a-4bad-a97a-4131afabd6d5"
+                      aria-label="Avançar status de CDB DI BB"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="8a38828e-a71a-4bad-a97a-4131afabd6d5"
+                      aria-label="Remover CDB DI BB"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+              <li data-testid="item-10b24210-3de8-449a-b3fc-6d8d9bf91c21">
+                <div class="item-topo">
+                  <span class="nome">LCA Prefixada BB</span>
+                  <span class="liquido">+ R$&nbsp;51,72</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;530,00 · 365d
+                    <span
+                      class="status status--planejado"
+                      data-testid="status-10b24210-3de8-449a-b3fc-6d8d9bf91c21"
+                      >Planejado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="10b24210-3de8-449a-b3fc-6d8d9bf91c21"
+                      disabled=""
+                      aria-label="Voltar status de LCA Prefixada BB"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="10b24210-3de8-449a-b3fc-6d8d9bf91c21"
+                      aria-label="Avançar status de LCA Prefixada BB"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="10b24210-3de8-449a-b3fc-6d8d9bf91c21"
+                      aria-label="Remover LCA Prefixada BB"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="grupo-risco" data-testid="grupo-medio">
+            <div class="grupo-cab">
+              <span class="nivel">médio</span>
+              <span class="ind">4 · R$&nbsp;15.680,00</span>
+              <span class="peso">18% da carteira</span>
+            </div>
+            <ul class="lista">
+              <li data-testid="item-a1935ea2-63dc-4533-b875-cabd85535dff">
+                <div class="item-topo">
+                  <span class="nome">Fundo RF Reserva (cofrinho)</span>
+                  <span class="liquido">+ R$&nbsp;1.273,91</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;14.810,00 · 365d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-a1935ea2-63dc-4533-b875-cabd85535dff"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="a1935ea2-63dc-4533-b875-cabd85535dff"
+                      aria-label="Voltar status de Fundo RF Reserva (cofrinho)"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="a1935ea2-63dc-4533-b875-cabd85535dff"
+                      aria-label="Avançar status de Fundo RF Reserva (cofrinho)"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="a1935ea2-63dc-4533-b875-cabd85535dff"
+                      aria-label="Remover Fundo RF Reserva (cofrinho)"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+              <li data-testid="item-d2e10c1d-80e4-48a7-b095-2fd1dfbab4bc">
+                <div class="item-topo">
+                  <span class="nome">Fundo RF Crédito Privado</span>
+                  <span class="liquido">+ R$&nbsp;76,96</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;400,00 · 720d
+                    <span
+                      class="status status--planejado"
+                      data-testid="status-d2e10c1d-80e4-48a7-b095-2fd1dfbab4bc"
+                      >Planejado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="d2e10c1d-80e4-48a7-b095-2fd1dfbab4bc"
+                      disabled=""
+                      aria-label="Voltar status de Fundo RF Crédito Privado"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="d2e10c1d-80e4-48a7-b095-2fd1dfbab4bc"
+                      aria-label="Avançar status de Fundo RF Crédito Privado"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="d2e10c1d-80e4-48a7-b095-2fd1dfbab4bc"
+                      aria-label="Remover Fundo RF Crédito Privado"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+              <li data-testid="item-f8452bff-d9cb-4886-8673-e5fe4f5d3dc9">
+                <div class="item-topo">
+                  <span class="nome">Fundo RF Tesouro</span>
+                  <span class="liquido">+ R$&nbsp;49,96</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;290,00 · 720d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-f8452bff-d9cb-4886-8673-e5fe4f5d3dc9"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="f8452bff-d9cb-4886-8673-e5fe4f5d3dc9"
+                      aria-label="Voltar status de Fundo RF Tesouro"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="f8452bff-d9cb-4886-8673-e5fe4f5d3dc9"
+                      aria-label="Avançar status de Fundo RF Tesouro"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="f8452bff-d9cb-4886-8673-e5fe4f5d3dc9"
+                      aria-label="Remover Fundo RF Tesouro"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+              <li data-testid="item-fd401e2b-049c-4b94-b83a-6a7f77b55a02">
+                <div class="item-topo">
+                  <span class="nome">Fundo Multimercado</span>
+                  <span class="liquido">+ R$&nbsp;33,94</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;180,00 · 720d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-fd401e2b-049c-4b94-b83a-6a7f77b55a02"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="fd401e2b-049c-4b94-b83a-6a7f77b55a02"
+                      aria-label="Voltar status de Fundo Multimercado"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="fd401e2b-049c-4b94-b83a-6a7f77b55a02"
+                      aria-label="Avançar status de Fundo Multimercado"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="fd401e2b-049c-4b94-b83a-6a7f77b55a02"
+                      aria-label="Remover Fundo Multimercado"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="grupo-risco" data-testid="grupo-alto">
+            <div class="grupo-cab">
+              <span class="nivel">alto</span>
+              <span class="ind">2 · R$&nbsp;130,00</span>
+              <span class="peso">0% da carteira</span>
+            </div>
+            <ul class="lista">
+              <li data-testid="item-0ac11875-d40b-4aad-a35c-fd3e2187d356">
+                <div class="item-topo">
+                  <span class="nome">Ações Bolsa Brasil</span>
+                  <span class="liquido">+ R$&nbsp;8,16</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;80,00 · 365d
+                    <span
+                      class="status status--aplicado"
+                      data-testid="status-0ac11875-d40b-4aad-a35c-fd3e2187d356"
+                      >Aplicado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="0ac11875-d40b-4aad-a35c-fd3e2187d356"
+                      aria-label="Voltar status de Ações Bolsa Brasil"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="0ac11875-d40b-4aad-a35c-fd3e2187d356"
+                      aria-label="Avançar status de Ações Bolsa Brasil"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="0ac11875-d40b-4aad-a35c-fd3e2187d356"
+                      aria-label="Remover Ações Bolsa Brasil"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+              <li data-testid="item-8dc98674-b270-4cd5-a977-09a579c8a57c">
+                <div class="item-topo">
+                  <span class="nome">Ações Globais Ativo</span>
+                  <span class="liquido">+ R$&nbsp;4,25</span>
+                </div>
+                <div class="item-rodape">
+                  <span class="meta">
+                    R$&nbsp;50,00 · 365d
+                    <span
+                      class="status status--planejado"
+                      data-testid="status-8dc98674-b270-4cd5-a977-09a579c8a57c"
+                      >Planejado</span
+                    >
+                  </span>
+                  <span class="acoes-item">
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="voltar"
+                      data-id="8dc98674-b270-4cd5-a977-09a579c8a57c"
+                      disabled=""
+                      aria-label="Voltar status de Ações Globais Ativo"
+                    >
+                      ◀ Voltar
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini"
+                      data-acao="avancar"
+                      data-id="8dc98674-b270-4cd5-a977-09a579c8a57c"
+                      aria-label="Avançar status de Ações Globais Ativo"
+                    >
+                      Avançar ▶
+                    </button>
+                    <button
+                      type="button"
+                      class="botao-mini botao-mini--perigo"
+                      data-acao="remover"
+                      data-id="8dc98674-b270-4cd5-a977-09a579c8a57c"
+                      aria-label="Remover Ações Globais Ativo"
+                    >
+                      Remover
+                    </button>
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="vazio" data-testid="carteira-vazia" hidden="">
+          Nenhum aporte ainda. Preencha o formulário e clique em “Adicionar à carteira” — ou
+          carregue uma carteira de exemplo para explorar o app.
         </p>
         <div class="form-acoes">
           <button type="button" class="botao botao--fantasma" data-testid="carregar-exemplo">
@@ -1141,17 +2079,22 @@
     <footer>
       <section class="contraste" aria-labelledby="titulo-contraste">
         <h2 id="titulo-contraste">Acessibilidade — contraste WCAG (ao vivo)</h2>
-        <ul id="lista-contraste" data-testid="contraste"></ul>
+        <ul id="lista-contraste" data-testid="contraste">
+          <li>Texto / fundo: <strong>19.8:1</strong> <span class="badge">AAA</span></li>
+          <li>Botão (preto / amarelo): <strong>13.09:1</strong> <span class="badge">AAA</span></li>
+          <li>Texto 2º / cartão: <strong>9.22:1</strong> <span class="badge">AAA</span></li>
+          <li>Ganho (verde) / cartão: <strong>9.03:1</strong> <span class="badge">AAA</span></li>
+          <li>Alerta (vermelho) / cartão: <strong>6.52:1</strong> <span class="badge">AA</span></li>
+        </ul>
       </section>
     </footer>
 
-    <script src="logica.js"></script>
+    <script src="./Render Mais Rel 1_files/logica.js"></script>
     <script>
       // Ponte tela → funções puras (window.Logica). Nada de regra de negócio aqui.
       const L = window.Logica;
       const $ = (sel) => document.querySelector(sel);
-      const reais = (n) =>
-        n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const reais = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
       // Onde a carteira mora no navegador (localStorage). A lista fica em memória
       // e é espelhada nesta chave a cada mudança.
@@ -1176,23 +2119,118 @@
       // Total = R$ 88.344 (conforme o perfil dos docs).
       const DADOS_EXEMPLO = [
         // CDB (~35%): BB CDB PRE + BB CDB DI
-        { produto: 'CDB Prefixado BB', categoria: 'cdb-pre', valor: 30434, pctCDI: 1.0, cdiAnual: 0.1065, dias: 720, status: 'aplicado' },
-        { produto: 'CDB DI BB', categoria: 'cdb-di', valor: 610, pctCDI: 1.02, cdiAnual: 0.1065, dias: 365, status: 'aplicado' },
+        {
+          produto: 'CDB Prefixado BB',
+          categoria: 'cdb-pre',
+          valor: 30434,
+          pctCDI: 1.0,
+          cdiAnual: 0.1065,
+          dias: 720,
+          status: 'aplicado',
+        },
+        {
+          produto: 'CDB DI BB',
+          categoria: 'cdb-di',
+          valor: 610,
+          pctCDI: 1.02,
+          cdiAnual: 0.1065,
+          dias: 365,
+          status: 'aplicado',
+        },
         // Títulos públicos (~20,6%): LFT-010331
-        { produto: 'Tesouro Selic 2031 (LFT)', categoria: 'tesouro', valor: 18200, pctCDI: 1.0, cdiAnual: 0.1065, dias: 1825, status: 'aplicado' },
+        {
+          produto: 'Tesouro Selic 2031 (LFT)',
+          categoria: 'tesouro',
+          valor: 18200,
+          pctCDI: 1.0,
+          cdiAnual: 0.1065,
+          dias: 1825,
+          status: 'aplicado',
+        },
         // Poupança (~19,8%)
-        { produto: 'Poupança BB', categoria: 'poupanca', valor: 17530, pctCDI: 0.7, cdiAnual: 0.1065, dias: 365, status: 'aplicado' },
+        {
+          produto: 'Poupança BB',
+          categoria: 'poupanca',
+          valor: 17530,
+          pctCDI: 0.7,
+          cdiAnual: 0.1065,
+          dias: 365,
+          status: 'aplicado',
+        },
         // Fundos (~17,9%): a parte de renda fixa + a parcela de renda variável dos docs
-        { produto: 'Fundo RF Reserva (cofrinho)', categoria: 'fundo', valor: 14810, pctCDI: 0.98, cdiAnual: 0.1065, dias: 365, status: 'aplicado' },
-        { produto: 'Fundo RF Crédito Privado', categoria: 'fundo', valor: 400, pctCDI: 1.05, cdiAnual: 0.1065, dias: 720, status: 'planejado' },
-        { produto: 'Fundo RF Tesouro', categoria: 'fundo', valor: 290, pctCDI: 0.95, cdiAnual: 0.1065, dias: 720, status: 'aplicado' },
+        {
+          produto: 'Fundo RF Reserva (cofrinho)',
+          categoria: 'fundo',
+          valor: 14810,
+          pctCDI: 0.98,
+          cdiAnual: 0.1065,
+          dias: 365,
+          status: 'aplicado',
+        },
+        {
+          produto: 'Fundo RF Crédito Privado',
+          categoria: 'fundo',
+          valor: 400,
+          pctCDI: 1.05,
+          cdiAnual: 0.1065,
+          dias: 720,
+          status: 'planejado',
+        },
+        {
+          produto: 'Fundo RF Tesouro',
+          categoria: 'fundo',
+          valor: 290,
+          pctCDI: 0.95,
+          cdiAnual: 0.1065,
+          dias: 720,
+          status: 'aplicado',
+        },
         // Renda variável (estava dentro de FUNDOS nos docs): multimercado + ações
-        { produto: 'Fundo Multimercado', categoria: 'multimercado', valor: 180, rentabilidadeAnual: 0.11, dias: 720, status: 'aplicado' },
-        { produto: 'Ações Bolsa Brasil', categoria: 'acoes', valor: 80, rentabilidadeAnual: 0.12, dyAnual: 0.06, dias: 365, status: 'aplicado' },
-        { produto: 'Ações Globais Ativo', categoria: 'acoes', valor: 50, rentabilidadeAnual: 0.1, dyAnual: 0.02, dias: 365, status: 'planejado' },
+        {
+          produto: 'Fundo Multimercado',
+          categoria: 'multimercado',
+          valor: 180,
+          rentabilidadeAnual: 0.11,
+          dias: 720,
+          status: 'aplicado',
+        },
+        {
+          produto: 'Ações Bolsa Brasil',
+          categoria: 'acoes',
+          valor: 80,
+          rentabilidadeAnual: 0.12,
+          dyAnual: 0.06,
+          dias: 365,
+          status: 'aplicado',
+        },
+        {
+          produto: 'Ações Globais Ativo',
+          categoria: 'acoes',
+          valor: 50,
+          rentabilidadeAnual: 0.1,
+          dyAnual: 0.02,
+          dias: 365,
+          status: 'planejado',
+        },
         // Letras (~6,5%): BB LCI POS CDI + BB LCA PREFIXADA
-        { produto: 'LCI Pós CDI BB', categoria: 'letra', valor: 5230, pctCDI: 0.95, cdiAnual: 0.1065, dias: 540, status: 'aplicado' },
-        { produto: 'LCA Prefixada BB', categoria: 'letra', valor: 530, pctCDI: 0.92, cdiAnual: 0.1065, dias: 365, status: 'planejado' },
+        {
+          produto: 'LCI Pós CDI BB',
+          categoria: 'letra',
+          valor: 5230,
+          pctCDI: 0.95,
+          cdiAnual: 0.1065,
+          dias: 540,
+          status: 'aplicado',
+        },
+        {
+          produto: 'LCA Prefixada BB',
+          categoria: 'letra',
+          valor: 530,
+          pctCDI: 0.92,
+          cdiAnual: 0.1065,
+          dias: 365,
+          status: 'planejado',
+        },
       ];
 
       // Ao carregar, garante que cada aporte tenha id e status (retrocompatível
@@ -1234,8 +2272,7 @@
       function escapar(txt) {
         return String(txt).replace(
           /[&<>"']/g,
-          (c) =>
-            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+          (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
         );
       }
 
@@ -1274,11 +2311,7 @@
       function renderizarCarteira() {
         const pct = (fracao) => `${Math.round(fracao * 100)}%`;
         // testid em ASCII (sem acento/espaço): "médio" -> "grupo-medio".
-        const slug = (txt) =>
-          txt
-            .normalize('NFD')
-            .replace(/[̀-ͯ]/g, '')
-            .replace(/\s+/g, '-');
+        const slug = (txt) => txt.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '-');
 
         // Só os aportes que passam nos filtros ficam visíveis; o PESO de cada grupo
         // segue relativo à carteira INTEIRA (a composição real não muda com o filtro).
@@ -1749,11 +2782,13 @@
       // Fonte única das legendas do sistema (mostradas no painel lateral).
       const SIGLAS = [
         ['CDB', 'Certificado de Depósito Bancário — empréstimo ao banco, coberto pelo FGC.'],
-        ['CDI', 'Certificado de Depósito Interbancário — a "régua" da renda fixa; anda colado na Selic.'],
+        [
+          'CDI',
+          'Certificado de Depósito Interbancário — a "régua" da renda fixa; anda colado na Selic.',
+        ],
         ['% do CDI', 'Quanto um produto paga em relação ao CDI (ex.: 110% do CDI).'],
         ['LCI', 'Letra de Crédito Imobiliário — renda fixa isenta de IR.'],
         ['LCA', 'Letra de Crédito do Agronegócio — renda fixa isenta de IR.'],
-        ['Debênture incentivada', 'Dívida de empresa de infraestrutura, isenta de IR (Lei 12.431/2011). Rende mais, mas SEM FGC — risco de crédito maior.'],
         ['LF', 'Letra Financeira — título de renda fixa de bancos.'],
         ['LFT', 'Letra Financeira do Tesouro — o Tesouro Selic (pós-fixado na Selic).'],
         ['Selic', 'Taxa básica de juros do país, definida pelo Copom.'],
@@ -1763,7 +2798,10 @@
         ['RF', 'Renda Fixa — retorno previsível (Tesouro, CDB, LCI/LCA, etc.).'],
         ['RV', 'Renda Variável — sem garantia (ações, multimercado); pode render mais e oscila.'],
         ['CVM', 'Comissão de Valores Mobiliários — reguladora; define o suitability (perfil).'],
-        ['WCAG', 'Web Content Accessibility Guidelines — padrão de acessibilidade (níveis AA/AAA).'],
+        [
+          'WCAG',
+          'Web Content Accessibility Guidelines — padrão de acessibilidade (níveis AA/AAA).',
+        ],
         ['a.a.', 'ao ano (taxa anual).'],
         ['p.p.', 'pontos percentuais (diferença entre duas taxas).'],
       ];

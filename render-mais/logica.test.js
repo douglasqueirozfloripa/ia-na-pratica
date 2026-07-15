@@ -703,8 +703,11 @@ describe('simulador de melhoria', () => {
     expect(s[0].taxaAlvo).toBeGreaterThan(s[0].taxaAtual);
   });
 
-  test('(negativo) um CDB já ótimo (120% CDI) NÃO gera sugestão', () => {
-    expect(sugestoesRebalanceamento([cdbBom])).toEqual([]);
+  test('(negativo) um CDB já ótimo (120% CDI) NÃO gera sugestão sem subir o risco', () => {
+    // Sem aumentar o risco, nenhum alvo de mesmo nível (LCI/LCA, CDB) supera um
+    // CDB a 120% do CDI. (Sem essa trava, a debênture isenta o superaria — mas aí
+    // subiria o risco, o que é outra decisão.)
+    expect(sugestoesRebalanceamento([cdbBom], { manterRisco: true })).toEqual([]);
   });
 
   test('(positivo) sugestões vêm ordenadas pelo maior ganho', () => {
@@ -725,14 +728,15 @@ describe('simulador de melhoria', () => {
     expect(r.ganhoAnualTotal).toBeCloseTo(r.sugestoes[0].ganhoAnual, 2);
   });
 
-  test('(positivo) carteira só com produtos ótimos não tem o que melhorar', () => {
-    const r = resumoMelhoria([cdbBom]);
+  test('(positivo) carteira só com produtos ótimos não tem o que melhorar (mesmo risco)', () => {
+    const r = resumoMelhoria([cdbBom], { manterRisco: true });
     expect(r.quantidade).toBe(0);
     expect(r.ganhoAnualTotal).toBe(0);
   });
 
   test('(positivo) a dica informa a mudança de risco e o IR descontado', () => {
-    // Tesouro (muito baixo, tributado) -> LCI (baixo, isento).
+    // Tesouro (muito baixo, tributado) -> Debênture isenta (médio). Desligamos a
+    // blindagem da reserva de propósito para exercitar a maior variação de risco.
     const tesouro = {
       ...base,
       id: 't1',
@@ -741,17 +745,17 @@ describe('simulador de melhoria', () => {
       valor: 10000,
       pctCDI: 1,
     };
-    const [s] = sugestoesRebalanceamento([tesouro]);
+    const [s] = sugestoesRebalanceamento([tesouro], { protegerReserva: false });
     expect(s.riscoAtual).toBe('muito baixo');
-    expect(s.riscoAlvo).toBe('baixo');
+    expect(s.riscoAlvo).toBe('médio'); // debênture isenta rende mais, subindo o risco
     expect(s.subiuRisco).toBe(true); // a troca aumenta o risco
     expect(s.irAtual).toBeGreaterThan(0); // Tesouro paga IR hoje
-    expect(s.irAlvo).toBe(0); // LCI/LCA é isenta
+    expect(s.irAlvo).toBe(0); // debênture incentivada é isenta
     expect(s.economiaIR).toBeCloseTo(s.irAtual, 2);
   });
 
   test('(negativo) troca de mesmo nível de risco não sobe o risco', () => {
-    // CDB PRÉ (baixo) -> LCI (baixo).
+    // CDB PRÉ (baixo) -> LCI/CDB (baixo), com "não aumentar o risco" ligado.
     const cdbPre = {
       ...base,
       id: 'cp',
@@ -760,13 +764,14 @@ describe('simulador de melhoria', () => {
       valor: 10000,
       pctCDI: 0.9,
     };
-    const [s] = sugestoesRebalanceamento([cdbPre]);
+    const [s] = sugestoesRebalanceamento([cdbPre], { manterRisco: true });
     expect(s.riscoAtual).toBe('baixo');
     expect(s.subiuRisco).toBe(false);
   });
 
-  test('(positivo) manterRisco: Tesouro (muito baixo) deixa de ter dica (só há alvo de maior risco)', () => {
-    const tesouro = {
+  test('(positivo) reserva de emergência (Tesouro Selic pós) é blindada de dicas', () => {
+    // Tesouro Selic ~100% do CDI = reserva (liquidez diária): não sugerir trocar.
+    const reserva = {
       ...base,
       id: 't1',
       produto: 'Tesouro Selic',
@@ -774,8 +779,50 @@ describe('simulador de melhoria', () => {
       valor: 10000,
       pctCDI: 1,
     };
-    expect(sugestoesRebalanceamento([tesouro])).toHaveLength(1); // sem restrição, sugere
-    expect(sugestoesRebalanceamento([tesouro], { manterRisco: true })).toEqual([]); // com restrição, não
+    expect(sugestoesRebalanceamento([reserva])).toEqual([]); // protegida por padrão
+    // Desligando a proteção, aí sim aparece (prova que era só a blindagem).
+    expect(sugestoesRebalanceamento([reserva], { protegerReserva: false })).toHaveLength(1);
+  });
+
+  test('(positivo) manterRisco: poupança melhora sem subir o risco (alvo Tesouro IPCA+)', () => {
+    // Agora existe um alvo de MUITO BAIXO risco (Tesouro IPCA+): a poupança pode
+    // render mais sem sair do nível de risco dela.
+    const s = sugestoesRebalanceamento([poupanca], { manterRisco: true });
+    expect(s).toHaveLength(1);
+    expect(s[0].subiuRisco).toBe(false);
+    expect(s[0].riscoAlvo).toBe('muito baixo');
+  });
+
+  test('(negativo) troca de ganho irrisório (abaixo do piso) não vira dica', () => {
+    // Aporte minúsculo: a taxa melhora, mas o ganho em R$/ano é ruído (< R$ 50).
+    const migalha = {
+      ...base,
+      id: 'm',
+      produto: 'LCA mixuruca',
+      categoria: 'letra',
+      valor: 100,
+      pctCDI: 0.9,
+    };
+    expect(sugestoesRebalanceamento([migalha])).toEqual([]); // filtrada pelo piso
+    expect(sugestoesRebalanceamento([migalha], { pisoGanhoAnual: 0 })).toHaveLength(1);
+  });
+
+  test('(positivo) menu de alvos: prazo longo (IR 15%) prefere CDB 118% à LCI, sem subir risco', () => {
+    // Prova que a monocultura de "sempre LCI/LCA" acabou: no longo prazo, um bom
+    // CDB pós tributado bate a LCI no líquido — e sem aumentar o risco.
+    const cdbFraco = {
+      ...base,
+      dias: 900,
+      id: 'cf',
+      produto: 'CDB fraco longo',
+      categoria: 'cdb-di',
+      valor: 20000,
+      pctCDI: 0.9,
+    };
+    const s = sugestoesRebalanceamento([cdbFraco], { manterRisco: true });
+    expect(s).toHaveLength(1);
+    expect(s[0].alvoRotulo).toMatch(/CDB DI de corretora a 118%/);
+    expect(s[0].subiuRisco).toBe(false);
   });
 
   test('(positivo) manterRisco: CDB PRÉ (baixo) mantém a dica (alvo é do mesmo nível)', () => {
@@ -794,7 +841,8 @@ describe('simulador de melhoria', () => {
 
   test('(positivo) aplicarMelhorias troca só os aportes com dica, sem mutar', () => {
     const lista = [poupanca, cdbBom];
-    const depois = aplicarMelhorias(lista);
+    // Com manterRisco, a poupança melhora (Tesouro IPCA+) e o CDB a 120% fica igual.
+    const depois = aplicarMelhorias(lista, { manterRisco: true });
     expect(depois[0].categoria).not.toBe('poupanca'); // poupança foi trocada
     expect(depois[1]).toEqual(cdbBom); // o bom ficou igual
     expect(lista[0].categoria).toBe('poupanca'); // original intacta
@@ -810,7 +858,8 @@ describe('simulador de melhoria', () => {
   });
 
   test('(negativo) simularMelhoria sem dicas não muda nada (melhora=false)', () => {
-    const sim = simularMelhoria([cdbBom]);
+    // Um CDB a 120% do CDI não tem troca melhor no MESMO nível de risco.
+    const sim = simularMelhoria([cdbBom], { manterRisco: true });
     expect(sim.melhora).toBe(false);
     expect(sim.ganhoAnual).toBe(0);
     expect(sim.rentDepois).toBeCloseTo(sim.rentAntes, 6);
